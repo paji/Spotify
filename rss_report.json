@@ -2,12 +2,48 @@
   "rss_generation": {
     "status": "completed",
     "details": [
-      "RSSGenerator: 受け取ったMP3ファイル数: 0",
+      "RSSGenerator: 受け取ったMP3ファイル数: 5",
       "ポッドキャスト情報を設定しました",
       "RSSフィードの生成を開始します",
-      "RSSに追加したアイテム数: 0"
+      "RSSアイテムを追加: sample1",
+      "RSSアイテムを追加: sample2",
+      "RSSアイテムを追加: sample3",
+      "RSSアイテムを追加: sample4",
+      "RSSアイテムを追加: sample5",
+      "RSSに追加したアイテム数: 5"
     ],
-    "items": [],
-    "total_items": 0
+    "items": [
+      {
+        "title": "sample1",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3",
+        "size": 1048576,
+        "pub_date": "2025-03-18T14:14:19.339270"
+      },
+      {
+        "title": "sample2",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3",
+        "size": 1048576,
+        "pub_date": "2025-03-18T14:14:19.339274"
+      },
+      {
+        "title": "sample3",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3",
+        "size": 1048576,
+        "pub_date": "2025-03-18T14:14:19.339277"
+      },
+      {
+        "title": "sample4",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3",
+        "size": 1048576,
+        "pub_date": "2025-03-18T14:14:19.339279"
+      },
+      {
+        "title": "sample5",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3",
+        "size": 1048576,
+        "pub_date": "2025-03-18T14:14:19.339281"
+      }
+    ],
+    "total_items": 5
   }
 }

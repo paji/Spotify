@@ -23,5 +23,70 @@
       <link>https://voicy.jp/channel/2834/all?premium=1</link>
     </image>
     <itunes:image href="https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg" />
+    <item>
+      <title>sample1</title>
+      <description>sample1 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
+
+パジの日々の挑戦を記録していきます</description>
+      <link>https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3</link>
+      <pubDate>Tue, 18 Mar 2025 14:14:19 </pubDate>
+      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3</guid>
+      <enclosure url="https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3" length="1048576" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:author>パジ</itunes:author>
+    </item>
+    <item>
+      <title>sample2</title>
+      <description>sample2 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
+
+パジの日々の挑戦を記録していきます</description>
+      <link>https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3</link>
+      <pubDate>Tue, 18 Mar 2025 14:14:19 </pubDate>
+      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3</guid>
+      <enclosure url="https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3" length="1048576" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:author>パジ</itunes:author>
+    </item>
+    <item>
+      <title>sample3</title>
+      <description>sample3 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
+
+パジの日々の挑戦を記録していきます</description>
+      <link>https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3</link>
+      <pubDate>Tue, 18 Mar 2025 14:14:19 </pubDate>
+      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3</guid>
+      <enclosure url="https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3" length="1048576" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:author>パジ</itunes:author>
+    </item>
+    <item>
+      <title>sample4</title>
+      <description>sample4 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
+
+パジの日々の挑戦を記録していきます</description>
+      <link>https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3</link>
+      <pubDate>Tue, 18 Mar 2025 14:14:19 </pubDate>
+      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3</guid>
+      <enclosure url="https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3" length="1048576" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:author>パジ</itunes:author>
+    </item>
+    <item>
+      <title>sample5</title>
+      <description>sample5 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
+
+パジの日々の挑戦を記録していきます</description>
+      <link>https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3</link>
+      <pubDate>Tue, 18 Mar 2025 14:14:19 </pubDate>
+      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3</guid>
+      <enclosure url="https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3" length="1048576" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:explicit>no</itunes:explicit>
+      <itunes:author>パジ</itunes:author>
+    </item>
   </channel>
 </rss>
