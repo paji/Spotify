@@ -4,11 +4,11 @@
     "details": [
       "GITHUB_TOKENを環境変数から取得しました。",
       "ブランチ名: main",
-      "GitHub API URL: https://api.github.com/repos/paji/Spotify/contents",
-      "Raw コンテンツ URL: https://raw.githubusercontent.com/paji/Spotify/main",
-      "GitHubリポジトリ paji/Spotify からMP3ファイルの取得を開始します",
+      "GitHub API URL: https://api.github.com/repos/paji/voicy/contents",
+      "Raw コンテンツ URL: https://raw.githubusercontent.com/paji/voicy/main",
+      "GitHubリポジトリ paji/voicy からMP3ファイルの取得を開始します",
       "パス: mp3_downloads",
-      "GitHubコンテンツAPIにアクセス中: https://api.github.com/repos/paji/Spotify/contents/mp3_downloads",
+      "GitHubコンテンツAPIにアクセス中: https://api.github.com/repos/paji/voicy/contents/mp3_downloads",
       "エラー: パス 'mp3_downloads' が見つかりません。",
       "取得したMP3ファイル数: 0"
     ],
