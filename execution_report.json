@@ -1,6 +1,6 @@
 {
   "command": "all",
-  "timestamp": "2025-03-18T14:32:26.037122",
+  "timestamp": "2025-03-18T14:52:44.030072",
   "arguments": {
     "command": "all",
     "username": "paji",
@@ -10,23 +10,63 @@
     "output": "podcast.xml"
   },
   "fetch_process": {
-    "status": "fetching",
+    "status": "completed",
     "details": [
-      "警告: MP3_PAT または GITHUB_TOKEN が設定されていません。プライベートリポジトリにアクセスできない可能性があります。",
+      "GitHubアクセストークンを環境変数から取得しました。",
       "ブランチ名: main",
       "GitHub API URL: https://api.github.com/repos/paji/voicy/contents",
       "Raw コンテンツ URL: https://raw.githubusercontent.com/paji/voicy/main",
       "GitHubリポジトリ paji/voicy からMP3ファイルの取得を開始します",
       "パス: mp3_downloads",
-      "アクセストークンがないため、ダミーデータを生成します",
+      "GitHubコンテンツAPIにアクセス中: https://api.github.com/repos/paji/voicy/contents/mp3_downloads",
+      "エラー: パス 'mp3_downloads' が見つかりません。",
+      "MP3ファイルが見つからないか、アクセスできないため、ダミーデータを生成します",
       "5個のダミーMP3データを生成します",
       "ダミーMP3ファイルを追加: sample1.mp3",
       "ダミーMP3ファイルを追加: sample2.mp3",
       "ダミーMP3ファイルを追加: sample3.mp3",
       "ダミーMP3ファイルを追加: sample4.mp3",
-      "ダミーMP3ファイルを追加: sample5.mp3"
+      "ダミーMP3ファイルを追加: sample5.mp3",
+      "取得したMP3ファイル数: 5",
+      "  - sample1.mp3 (https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3)",
+      "  - sample2.mp3 (https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3)",
+      "  - sample3.mp3 (https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3)",
+      "  - sample4.mp3 (https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3)",
+      "  - sample5.mp3 (https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3)"
     ],
-    "mp3_files": []
+    "mp3_files": [
+      {
+        "filename": "sample1.mp3",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3",
+        "size": 1048576,
+        "last_updated": "2025-03-18T14:52:44.199268"
+      },
+      {
+        "filename": "sample2.mp3",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3",
+        "size": 1048576,
+        "last_updated": "2025-03-18T14:52:44.199287"
+      },
+      {
+        "filename": "sample3.mp3",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3",
+        "size": 1048576,
+        "last_updated": "2025-03-18T14:52:44.199290"
+      },
+      {
+        "filename": "sample4.mp3",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3",
+        "size": 1048576,
+        "last_updated": "2025-03-18T14:52:44.199292"
+      },
+      {
+        "filename": "sample5.mp3",
+        "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3",
+        "size": 1048576,
+        "last_updated": "2025-03-18T14:52:44.199294"
+      }
+    ],
+    "total_files": 5
   },
   "rss_generation": {
     "status": "completed",
@@ -46,31 +86,31 @@
         "title": "sample1",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:32:26.037159"
+        "pub_date": "2025-03-18T14:52:44.199268"
       },
       {
         "title": "sample2",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:32:26.037163"
+        "pub_date": "2025-03-18T14:52:44.199287"
       },
       {
         "title": "sample3",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:32:26.037166"
+        "pub_date": "2025-03-18T14:52:44.199290"
       },
       {
         "title": "sample4",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:32:26.037168"
+        "pub_date": "2025-03-18T14:52:44.199292"
       },
       {
         "title": "sample5",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:32:26.037170"
+        "pub_date": "2025-03-18T14:52:44.199294"
       }
     ],
     "total_items": 5
