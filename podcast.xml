@@ -12,8 +12,10 @@
     <ttl>60</ttl>
     <itunes:explicit>no</itunes:explicit>
     <itunes:author>パジ</itunes:author>
-    <itunes:owner>パジ</itunes:owner>
-    <itunes:email>hajimeataka@gmail.com</itunes:email>
+    <itunes:owner>
+      <itunes:name>パジ</itunes:name>
+      <itunes:email>hajimeataka@gmail.com</itunes:email>
+    </itunes:owner>
     <itunes:category text="Technology" />
     <image>
       <url>https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg</url>
