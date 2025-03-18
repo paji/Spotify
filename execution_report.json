@@ -1,0 +1,39 @@
+{
+  "command": "all",
+  "timestamp": "2025-03-18T13:39:22.187968",
+  "arguments": {
+    "command": "all",
+    "username": "paji",
+    "repo": "Spotify",
+    "path": "mp3_downloads",
+    "branch": "main",
+    "output": "podcast.xml"
+  },
+  "fetch_process": {
+    "status": "completed",
+    "details": [
+      "GITHUB_TOKENを環境変数から取得しました。",
+      "ブランチ名: main",
+      "GitHub API URL: https://api.github.com/repos/paji/Spotify/contents",
+      "Raw コンテンツ URL: https://raw.githubusercontent.com/paji/Spotify/main",
+      "GitHubリポジトリ paji/Spotify からMP3ファイルの取得を開始します",
+      "パス: mp3_downloads",
+      "GitHubコンテンツAPIにアクセス中: https://api.github.com/repos/paji/Spotify/contents/mp3_downloads",
+      "エラー: パス 'mp3_downloads' が見つかりません。",
+      "取得したMP3ファイル数: 0"
+    ],
+    "mp3_files": [],
+    "total_files": 0
+  },
+  "rss_generation": {
+    "status": "completed",
+    "details": [
+      "RSSGenerator: 受け取ったMP3ファイル数: 0",
+      "ポッドキャスト情報を設定しました",
+      "RSSフィードの生成を開始します",
+      "RSSに追加したアイテム数: 0"
+    ],
+    "items": [],
+    "total_items": 0
+  }
+}

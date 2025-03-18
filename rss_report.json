@@ -1,0 +1,13 @@
+{
+  "rss_generation": {
+    "status": "completed",
+    "details": [
+      "RSSGenerator: 受け取ったMP3ファイル数: 0",
+      "ポッドキャスト情報を設定しました",
+      "RSSフィードの生成を開始します",
+      "RSSに追加したアイテム数: 0"
+    ],
+    "items": [],
+    "total_items": 0
+  }
+}
