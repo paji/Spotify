@@ -1,6 +1,6 @@
 {
   "command": "all",
-  "timestamp": "2025-03-18T14:14:19.339229",
+  "timestamp": "2025-03-18T14:29:09.180236",
   "arguments": {
     "command": "all",
     "username": "paji",
@@ -12,7 +12,7 @@
   "fetch_process": {
     "status": "fetching",
     "details": [
-      "警告: GITHUB_PAT または GITHUB_TOKEN が設定されていません。プライベートリポジトリにアクセスできない可能性があります。",
+      "警告: MP3_PAT または GITHUB_TOKEN が設定されていません。プライベートリポジトリにアクセスできない可能性があります。",
       "ブランチ名: main",
       "GitHub API URL: https://api.github.com/repos/paji/voicy/contents",
       "Raw コンテンツ URL: https://raw.githubusercontent.com/paji/voicy/main",
@@ -46,31 +46,31 @@
         "title": "sample1",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample1.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:14:19.339270"
+        "pub_date": "2025-03-18T14:29:09.180275"
       },
       {
         "title": "sample2",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample2.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:14:19.339274"
+        "pub_date": "2025-03-18T14:29:09.180279"
       },
       {
         "title": "sample3",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample3.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:14:19.339277"
+        "pub_date": "2025-03-18T14:29:09.180282"
       },
       {
         "title": "sample4",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample4.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:14:19.339279"
+        "pub_date": "2025-03-18T14:29:09.180284"
       },
       {
         "title": "sample5",
         "url": "https://raw.githubusercontent.com/paji/voicy/main/mp3_downloads/sample5.mp3",
         "size": 1048576,
-        "pub_date": "2025-03-18T14:14:19.339281"
+        "pub_date": "2025-03-18T14:29:09.180286"
       }
     ],
     "total_items": 5
