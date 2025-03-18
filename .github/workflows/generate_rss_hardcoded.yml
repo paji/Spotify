@@ -1,0 +1,57 @@
+name: Generate Spotify RSS Feed
+
+on:
+  # 手動実行用
+  workflow_dispatch:
+  # 定期実行（毎日0時に実行）
+  schedule:
+    - cron: '0 0 * * *'
+  # MP3ファイルが追加されたときに実行
+  push:
+    paths:
+      - '**.mp3'
+
+jobs:
+  generate-rss:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      - name: Generate RSS feed
+        run: |
+          python github_mp3_to_spotify_hardcoded.py all \
+            --username ${{ github.repository_owner }} \
+            --repo ${{ github.event.repository.name }} \
+            --branch ${{ github.ref_name }} \
+            --output podcast.xml
+      
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add podcast.xml mp3_files.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update RSS feed"
+          git push
+      
+      # GitHub Pagesが有効な場合、RSSフィードを公開
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .
+          branch: gh-pages
+          target-folder: .
+          clean: false
