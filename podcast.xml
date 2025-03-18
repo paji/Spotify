@@ -2,20 +2,24 @@
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>裏・パジちゃんねる</title>
-    <description>パジちゃんねるのポッドキャストフィード</description>
-    <link>https://example.com</link>
+    <description>ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
+
+パジの日々の挑戦を記録していきます</description>
+    <link>https://voicy.jp/channel/2834/all?premium=1</link>
     <language>ja</language>
-    <copyright>All rights reserved</copyright>
-    <webMaster>example@example.com</webMaster>
+    <copyright>© 2025 パジ</copyright>
+    <webMaster>hajimeataka@gmail.com</webMaster>
     <ttl>60</ttl>
     <itunes:explicit>no</itunes:explicit>
-    <itunes:author>Author Name</itunes:author>
+    <itunes:author>パジ</itunes:author>
+    <itunes:owner>パジ</itunes:owner>
+    <itunes:email>hajimeataka@gmail.com</itunes:email>
     <itunes:category text="Technology" />
     <image>
-      <url>https://example.com/image.jpg</url>
+      <url>https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg</url>
       <title>裏・パジちゃんねる</title>
-      <link>https://example.com</link>
+      <link>https://voicy.jp/channel/2834/all?premium=1</link>
     </image>
-    <itunes:image href="https://example.com/image.jpg" />
+    <itunes:image href="https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg" />
   </channel>
 </rss>
