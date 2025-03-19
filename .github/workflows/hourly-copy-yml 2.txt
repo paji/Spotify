@@ -1,0 +1,54 @@
+name: Hourly MP3 Copy
+
+on:
+  schedule:
+    # 1時間ごとに実行（0分に実行）
+    - cron: '0 * * * *'
+  # 手動実行も可能にする
+  workflow_dispatch:
+
+jobs:
+  copy-mp3-files:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # リポジトリコンテンツの書き込み権限を付与
+    
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v3
+        with:
+          path: source-repo
+      
+      - name: Checkout target repository
+        uses: actions/checkout@v3
+        with:
+          repository: paji/Spotify
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: target-repo
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      - name: Copy MP3 files
+        run: |
+          cd source-repo
+          python copy_mp3_files.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      
+      - name: Commit and push changes
+        run: |
+          cd target-repo
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add .
+          # 変更がある場合のみコミット
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update MP3 files from voicy repository" && git push)
