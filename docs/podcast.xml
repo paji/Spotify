@@ -27,21 +27,21 @@
       <title>NounsDAOの課題解決を模索している件</title>
       <description>Episode: NounsDAOの課題解決を模索している件</description>
       <pubDate>Wed, 19 Mar 2025 00:00:00 UTC</pubDate>
-      <enclosure url="https://paji.github.io/Spotify/docs/podcast/2025-03-19_NounsDAOの課題解決を模索している件_6467566.mp3" length="3209429" type="audio/mpeg" />
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_NounsDAOの課題解決を模索している件_6467566.mp3" length="3209429" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
       <itunes:author>パジ</itunes:author>
       <itunes:summary>Episode: NounsDAOの課題解決を模索している件</itunes:summary>
-      <guid isPermaLink="true">https://paji.github.io/Spotify/docs/podcast/2025-03-19_NounsDAOの課題解決を模索している件_6467566.mp3</guid>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_NounsDAOの課題解決を模索している件_6467566.mp3</guid>
     </item>
     <item>
       <title>AI覇権、Google vs OpenAI</title>
       <description>Episode: AI覇権、Google vs OpenAI</description>
       <pubDate>Thu, 13 Feb 2025 00:00:00 UTC</pubDate>
-      <enclosure url="https://paji.github.io/Spotify/docs/podcast/2025-02-13_AI覇権、Google vs OpenAI_6425787.mp3" length="3322978" type="audio/mpeg" />
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-02-13_AI覇権、Google vs OpenAI_6425787.mp3" length="3322978" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
       <itunes:author>パジ</itunes:author>
       <itunes:summary>Episode: AI覇権、Google vs OpenAI</itunes:summary>
-      <guid isPermaLink="true">https://paji.github.io/Spotify/docs/podcast/2025-02-13_AI覇権、Google vs OpenAI_6425787.mp3</guid>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-02-13_AI覇権、Google vs OpenAI_6425787.mp3</guid>
     </item>
   </channel>
 </rss>
