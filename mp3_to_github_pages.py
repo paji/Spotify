@@ -17,9 +17,9 @@ INDEX_FILE = 'docs/index.html'
 
 # GitHubユーザー名とリポジトリ名
 github_username = 'paji'
-repo_name = 'gh-pages'
+repo_name = 'Spotify'
 
-# GitHub PagesのベースURL
+# GitHub PagesのベースURL（gh-pagesブランチを使用）
 github_pages_url = f'https://{github_username}.github.io/{repo_name}/podcast'
 
 def ensure_directory(directory):
