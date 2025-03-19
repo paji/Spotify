@@ -5,12 +5,18 @@
   
   
   
+  
+  
   <channel>
     
     
     
     
+    
+    
     <title>裏・パジちゃんねる</title>
+    
+    
     
     
     
@@ -22,7 +28,11 @@
     
     
     
+    
+    
     <link>https://voicy.jp/channel/2834/all?premium=1</link>
+    
+    
     
     
     
@@ -32,7 +42,11 @@
     
     
     
+    
+    
     <copyright>© 2025 パジ</copyright>
+    
+    
     
     
     
@@ -42,7 +56,11 @@
     
     
     
+    
+    
     <ttl>60</ttl>
+    
+    
     
     
     
@@ -52,7 +70,11 @@
     
     
     
+    
+    
     <itunes:author>パジ</itunes:author>
+    
+    
     
     
     
@@ -62,7 +84,11 @@
       
       
       
+      
+      
       <itunes:name>パジ</itunes:name>
+      
+      
       
       
       
@@ -70,9 +96,13 @@
       <itunes:email>hajimeataka@gmail.com</itunes:email>
       
       
+      
+    
     
     
     </itunes:owner>
+    
+    
     
     
     
@@ -82,7 +112,11 @@
     
     
     
+    
+    
     <image>
+      
+      
       
       
       
@@ -92,7 +126,11 @@
       
       
       
+      
+      
       <title>裏・パジちゃんねる</title>
+      
+      
       
       
       
@@ -100,9 +138,13 @@
       <link>https://voicy.jp/channel/2834/all?premium=1</link>
       
       
+      
+    
     
     
     </image>
+    
+    
     
     
     
@@ -111,7 +153,9 @@
     
     
     
+    
   
+    
     <item>
       <title>“ゲームノミクス”と敵対関係</title>
       <description>“ゲームノミクス”と敵対関係 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
@@ -192,6 +236,8 @@
   </channel>
   
   
+  
+
 
 
 </rss>
