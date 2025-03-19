@@ -1,92 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:ns0="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  
+  
   <channel>
+    
+    
     <title>裏・パジちゃんねる</title>
+    
+    
     <description>ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
 
 パジの日々の挑戦を記録していきます</description>
+    
+    
     <link>https://voicy.jp/channel/2834/all?premium=1</link>
+    
+    
     <language>ja</language>
+    
+    
     <copyright>© 2025 パジ</copyright>
+    
+    
     <webMaster>hajimeataka@gmail.com</webMaster>
+    
+    
     <ttl>60</ttl>
-    <itunes:explicit>no</itunes:explicit>
-    <itunes:author>パジ</itunes:author>
-    <itunes:owner>
-      <itunes:name>パジ</itunes:name>
-      <itunes:email>hajimeataka@gmail.com</itunes:email>
-    </itunes:owner>
-    <itunes:category text="Technology" />
+    
+    
+    <ns0:explicit>no</ns0:explicit>
+    
+    
+    <ns0:author>パジ</ns0:author>
+    
+    
+    <ns0:owner>
+      
+      
+      <ns0:name>パジ</ns0:name>
+      
+      
+      <ns0:email>hajimeataka@gmail.com</ns0:email>
+      
+    
+    </ns0:owner>
+    
+    
+    <ns0:category text="Technology"/>
+    
+    
     <image>
+      
+      
       <url>https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg</url>
+      
+      
       <title>裏・パジちゃんねる</title>
+      
+      
       <link>https://voicy.jp/channel/2834/all?premium=1</link>
+      
+    
     </image>
-    <itunes:image href="https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg" />
-    <item>
-      <title>sample1</title>
-      <description>sample1 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
-
-パジの日々の挑戦を記録していきます</description>
-      <link>https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample1.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 15:52:39 </pubDate>
-      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample1.mp3</guid>
-      <enclosure url="https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample1.mp3" length="1048576" type="audio/mpeg" />
-      <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
-    </item>
-    <item>
-      <title>sample2</title>
-      <description>sample2 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
-
-パジの日々の挑戦を記録していきます</description>
-      <link>https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample2.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 15:52:39 </pubDate>
-      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample2.mp3</guid>
-      <enclosure url="https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample2.mp3" length="1048576" type="audio/mpeg" />
-      <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
-    </item>
-    <item>
-      <title>sample3</title>
-      <description>sample3 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
-
-パジの日々の挑戦を記録していきます</description>
-      <link>https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample3.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 15:52:39 </pubDate>
-      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample3.mp3</guid>
-      <enclosure url="https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample3.mp3" length="1048576" type="audio/mpeg" />
-      <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
-    </item>
-    <item>
-      <title>sample4</title>
-      <description>sample4 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
-
-パジの日々の挑戦を記録していきます</description>
-      <link>https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample4.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 15:52:39 </pubDate>
-      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample4.mp3</guid>
-      <enclosure url="https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample4.mp3" length="1048576" type="audio/mpeg" />
-      <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
-    </item>
-    <item>
-      <title>sample5</title>
-      <description>sample5 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
-
-パジの日々の挑戦を記録していきます</description>
-      <link>https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample5.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 15:52:39 </pubDate>
-      <guid isPermaLink="false">https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample5.mp3</guid>
-      <enclosure url="https://raw.githubusercontent.com/paji/voicy/28b8c34888bd47f26e225e53f8b33868709a138a/mp3_downloads/sample5.mp3" length="1048576" type="audio/mpeg" />
-      <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
-    </item>
+    
+    
+    <ns0:image href="https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg"/>
+    
+    
   </channel>
+  
+
 </rss>
