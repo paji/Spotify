@@ -9,6 +9,8 @@
   
   
   
+  
+  
   <channel>
     
     
@@ -18,7 +20,11 @@
     
     
     
+    
+    
     <title>裏・パジちゃんねる</title>
+    
+    
     
     
     
@@ -38,7 +44,11 @@
     
     
     
+    
+    
     <link>https://voicy.jp/channel/2834/all?premium=1</link>
+    
+    
     
     
     
@@ -56,7 +66,11 @@
     
     
     
+    
+    
     <copyright>© 2025 パジ</copyright>
+    
+    
     
     
     
@@ -74,7 +88,11 @@
     
     
     
+    
+    
     <ttl>60</ttl>
+    
+    
     
     
     
@@ -92,7 +110,11 @@
     
     
     
+    
+    
     <itunes:author>パジ</itunes:author>
+    
+    
     
     
     
@@ -110,7 +132,11 @@
       
       
       
+      
+      
       <itunes:name>パジ</itunes:name>
+      
+      
       
       
       
@@ -124,11 +150,15 @@
       
       
       
+      
+    
     
     
     
     
     </itunes:owner>
+    
+    
     
     
     
@@ -146,7 +176,11 @@
     
     
     
+    
+    
     <image>
+      
+      
       
       
       
@@ -164,7 +198,11 @@
       
       
       
+      
+      
       <title>裏・パジちゃんねる</title>
+      
+      
       
       
       
@@ -178,11 +216,15 @@
       
       
       
+      
+    
     
     
     
     
     </image>
+    
+    
     
     
     
@@ -197,7 +239,9 @@
     
     
     
+    
   
+    
     
     
     <item>
@@ -282,6 +326,8 @@
   
   
   
+  
+
 
 
 
