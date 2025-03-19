@@ -1,334 +1,87 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   <channel>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <title>裏・パジちゃんねる</title>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <description>ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1
 
 パジの日々の挑戦を記録していきます</description>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <link>https://voicy.jp/channel/2834/all?premium=1</link>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <language>ja</language>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <copyright>© 2025 パジ</copyright>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <webMaster>hajimeataka@gmail.com</webMaster>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <ttl>60</ttl>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <itunes:explicit>no</itunes:explicit>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <itunes:author>パジ</itunes:author>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <itunes:owner>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <itunes:name>パジ</itunes:name>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <itunes:email>hajimeataka@gmail.com</itunes:email>
-      
-      
-      
-      
-      
-    
-    
-    
-    
-    
     </itunes:owner>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <itunes:category text="Technology" />
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <image>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <url>https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg</url>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <title>裏・パジちゃんねる</title>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <link>https://voicy.jp/channel/2834/all?premium=1</link>
-      
-      
-      
-      
-      
-    
-    
-    
-    
-    
     </image>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <itunes:image href="https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg" />
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
     <item>
-      <title>“ゲームノミクス”と敵対関係</title>
-      <description>“ゲームノミクス”と敵対関係 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
-      <link>https://paji.github.io/gh-pages/podcast/2025-03-19_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3</link>
-      <pubDate>Wed, 19 Mar 2025 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">https://paji.github.io/gh-pages/podcast/2025-03-19_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3</guid>
-      <enclosure url="https://paji.github.io/gh-pages/podcast/2025-03-19_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3" length="2097152" type="audio/mpeg" />
+      <title>2025 03 19 %E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6323140</title>
+      <description>Episode: 2025 03 19 %E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6323140</description>
+      <pubDate>Wed, 19 Mar 2025 13:01:18 GMT</pubDate>
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6323140.mp3" length="3209429" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
+      <itunes:author>Podcast Author</itunes:author>
+      <itunes:summary>Episode: 2025 03 19 %E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6323140</itunes:summary>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6323140.mp3</guid>
     </item>
     <item>
-      <title>AIエージェントmanusが噂通りヤバかった件</title>
-      <description>AIエージェントmanusが噂通りヤバかった件 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
-      <link>https://paji.github.io/gh-pages/podcast/2025-03-19_AI%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88manus%E3%81%8C%E5%99%82%E9%80%9A%E3%82%8A%E3%83%A4%E3%83%90%E3%81%8B%E3%81%A3%E3%81%9F%E4%BB%B6_6532970.mp3</link>
-      <pubDate>Wed, 19 Mar 2025 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">https://paji.github.io/gh-pages/podcast/2025-03-19_AI%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88manus%E3%81%8C%E5%99%82%E9%80%9A%E3%82%8A%E3%83%A4%E3%83%90%E3%81%8B%E3%81%A3%E3%81%9F%E4%BB%B6_6532970.mp3</guid>
-      <enclosure url="https://paji.github.io/gh-pages/podcast/2025-03-19_AI%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88manus%E3%81%8C%E5%99%82%E9%80%9A%E3%82%8A%E3%83%A4%E3%83%90%E3%81%8B%E3%81%A3%E3%81%9F%E4%BB%B6_6532970.mp3" length="2097152" type="audio/mpeg" />
+      <title>2025 03 19 %E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6323140</title>
+      <description>Episode: 2025 03 19 %E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6323140</description>
+      <pubDate>Wed, 19 Mar 2025 13:01:18 GMT</pubDate>
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6323140.mp3" length="3209429" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
+      <itunes:author>Podcast Author</itunes:author>
+      <itunes:summary>Episode: 2025 03 19 %E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6323140</itunes:summary>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E7%B6%9A%E3%83%BB%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6323140.mp3</guid>
     </item>
     <item>
-      <title>コンテンツとNFTの関係</title>
-      <description>コンテンツとNFTの関係 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
-      <link>https://paji.github.io/gh-pages/podcast/2025-03-18_%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%81%A8NFT%E3%81%AE%E9%96%A2%E4%BF%82_6528867.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">https://paji.github.io/gh-pages/podcast/2025-03-18_%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%81%A8NFT%E3%81%AE%E9%96%A2%E4%BF%82_6528867.mp3</guid>
-      <enclosure url="https://paji.github.io/gh-pages/podcast/2025-03-18_%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%81%A8NFT%E3%81%AE%E9%96%A2%E4%BF%82_6528867.mp3" length="2097152" type="audio/mpeg" />
+      <title>2025 03 19 %E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6322202</title>
+      <description>Episode: 2025 03 19 %E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6322202</description>
+      <pubDate>Wed, 19 Mar 2025 13:01:17 GMT</pubDate>
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3" length="3209429" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
+      <itunes:author>Podcast Author</itunes:author>
+      <itunes:summary>Episode: 2025 03 19 %E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6322202</itunes:summary>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3</guid>
     </item>
     <item>
-      <title>“ゲームノミクス”と敵対関係</title>
-      <description>“ゲームノミクス”と敵対関係 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
-      <link>https://paji.github.io/gh-pages/podcast/2025-03-18_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">https://paji.github.io/gh-pages/podcast/2025-03-18_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3</guid>
-      <enclosure url="https://paji.github.io/gh-pages/podcast/2025-03-18_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3" length="2097152" type="audio/mpeg" />
+      <title>2025 03 19 %E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6322202</title>
+      <description>Episode: 2025 03 19 %E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6322202</description>
+      <pubDate>Wed, 19 Mar 2025 13:01:17 GMT</pubDate>
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3" length="3209429" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
+      <itunes:author>Podcast Author</itunes:author>
+      <itunes:summary>Episode: 2025 03 19 %E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82 6322202</itunes:summary>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-19_%E2%80%9C%E3%82%B2%E3%83%BC%E3%83%A0%E3%83%8E%E3%83%9F%E3%82%AF%E3%82%B9%E2%80%9D%E3%81%A8%E6%95%B5%E5%AF%BE%E9%96%A2%E4%BF%82_6322202.mp3</guid>
     </item>
     <item>
-      <title>AI自動開発「Replit」が面白い件</title>
-      <description>AI自動開発「Replit」が面白い件 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
-      <link>https://paji.github.io/gh-pages/podcast/2025-03-18_AI%E8%87%AA%E5%8B%95%E9%96%8B%E7%99%BA%E3%80%8CReplit%E3%80%8D%E3%81%8C%E9%9D%A2%E7%99%BD%E3%81%84%E4%BB%B6_6529143.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">https://paji.github.io/gh-pages/podcast/2025-03-18_AI%E8%87%AA%E5%8B%95%E9%96%8B%E7%99%BA%E3%80%8CReplit%E3%80%8D%E3%81%8C%E9%9D%A2%E7%99%BD%E3%81%84%E4%BB%B6_6529143.mp3</guid>
-      <enclosure url="https://paji.github.io/gh-pages/podcast/2025-03-18_AI%E8%87%AA%E5%8B%95%E9%96%8B%E7%99%BA%E3%80%8CReplit%E3%80%8D%E3%81%8C%E9%9D%A2%E7%99%BD%E3%81%84%E4%BB%B6_6529143.mp3" length="2097152" type="audio/mpeg" />
+      <title>2025 02 13 AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI 6425787</title>
+      <description>Episode: 2025 02 13 AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI 6425787</description>
+      <pubDate>Wed, 19 Mar 2025 13:01:17 GMT</pubDate>
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-02-13_AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI_6425787.mp3" length="3322978" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
+      <itunes:author>Podcast Author</itunes:author>
+      <itunes:summary>Episode: 2025 02 13 AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI 6425787</itunes:summary>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-02-13_AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI_6425787.mp3</guid>
     </item>
     <item>
-      <title>AIエージェントmanusが噂通りヤバかった件</title>
-      <description>AIエージェントmanusが噂通りヤバかった件 - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
-      <link>https://paji.github.io/gh-pages/podcast/2025-03-18_AI%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88manus%E3%81%8C%E5%99%82%E9%80%9A%E3%82%8A%E3%83%A4%E3%83%90%E3%81%8B%E3%81%A3%E3%81%9F%E4%BB%B6_6532970.mp3</link>
-      <pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">https://paji.github.io/gh-pages/podcast/2025-03-18_AI%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88manus%E3%81%8C%E5%99%82%E9%80%9A%E3%82%8A%E3%83%A4%E3%83%90%E3%81%8B%E3%81%A3%E3%81%9F%E4%BB%B6_6532970.mp3</guid>
-      <enclosure url="https://paji.github.io/gh-pages/podcast/2025-03-18_AI%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88manus%E3%81%8C%E5%99%82%E9%80%9A%E3%82%8A%E3%83%A4%E3%83%90%E3%81%8B%E3%81%A3%E3%81%9F%E4%BB%B6_6532970.mp3" length="2097152" type="audio/mpeg" />
+      <title>2025 02 13 AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI 6425787</title>
+      <description>Episode: 2025 02 13 AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI 6425787</description>
+      <pubDate>Wed, 19 Mar 2025 13:01:17 GMT</pubDate>
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-02-13_AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI_6425787.mp3" length="3322978" type="audio/mpeg" />
       <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
-    </item>
-    <item>
-      <title>AI覇権、Google vs OpenAI</title>
-      <description>AI覇権、Google vs OpenAI - ブロックチェーンやAIなど最新テクノロジーについての考察を毎日配信、濃密情報はプレミアムへ→ https://voicy.jp/channel/2834/all?premium=1 パジの日々の挑戦を記録していきます</description>
-      <link>https://paji.github.io/gh-pages/podcast/2025-02-13_AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI_6425787.mp3</link>
-      <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">https://paji.github.io/gh-pages/podcast/2025-02-13_AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI_6425787.mp3</guid>
-      <enclosure url="https://paji.github.io/gh-pages/podcast/2025-02-13_AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI_6425787.mp3" length="2097152" type="audio/mpeg" />
-      <itunes:duration>00:30:00</itunes:duration>
-      <itunes:explicit>no</itunes:explicit>
-      <itunes:author>パジ</itunes:author>
+      <itunes:author>Podcast Author</itunes:author>
+      <itunes:summary>Episode: 2025 02 13 AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI 6425787</itunes:summary>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-02-13_AI%E8%A6%87%E6%A8%A9%E3%80%81Google%20vs%20OpenAI_6425787.mp3</guid>
     </item>
   </channel>
-  
-  
-  
-  
-  
-
-
-
-
-
 </rss>
