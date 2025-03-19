@@ -23,5 +23,25 @@
       <link>https://voicy.jp/channel/2834/all?premium=1</link>
     </image>
     <itunes:image href="https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg" />
+    <item>
+      <title>NounsDAOの課題解決を模索している件 6467566</title>
+      <description>Episode: NounsDAOの課題解決を模索している件 6467566</description>
+      <pubDate>Wed, 19 Mar 2025 00:00:00 UTC</pubDate>
+      <enclosure url="https://paji.github.io/Spotify/docs/podcast/2025-03-19_NounsDAOの課題解決を模索している件_6467566.mp3" length="3209429" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:author>パジ</itunes:author>
+      <itunes:summary>Episode: NounsDAOの課題解決を模索している件 6467566</itunes:summary>
+      <guid isPermaLink="true">https://paji.github.io/Spotify/docs/podcast/2025-03-19_NounsDAOの課題解決を模索している件_6467566.mp3</guid>
+    </item>
+    <item>
+      <title>AI覇権、Google vs OpenAI 6425787</title>
+      <description>Episode: AI覇権、Google vs OpenAI 6425787</description>
+      <pubDate>Thu, 13 Feb 2025 00:00:00 UTC</pubDate>
+      <enclosure url="https://paji.github.io/Spotify/docs/podcast/2025-02-13_AI覇権、Google vs OpenAI_6425787.mp3" length="3322978" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:author>パジ</itunes:author>
+      <itunes:summary>Episode: AI覇権、Google vs OpenAI 6425787</itunes:summary>
+      <guid isPermaLink="true">https://paji.github.io/Spotify/docs/podcast/2025-02-13_AI覇権、Google vs OpenAI_6425787.mp3</guid>
+    </item>
   </channel>
 </rss>
