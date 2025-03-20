@@ -18,11 +18,11 @@
     </itunes:owner>
     <itunes:category text="Technology" />
     <image>
-      <url>https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg</url>
+      <url>https://raw.githubusercontent.com/paji/Spotify/refs/heads/main/docs/profile1600.jpeg</url>
       <title>裏・パジちゃんねる</title>
       <link>https://voicy.jp/channel/2834/all?premium=1</link>
     </image>
-    <itunes:image href="https://pbs.twimg.com/profile_images/1616257394815954945/2W90KByr_400x400.jpg" />
+    <itunes:image href="https://raw.githubusercontent.com/paji/Spotify/refs/heads/main/docs/profile1600.jpeg" />
     <item>
       <title>NounsDAOの課題解決を模索している件</title>
       <description>Episode: NounsDAOの課題解決を模索している件</description>
