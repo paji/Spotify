@@ -24,6 +24,16 @@
     </image>
     <itunes:image href="https://raw.githubusercontent.com/paji/Spotify/refs/heads/main/docs/profile1600.jpeg" />
     <item>
+      <title>Voicyどうする問題</title>
+      <description>Episode: Voicyどうする問題</description>
+      <pubDate>Thu, 20 Mar 2025 00:00:00 UTC</pubDate>
+      <enclosure url="https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-20_Voicyどうする問題_6533725.mp3" length="3209429" type="audio/mpeg" />
+      <itunes:duration>00:30:00</itunes:duration>
+      <itunes:author>パジ</itunes:author>
+      <itunes:summary>Episode: Voicyどうする問題</itunes:summary>
+      <guid isPermaLink="true">https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast/2025-03-20_Voicyどうする問題_6533725.mp3</guid>
+    </item>
+    <item>
       <title>NounsDAOの課題解決を模索している件</title>
       <description>Episode: NounsDAOの課題解決を模索している件</description>
       <pubDate>Thu, 20 Mar 2025 00:00:00 UTC</pubDate>
