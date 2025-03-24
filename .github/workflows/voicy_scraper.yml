@@ -65,8 +65,8 @@ jobs:
           # スクレイピング設定
           MAX_RETRIES = 5  # 最大リトライ回数
           SCROLL_PAUSE_TIME = 1  # スクロール間の待機時間（秒）
-          MAX_SCROLL_ATTEMPTS = 500  # 最大スクロール試行回数（約2200件のエピソードを取得するため）
-          TARGET_EPISODES = 2200  # 目標エピソード数
+          MAX_SCROLL_ATTEMPTS = 2  # 最大スクロール試行回数（約20件のエピソードを取得するため）
+          TARGET_EPISODES = 20  # 目標エピソード数
 
           def setup_directories():
               """必要なディレクトリを作成"""
