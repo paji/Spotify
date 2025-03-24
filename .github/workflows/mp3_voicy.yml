@@ -1,0 +1,849 @@
+name: Voicy MP3 Downloader
+
+on:
+  schedule:
+    - cron: '31 * * * *'  # 毎時31分に実行
+  workflow_dispatch:  # 手動実行用
+
+# 明示的に権限を設定
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  voicy-mp3-download:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v3
+      
+      - name: Python 3.10 セットアップ
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Chrome ブラウザのセットアップ
+        uses: browser-actions/setup-chrome@v1
+      
+      - name: FFmpegのインストール
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+      
+      - name: 依存関係のインストール
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 selenium webdriver-manager
+      
+      - name: 必要なディレクトリを作成
+        run: |
+          mkdir -p mp3_downloads
+          mkdir -p temp_segments
+          mkdir -p debug_files
+          mkdir -p scripts
+      
+      - name: Voicy MP3ダウンロードスクリプト作成
+        run: |
+          cat > voicy_mp3_downloader_v3.py << 'EOF'
+          import os
+          import re
+          import json
+          import requests
+          import subprocess
+          from datetime import datetime
+          from bs4 import BeautifulSoup
+          import traceback
+          import time
+          import shutil
+          from selenium import webdriver
+          from selenium.webdriver.chrome.options import Options
+          from selenium.webdriver.chrome.service import Service
+          from selenium.webdriver.common.by import By
+          from selenium.webdriver.support.ui import WebDriverWait
+          from selenium.webdriver.support import expected_conditions as EC
+          from webdriver_manager.chrome import ChromeDriverManager
+
+          # Voicyチャンネル情報
+          CHANNEL_ID = "2834"  # パジ郎チャンネル
+          CHANNEL_URL = f"https://voicy.jp/channel/{CHANNEL_ID}"  # チャンネルトップページ
+          CHANNEL_ALL_URL = f"https://voicy.jp/channel/{CHANNEL_ID}/all?premium=1"  # 全エピソード一覧ページ（すべての年月）
+
+          # ダウンロードする最新エピソード数
+          MAX_EPISODES = 3
+
+          # ディレクトリ設定
+          MP3_DIR = "mp3_downloads"
+          TEMP_DIR = "temp_segments"
+          DEBUG_DIR = "debug_files"
+
+          def setup_directories():
+              """必要なディレクトリを作成"""
+              for directory in [MP3_DIR, TEMP_DIR, DEBUG_DIR]:
+                  os.makedirs(directory, exist_ok=True)
+                  print(f"ディレクトリを確認/作成しました: {directory}")
+
+          # MP3ファイルを結合する修正版関数
+          def concat_mp3_files(mp3_segments, output_mp3_path, temp_dir=TEMP_DIR):
+              """
+              MP3ファイルを結合する関数
+              
+              Args:
+                  mp3_segments: MP3セグメントファイルのリスト
+                  output_mp3_path: 出力先のMP3ファイルパス
+                  temp_dir: 一時ファイル用ディレクトリ
+              
+              Returns:
+                  bool: 成功した場合はTrue、失敗した場合はFalse
+              """
+              if not mp3_segments:
+                  print("結合するMP3セグメントがありません")
+                  return False
+              
+              # 絶対パスに変換
+              mp3_segments = [os.path.abspath(segment) for segment in mp3_segments if os.path.exists(segment)]
+              output_mp3_path = os.path.abspath(output_mp3_path)
+              
+              if not mp3_segments:
+                  print("有効なMP3セグメントが見つかりません")
+                  return False
+              
+              # MP3セグメントリストファイルを作成
+              mp3_segments_list = os.path.join(os.path.abspath(temp_dir), "mp3_segments.txt")
+              
+              try:
+                  # 方法1: ffmpegのconcatフィルターを使用
+                  with open(mp3_segments_list, 'w') as f:
+                      for segment in mp3_segments:
+                          # 絶対パスを使用し、エスケープ処理を追加
+                          # バックスラッシュのエスケープを修正
+                          segment_escaped = segment.replace('\\', '\\\\')
+                          segment_escaped = segment_escaped.replace("'", "\\'")
+                          segment_escaped = segment_escaped.replace(" ", "\\ ")
+                          f.write(f"file '{segment_escaped}'\n")
+                  
+                  print(f"MP3セグメントリストファイルを作成しました: {mp3_segments_list}")
+                  print(f"リストファイルの内容:")
+                  with open(mp3_segments_list, 'r') as f:
+                      print(f.read())
+                  
+                  # ffmpegコマンドを実行
+                  cmd = [
+                      'ffmpeg',
+                      '-f', 'concat',
+                      '-safe', '0',
+                      '-i', mp3_segments_list,
+                      '-c', 'copy',
+                      '-y',
+                      output_mp3_path
+                  ]
+                  
+                  print(f"FFmpegコマンドを実行: {' '.join(cmd)}")
+                  result = subprocess.run(cmd, capture_output=True, text=True)
+                  
+                  if result.returncode == 0:
+                      print(f"MP3ファイルの結合に成功しました: {output_mp3_path}")
+                      if os.path.exists(output_mp3_path) and os.path.getsize(output_mp3_path) > 0:
+                          file_size_mb = os.path.getsize(output_mp3_path) / (1024 * 1024)
+                          print(f"MP3ファイル: {output_mp3_path} (サイズ: {file_size_mb:.2f}MB)")
+                          return True
+                      else:
+                          print(f"MP3ファイルが正常に作成されませんでした")
+                          return False
+                  else:
+                      print(f"MP3ファイルの結合に失敗しました: {result.stderr}")
+                      return False
+              except Exception as e:
+                  print(f"MP3ファイルの結合中にエラーが発生しました: {str(e)}")
+                  traceback.print_exc()
+                  return False
+
+          def download_m3u8_to_mp3(m3u8_url, mp3_path, episode_id):
+              """m3u8からMP3をダウンロード"""
+              print(f"::group::MP3ダウンロード")
+              print(f"オーディオURLからMP3をダウンロード中: {m3u8_url}")
+              print(f"出力先: {mp3_path}")
+              
+              try:
+                  # URLの拡張子を確認
+                  is_m3u8 = '.m3u8' in m3u8_url.lower()
+                  is_mp3 = '.mp3' in m3u8_url.lower()
+                  
+                  # MP3の場合は直接ダウンロード
+                  if is_mp3:
+                      print(f"MP3ファイルを直接ダウンロードします")
+                      try:
+                          response = requests.get(m3u8_url, timeout=30)
+                          if response.status_code == 200:
+                              with open(mp3_path, 'wb') as f:
+                                  f.write(response.content)
+                              
+                              if os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 0:
+                                  file_size_mb = os.path.getsize(mp3_path) / (1024 * 1024)
+                                  print(f"MP3ファイルのダウンロードに成功しました: {mp3_path} (サイズ: {file_size_mb:.2f}MB)")
+                                  return mp3_path
+                              else:
+                                  print(f"MP3ファイルが正常にダウンロードされませんでした")
+                                  return None
+                          else:
+                              print(f"MP3ファイルのダウンロードに失敗しました: ステータスコード {response.status_code}")
+                              return None
+                      except Exception as e:
+                          print(f"MP3ファイルのダウンロード中にエラーが発生しました: {str(e)}")
+                          traceback.print_exc()
+                          return None
+                  
+                  # AACの場合はMP3に変換
+                  elif '.aac' in m3u8_url.lower():
+                      print(f"AACファイルをMP3に変換します")
+                      try:
+                          # 一時ファイルパス
+                          temp_aac_path = os.path.join(TEMP_DIR, f"temp_{episode_id}.aac")
+                          
+                          # AACファイルをダウンロード
+                          response = requests.get(m3u8_url, timeout=30)
+                          if response.status_code == 200:
+                              with open(temp_aac_path, 'wb') as f:
+                                  f.write(response.content)
+                              
+                              if os.path.exists(temp_aac_path) and os.path.getsize(temp_aac_path) > 0:
+                                  # AACをMP3に変換
+                                  cmd = [
+                                      'ffmpeg',
+                                      '-i', temp_aac_path,
+                                      '-c:a', 'libmp3lame',
+                                      '-q:a', '2',
+                                      '-y',
+                                      mp3_path
+                                  ]
+                                  
+                                  print(f"FFmpegコマンドを実行: {' '.join(cmd)}")
+                                  result = subprocess.run(cmd, capture_output=True, text=True)
+                                  
+                                  # 一時ファイルを削除
+                                  if os.path.exists(temp_aac_path):
+                                      os.remove(temp_aac_path)
+                                  
+                                  if result.returncode == 0 and os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 0:
+                                      file_size_mb = os.path.getsize(mp3_path) / (1024 * 1024)
+                                      print(f"AACからMP3への変換に成功しました: {mp3_path} (サイズ: {file_size_mb:.2f}MB)")
+                                      return mp3_path
+                                  else:
+                                      print(f"AACからMP3への変換に失敗しました: {result.stderr}")
+                                      return None
+                              else:
+                                  print(f"AACファイルが正常にダウンロードされませんでした")
+                                  return None
+                          else:
+                              print(f"AACファイルのダウンロードに失敗しました: ステータスコード {response.status_code}")
+                              return None
+                      except Exception as e:
+                          print(f"AACファイルの処理中にエラーが発生しました: {str(e)}")
+                          traceback.print_exc()
+                          return None
+                  
+                  # m3u8の場合はセグメントをダウンロードして結合
+                  elif is_m3u8:
+                      print(f"m3u8プレイリストからMP3を作成します")
+                      try:
+                          # m3u8プレイリストを取得
+                          response = requests.get(m3u8_url, timeout=30)
+                          if response.status_code != 200:
+                              print(f"m3u8プレイリストの取得に失敗しました: ステータスコード {response.status_code}")
+                              return None
+                          
+                          m3u8_content = response.text
+                          
+                          # m3u8プレイリストをデバッグ用に保存
+                          m3u8_debug_path = os.path.join(DEBUG_DIR, f"playlist_{episode_id}.m3u8")
+                          with open(m3u8_debug_path, 'w', encoding='utf-8') as f:
+                              f.write(m3u8_content)
+                          print(f"m3u8プレイリストを保存しました: {m3u8_debug_path}")
+                          
+                          # セグメントURLを抽出
+                          segment_urls = []
+                          base_url = m3u8_url.rsplit('/', 1)[0] + '/'
+                          
+                          for line in m3u8_content.splitlines():
+                              line = line.strip()
+                              if line and not line.startswith('#'):
+                                  # 相対URLを絶対URLに変換
+                                  if not line.startswith('http'):
+                                      segment_url = base_url + line
+                                  else:
+                                      segment_url = line
+                                  segment_urls.append(segment_url)
+                          
+                          if not segment_urls:
+                              print(f"m3u8プレイリスト内にセグメントが見つかりませんでした")
+                              return None
+                          
+                          print(f"セグメント数: {len(segment_urls)}")
+                          
+                          # セグメントをダウンロード
+                          segment_files = []
+                          for i, segment_url in enumerate(segment_urls):
+                              segment_path = os.path.join(TEMP_DIR, f"segment_{episode_id}_{i:03d}.ts")
+                              try:
+                                  segment_response = requests.get(segment_url, timeout=30)
+                                  if segment_response.status_code == 200:
+                                      with open(segment_path, 'wb') as f:
+                                          f.write(segment_response.content)
+                                      
+                                      if os.path.exists(segment_path) and os.path.getsize(segment_path) > 0:
+                                          segment_files.append(segment_path)
+                                          print(f"セグメント {i+1}/{len(segment_urls)} をダウンロードしました: {segment_path}")
+                                      else:
+                                          print(f"セグメント {i+1}/{len(segment_urls)} のダウンロードに失敗しました: ファイルが空です")
+                                  else:
+                                      print(f"セグメント {i+1}/{len(segment_urls)} のダウンロードに失敗しました: ステータスコード {segment_response.status_code}")
+                              except Exception as e:
+                                  print(f"セグメント {i+1}/{len(segment_urls)} のダウンロード中にエラーが発生しました: {str(e)}")
+                          
+                          if not segment_files:
+                              print(f"セグメントのダウンロードに失敗しました")
+                              return None
+                          
+                          print(f"ダウンロードしたセグメント数: {len(segment_files)}/{len(segment_urls)}")
+                          
+                          # セグメントを結合してMP3に変換
+                          # 一時的な結合ファイル
+                          temp_ts_path = os.path.join(TEMP_DIR, f"combined_{episode_id}.ts")
+                          
+                          # セグメントを結合
+                          with open(temp_ts_path, 'wb') as outfile:
+                              for segment_file in segment_files:
+                                  with open(segment_file, 'rb') as infile:
+                                      outfile.write(infile.read())
+                          
+                          if os.path.exists(temp_ts_path) and os.path.getsize(temp_ts_path) > 0:
+                              print(f"セグメントの結合に成功しました: {temp_ts_path}")
+                              
+                              # TSをMP3に変換
+                              cmd = [
+                                  'ffmpeg',
+                                  '-i', temp_ts_path,
+                                  '-c:a', 'libmp3lame',
+                                  '-q:a', '2',
+                                  '-y',
+                                  mp3_path
+                              ]
+                              
+                              print(f"FFmpegコマンドを実行: {' '.join(cmd)}")
+                              result = subprocess.run(cmd, capture_output=True, text=True)
+                              
+                              # 一時ファイルを削除
+                              if os.path.exists(temp_ts_path):
+                                  os.remove(temp_ts_path)
+                              
+                              # セグメントファイルを削除
+                              for segment_file in segment_files:
+                                  if os.path.exists(segment_file):
+                                      os.remove(segment_file)
+                              
+                              if result.returncode == 0 and os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 0:
+                                  file_size_mb = os.path.getsize(mp3_path) / (1024 * 1024)
+                                  print(f"MP3ファイルの作成に成功しました: {mp3_path} (サイズ: {file_size_mb:.2f}MB)")
+                                  return mp3_path
+                              else:
+                                  print(f"MP3ファイルの作成に失敗しました: {result.stderr}")
+                                  return None
+                          else:
+                              print(f"セグメントの結合に失敗しました")
+                              return None
+                      except Exception as e:
+                          print(f"m3u8の処理中にエラーが発生しました: {str(e)}")
+                          traceback.print_exc()
+                          return None
+                  else:
+                      print(f"未対応の形式です: {m3u8_url}")
+                      return None
+              except Exception as e:
+                  print(f"MP3ダウンロード中にエラーが発生しました: {str(e)}")
+                  traceback.print_exc()
+                  return None
+              finally:
+                  print(f"::endgroup::")
+
+          def get_episode_list():
+              """エピソードリストを取得"""
+              print(f"::group::エピソードリスト取得")
+              try:
+                  print(f"チャンネルURL: {CHANNEL_ALL_URL}")
+                  
+                  # Chromeオプションを設定
+                  chrome_options = Options()
+                  chrome_options.add_argument("--headless")
+                  chrome_options.add_argument("--no-sandbox")
+                  chrome_options.add_argument("--disable-dev-shm-usage")
+                  chrome_options.add_argument("--disable-gpu")
+                  chrome_options.add_argument("--window-size=1920,1080")
+                  
+                  # Chromeドライバーを初期化
+                  service = Service(ChromeDriverManager().install())
+                  driver = webdriver.Chrome(service=service, options=chrome_options)
+                  
+                  try:
+                      # 全エピソード一覧ページにアクセス
+                      driver.get(CHANNEL_ALL_URL)
+                      print(f"チャンネルページにアクセスしました: {CHANNEL_ALL_URL}")
+                      
+                      # ページが完全に読み込まれるまで待機
+                      WebDriverWait(driver, 20).until(
+                          EC.presence_of_element_located((By.TAG_NAME, "body"))
+                      )
+                      
+                      # JavaScriptが実行されるまで少し待機
+                      time.sleep(5)
+                      
+                      # 「すべての年月」タブを選択
+                      try:
+                          # ドロップダウンメニューをクリック
+                          dropdown = WebDriverWait(driver, 10).until(
+                              EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'すべての年月')]"))
+                          )
+                          dropdown.click()
+                          print("「すべての年月」ドロップダウンをクリックしました")
+                          
+                          # 少し待機
+                          time.sleep(2)
+                          
+                          # 「すべての年月」オプションを選択
+                          all_months_option = WebDriverWait(driver, 10).until(
+                              EC.element_to_be_clickable((By.XPATH, "//div[contains(text(), 'すべての年月')]"))
+                          )
+                          all_months_option.click()
+                          print("「すべての年月」オプションを選択しました")
+                          
+                          # 選択後に少し待機
+                          time.sleep(3)
+                      except Exception as e:
+                          print(f"「すべての年月」タブの選択中にエラーが発生しました: {str(e)}")
+                          print("すでに「すべての年月」が選択されている可能性があります。処理を続行します。")
+                      
+                      # ページをスクロールして全てのコンテンツを読み込む
+                      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                      time.sleep(3)
+                      
+                      # ページのHTMLをデバッグ用に保存
+                      debug_html_path = f"{DEBUG_DIR}/channel_page.html"
+                      with open(debug_html_path, "w", encoding="utf-8") as f:
+                          f.write(driver.page_source)
+                      print(f"チャンネルページのHTMLを保存しました: {debug_html_path}")
+                      
+                      # エピソード要素を取得
+                      episode_elements = driver.find_elements(By.CSS_SELECTOR, "[class*='episode']")
+                      
+                      if not episode_elements:
+                          print("エピソード要素が見つかりませんでした。別のセレクタを試します。")
+                          episode_elements = driver.find_elements(By.XPATH, "//div[contains(@class, 'episode') or contains(@class, 'Episode')]")
+                      
+                      print(f"エピソード要素数: {len(episode_elements)}")
+                      
+                      episodes = []
+                      episode_ids_seen = set()
+                      
+                      for element in episode_elements:
+                          try:
+                              # エピソードIDを取得
+                              episode_id = None
+                              
+                              # リンク要素を取得
+                              links = element.find_elements(By.TAG_NAME, "a")
+                              episode_url = None
+                              
+                              for link in links:
+                                  href = link.get_attribute("href")
+                                  if href and "/channel/" in href and "/channel/" + CHANNEL_ID + "/" in href:
+                                      episode_url = href
+                                      # エピソードIDを抽出
+                                      match = re.search(r'/channel/\d+/(\d+)', href)
+                                      if match:
+                                          episode_id = match.group(1)
+                                      break
+                              
+                              if not episode_id:
+                                  continue
+                              
+                              if episode_id in episode_ids_seen:
+                                  continue
+                              
+                              episode_ids_seen.add(episode_id)
+                              
+                              # タイトルを取得
+                              title = None
+                              try:
+                                  title_element = element.find_element(By.CSS_SELECTOR, "[class*='title']")
+                                  title = title_element.text
+                              except:
+                                  try:
+                                      title_element = element.find_element(By.TAG_NAME, "h2")
+                                      title = title_element.text
+                                  except:
+                                      title = f"エピソード {episode_id}"
+                              
+                              # 日付を取得
+                              date_str = None
+                              try:
+                                  date_element = element.find_element(By.CSS_SELECTOR, "[class*='date']")
+                                  date_str = date_element.text
+                              except:
+                                  try:
+                                      date_element = element.find_element(By.TAG_NAME, "time")
+                                      date_str = date_element.text
+                                  except:
+                                      date_str = datetime.now().strftime("%Y-%m-%d")
+                              
+                              # 日付文字列を整形
+                              date_match = re.search(r'(\d+)月(\d+)日', date_str)
+                              if date_match:
+                                  month = int(date_match.group(1))
+                                  day = int(date_match.group(2))
+                                  year = datetime.now().year
+                                  episode_date = f"{year:04d}{month:02d}{day:02d}"
+                              else:
+                                  # 日付形式が異なる場合は現在の日付を使用
+                                  episode_date = datetime.now().strftime("%Y%m%d")
+                              
+                              # 有料放送かどうかを判定
+                              is_premium = False
+                              try:
+                                  premium_elements = element.find_elements(By.CSS_SELECTOR, "[class*='premium']")
+                                  if premium_elements:
+                                      is_premium = True
+                              except:
+                                  pass
+                              
+                              # エピソード情報を追加
+                              episode_info = {
+                                  "id": episode_id,
+                                  "title": title,
+                                  "date": episode_date,
+                                  "url": episode_url,
+                                  "is_premium": is_premium
+                              }
+                              
+                              episodes.append(episode_info)
+                              print(f"エピソード情報を追加: {episode_info}")
+                              
+                              # 最大エピソード数に達したら終了
+                              if len(episodes) >= MAX_EPISODES:
+                                  break
+                          
+                          except Exception as e:
+                              print(f"エピソード要素の処理中にエラーが発生しました: {str(e)}")
+                              continue
+                      
+                      if not episodes:
+                          print("エピソードが見つかりませんでした。別のアプローチを試します。")
+                          
+                          # 再生ボタンを持つ要素を探す
+                          play_buttons = driver.find_elements(By.CSS_SELECTOR, "button[aria-label='再生']")
+                          
+                          for i, button in enumerate(play_buttons):
+                              if i >= MAX_EPISODES:
+                                  break
+                                  
+                              try:
+                                  # 親要素を取得
+                                  parent = button.find_element(By.XPATH, "./ancestor::div[contains(@class, 'episode') or contains(@class, 'Episode')]")
+                                  
+                                  # エピソードIDを取得
+                                  episode_id = f"unknown_{i+1}"
+                                  
+                                  # リンク要素を取得
+                                  links = parent.find_elements(By.TAG_NAME, "a")
+                                  episode_url = None
+                                  
+                                  for link in links:
+                                      href = link.get_attribute("href")
+                                      if href and "/channel/" in href:
+                                          episode_url = href
+                                          # エピソードIDを抽出
+                                          match = re.search(r'/channel/\d+/(\d+)', href)
+                                          if match:
+                                              episode_id = match.group(1)
+                                          break
+                                  
+                                  # タイトルを取得
+                                  title = None
+                                  try:
+                                      title_element = parent.find_element(By.CSS_SELECTOR, "[class*='title']")
+                                      title = title_element.text
+                                  except:
+                                      try:
+                                          title_element = parent.find_element(By.TAG_NAME, "h2")
+                                          title = title_element.text
+                                      except:
+                                          title = f"エピソード {episode_id}"
+                                  
+                                  # 日付を取得
+                                  date_str = None
+                                  try:
+                                      date_element = parent.find_element(By.CSS_SELECTOR, "[class*='date']")
+                                      date_str = date_element.text
+                                  except:
+                                      try:
+                                          date_element = parent.find_element(By.TAG_NAME, "time")
+                                          date_str = date_element.text
+                                      except:
+                                          date_str = datetime.now().strftime("%Y-%m-%d")
+                                  
+                                  # 日付文字列を整形
+                                  date_match = re.search(r'(\d+)月(\d+)日', date_str)
+                                  if date_match:
+                                      month = int(date_match.group(1))
+                                      day = int(date_match.group(2))
+                                      year = datetime.now().year
+                                      episode_date = f"{year:04d}{month:02d}{day:02d}"
+                                  else:
+                                      # 日付形式が異なる場合は現在の日付を使用
+                                      episode_date = datetime.now().strftime("%Y%m%d")
+                                  
+                                  # 有料放送かどうかを判定
+                                  is_premium = False
+                                  try:
+                                      premium_elements = parent.find_elements(By.CSS_SELECTOR, "[class*='premium']")
+                                      if premium_elements:
+                                          is_premium = True
+                                  except:
+                                      pass
+                                  
+                                  # エピソード情報を追加
+                                  episode_info = {
+                                      "id": episode_id,
+                                      "title": title,
+                                      "date": episode_date,
+                                      "url": episode_url,
+                                      "is_premium": is_premium
+                                  }
+                                  
+                                  episodes.append(episode_info)
+                                  print(f"再生ボタンからエピソード情報を追加: {episode_info}")
+                              
+                              except Exception as e:
+                                  print(f"再生ボタンからのエピソード情報取得中にエラーが発生しました: {str(e)}")
+                                  continue
+                      
+                      return episodes
+                  
+                  finally:
+                      # ブラウザを閉じる
+                      driver.quit()
+              
+              except Exception as e:
+                  print(f"エピソードリスト取得中にエラーが発生しました: {str(e)}")
+                  traceback.print_exc()
+                  return []
+              
+              finally:
+                  print(f"::endgroup::")
+
+          def download_episode(episode):
+              """エピソードをダウンロード"""
+              episode_id = episode["id"]
+              episode_title = episode["title"]
+              episode_date = episode["date"]
+              episode_url = episode["url"]
+              is_premium = episode["is_premium"]
+              
+              print(f"::group::エピソード {episode_id} のダウンロード")
+              print(f"タイトル: {episode_title}")
+              print(f"日付: {episode_date}")
+              print(f"URL: {episode_url}")
+              print(f"有料放送: {'はい' if is_premium else 'いいえ'}")
+              
+              try:
+                  # Chromeオプションを設定
+                  chrome_options = Options()
+                  chrome_options.add_argument("--headless")
+                  chrome_options.add_argument("--no-sandbox")
+                  chrome_options.add_argument("--disable-dev-shm-usage")
+                  chrome_options.add_argument("--disable-gpu")
+                  chrome_options.add_argument("--window-size=1920,1080")
+                  
+                  # Chromeドライバーを初期化
+                  service = Service(ChromeDriverManager().install())
+                  driver = webdriver.Chrome(service=service, options=chrome_options)
+                  
+                  try:
+                      # エピソードページにアクセス
+                      driver.get(episode_url)
+                      print(f"エピソードページにアクセスしました: {episode_url}")
+                      
+                      # ページが完全に読み込まれるまで少し待機
+                      time.sleep(5)
+                      
+                      # ページのHTMLをデバッグ用に保存
+                      debug_html_path = f"{DEBUG_DIR}/episode_{episode_id}.html"
+                      with open(debug_html_path, "w", encoding="utf-8") as f:
+                          f.write(driver.page_source)
+                      print(f"エピソードページのHTMLを保存しました: {debug_html_path}")
+                      
+                      # 再生ボタンをクリック
+                      play_button = WebDriverWait(driver, 10).until(
+                          EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label='再生']"))
+                      )
+                      play_button.click()
+                      print("再生ボタンをクリックしました")
+                      
+                      # オーディオURLを取得するためにネットワークリクエストを監視
+                      time.sleep(5)  # リクエストが発生するのを待つ
+                      
+                      # JavaScriptを実行してネットワークリクエストを取得
+                      logs = driver.execute_script("""
+                          var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {};
+                          var network = performance.getEntries() || [];
+                          return network;
+                      """)
+                      
+                      # ネットワークログをデバッグ用に保存
+                      debug_network_path = f"{DEBUG_DIR}/network_{episode_id}.json"
+                      with open(debug_network_path, "w", encoding="utf-8") as f:
+                          json.dump(logs, f, indent=2)
+                      print(f"ネットワークログを保存しました: {debug_network_path}")
+                      
+                      # オーディオURLを探す
+                      audio_url = None
+                      for entry in logs:
+                          name = entry.get("name", "")
+                          if isinstance(name, str) and (name.endswith(".mp3") or name.endswith(".aac") or name.endswith(".m3u8")):
+                              audio_url = name
+                              print(f"オーディオURLを見つけました: {audio_url}")
+                              break
+                      
+                      if not audio_url:
+                          print("オーディオURLが見つかりませんでした")
+                          return None
+                  
+                  finally:
+                      # ブラウザを閉じる
+                      driver.quit()
+                  
+                  # タイトルを安全なファイル名に変換
+                  safe_title = re.sub(r'[\\/*?:"<>|]', '_', episode_title)
+                  safe_title = safe_title.replace(' ', '_')
+                  
+                  # MP3ファイル名を作成
+                  if is_premium:
+                      mp3_filename = f"_{episode_date}_{safe_title}_{episode_id}.mp3"
+                      print(f"有料放送用ファイル名: {mp3_filename}")
+                  else:
+                      mp3_filename = f"{episode_date}_{safe_title}_{episode_id}.mp3"
+                      print(f"無料放送用ファイル名: {mp3_filename}")
+                  mp3_path = os.path.join(MP3_DIR, mp3_filename)
+                  
+                  # 既にダウンロード済みかチェック
+                  if os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 0:
+                      file_size_mb = os.path.getsize(mp3_path) / (1024 * 1024)
+                      print(f"エピソード {episode_id} は既にダウンロード済みです: {mp3_path} (サイズ: {file_size_mb:.2f}MB)")
+                      print(f"::endgroup::")
+                      return mp3_path
+                  
+                  # MP3をダウンロード
+                  mp3_file = download_m3u8_to_mp3(audio_url, mp3_path, episode_id)
+                  
+                  if mp3_file:
+                      print(f"エピソード {episode_id} のダウンロードに成功しました: {mp3_path}")
+                      print(f"::endgroup::")
+                      return mp3_path
+                  else:
+                      print(f"エピソード {episode_id} のダウンロードに失敗しました")
+              except Exception as e:
+                  print(f"エピソード {episode_id} のダウンロード中にエラーが発生しました: {str(e)}")
+                  traceback.print_exc()
+              
+              print(f"::endgroup::")
+              return None
+
+          def main():
+              """メイン関数"""
+              print("Voicy MP3ダウンローダーを開始します")
+              
+              # 必要なディレクトリを作成
+              setup_directories()
+              
+              # エピソードリストを取得
+              episodes = get_episode_list()
+              
+              if not episodes:
+                  print("エピソードが見つかりませんでした")
+                  return
+              
+              # 最新のエピソードを処理
+              latest_episodes = episodes[:MAX_EPISODES]
+              print(f"最新の{len(latest_episodes)}件のエピソードを処理します")
+              
+              downloaded_files = []
+              for episode in latest_episodes:
+                  mp3_file = download_episode(episode)
+                  if mp3_file:
+                      downloaded_files.append(mp3_file)
+              
+              # ダウンロード結果を表示
+              print("\nダウンロード結果:")
+              mp3_files = [f for f in os.listdir(MP3_DIR) if f.endswith('.mp3')]
+              for i, mp3_file in enumerate(mp3_files, 1):
+                  mp3_path = os.path.join(MP3_DIR, mp3_file)
+                  file_size_mb = os.path.getsize(mp3_path) / (1024 * 1024) if os.path.exists(mp3_path) else 0
+                  
+                  # ファイル名から情報を抽出
+                  if mp3_file.startswith('_'):
+                      # 有料放送: _タイトル_ID.mp3
+                      match = re.match(r'_(.+)_(\d+)\.mp3', mp3_file)
+                      if match:
+                          date_title = match.group(1)
+                          episode_id = match.group(2)
+                          print(f"{i}. 有料放送:")
+                          print(f"   ID: {episode_id}")
+                          print(f"   日付とタイトル: {date_title}")
+                          print(f"   ファイル: {mp3_file}")
+                          print(f"   サイズ: {file_size_mb:.2f}MB")
+                      else:
+                          print(f"{i}. {mp3_file} (サイズ: {file_size_mb:.2f}MB)")
+                  else:
+                      # 無料放送: タイトル_ID.mp3
+                      match = re.match(r'(.+)_(\d+)\.mp3', mp3_file)
+                      if match:
+                          date_title = match.group(1)
+                          episode_id = match.group(2)
+                          print(f"{i}. 無料放送:")
+                          print(f"   ID: {episode_id}")
+                          print(f"   日付とタイトル: {date_title}")
+                          print(f"   ファイル: {mp3_file}")
+                          print(f"   サイズ: {file_size_mb:.2f}MB")
+                      else:
+                          print(f"{i}. {mp3_file} (サイズ: {file_size_mb:.2f}MB)")
+              
+              print(f"合計: {len(mp3_files)}個のMP3ファイル")
+              print("Voicy MP3ダウンローダーを終了します")
+
+          if __name__ == "__main__":
+              main()
+          EOF
+      
+      - name: Voicy MP3ダウンロードスクリプトを実行
+        run: |
+          python voicy_mp3_downloader_v3.py
+      
+      - name: MP3ファイルをdocsディレクトリにコピー
+        run: |
+          mkdir -p docs/podcast
+          cp mp3_downloads/*.mp3 docs/podcast/
+          echo "MP3ファイルをdocs/podcastディレクトリにコピーしました"
+      
+      - name: 変更をコミット
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b gh-pages
+          git add docs/podcast/*.mp3
+          git commit -m "Update MP3 files" || echo "No changes to commit"
+      
+      - name: 変更をプッシュ
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force: true
