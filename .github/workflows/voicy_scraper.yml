@@ -39,7 +39,7 @@ jobs:
           import json
           import time
           import random
-          from datetime import datetime
+          from datetime import datetime, timedelta
           from bs4 import BeautifulSoup
           import traceback
           from tqdm import tqdm
@@ -79,6 +79,145 @@ jobs:
               sleep_time = random.uniform(min_seconds, max_seconds)
               time.sleep(sleep_time)
               return sleep_time
+
+          def parse_date_from_element(parent):
+              """
+              親要素からtimeタグやdata属性を使用して日付情報を取得する関数
+              
+              Args:
+                  parent: 親要素（Seleniumの要素オブジェクト）
+                  
+              Returns:
+                  tuple: (datetime オブジェクト, 日付文字列)
+              """
+              episode_date = None
+              date_str = None
+              
+              try:
+                  # 1. timeタグを優先的に探す
+                  try:
+                      time_element = parent.find_element(By.CSS_SELECTOR, "time")
+                      
+                      # data-timestamp属性を確認（Unixタイムスタンプ）
+                      timestamp = time_element.get_attribute("data-timestamp")
+                      if timestamp and timestamp.isdigit():
+                          # Unixタイムスタンプを日時に変換
+                          episode_date = datetime.fromtimestamp(int(timestamp))
+                          date_str = time_element.text.strip()
+                          return episode_date, date_str
+                      
+                      # datetime属性を確認（ISO形式の日時）
+                      datetime_attr = time_element.get_attribute("datetime")
+                      if datetime_attr:
+                          try:
+                              # ISO形式の日時を解析
+                              episode_date = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
+                              date_str = time_element.text.strip()
+                              return episode_date, date_str
+                          except ValueError:
+                              pass
+                      
+                      # timeタグのテキストを取得
+                      date_str = time_element.text.strip()
+                  except:
+                      # timeタグが見つからない場合は他の日付要素を探す
+                      try:
+                          date_element = parent.find_element(By.CSS_SELECTOR, ".date, .episode-date")
+                          date_str = date_element.text.strip()
+                      except:
+                          date_str = None
+              except:
+                  date_str = None
+              
+              # 日付文字列が取得できた場合は解析を試みる
+              if date_str:
+                  episode_date = parse_date_string(date_str)
+              
+              return episode_date, date_str
+
+          def parse_date_string(date_str):
+              """
+              日付文字列を解析してdatetimeオブジェクトに変換する関数
+              
+              Args:
+                  date_str: 日付を表す文字列
+                  
+              Returns:
+                  datetime: 解析された日時オブジェクト、解析失敗時はNone
+              """
+              if not date_str:
+                  return None
+              
+              # 現在の日時を取得（相対日付計算用）
+              now = datetime.now()
+              
+              try:
+                  # 1. 相対日付の解析（例: 3日前、1週間前、2時間前）
+                  relative_match = re.search(r'(\d+)\s*(時間|日|週間|ヶ月|カ月|ヵ月|か月|年)\s*前', date_str)
+                  if relative_match:
+                      value = int(relative_match.group(1))
+                      unit = relative_match.group(2)
+                      
+                      if unit == '時間':
+                          return now - timedelta(hours=value)
+                      elif unit == '日':
+                          return now - timedelta(days=value)
+                      elif unit == '週間':
+                          return now - timedelta(weeks=value)
+                      elif unit in ['ヶ月', 'カ月', 'ヵ月', 'か月']:
+                          # 月は正確な日数がないので近似値を使用
+                          return now - timedelta(days=value * 30)
+                      elif unit == '年':
+                          # 年も近似値を使用
+                          return now - timedelta(days=value * 365)
+                  
+                  # 2. 「今日」「昨日」「一昨日」などの特殊な相対日付
+                  if '今日' in date_str:
+                      return now
+                  elif '昨日' in date_str:
+                      return now - timedelta(days=1)
+                  elif '一昨日' in date_str or '2日前' in date_str:
+                      return now - timedelta(days=2)
+                  
+                  # 3. 日付フォーマットのパターンを試行
+                  date_formats = [
+                      # 年月日 時分 形式
+                      "%Y年%m月%d日 %H時%M分",
+                      "%Y年%m月%d日 %H:%M",
+                      "%Y/%m/%d %H:%M",
+                      "%Y-%m-%d %H:%M",
+                      # 年月日のみ
+                      "%Y年%m月%d日",
+                      "%Y/%m/%d",
+                      "%Y-%m-%d",
+                      # 月日 時分 形式
+                      "%m月%d日 %H時%M分",
+                      "%m月%d日 %H:%M",
+                      "%m/%d %H:%M",
+                      # 月日のみ
+                      "%m月%d日",
+                      "%m/%d"
+                  ]
+                  
+                  for date_format in date_formats:
+                      try:
+                          # 時間情報を含まないフォーマットで年が省略されている場合
+                          if (len(date_format.split()) > 0 and "年" not in date_format.split()[0] and "/" not in date_format.split()[0] and "-" not in date_format.split()[0]) and \
+                             (len(date_str.split()) > 0 and "年" not in date_str.split()[0] and "/" not in date_str.split()[0] and "-" not in date_str.split()[0]):
+                              # 現在の年を使用
+                              parsed_date = datetime.strptime(date_str, date_format)
+                              return parsed_date.replace(year=now.year)
+                          
+                          # 完全な日付
+                          return datetime.strptime(date_str, date_format)
+                      except (ValueError, IndexError):
+                          continue
+              
+              except Exception as e:
+                  print(f"日付の解析中にエラーが発生しました: {e}")
+              
+              # 解析できなかった場合はNoneを返す
+              return None
 
           def get_episodes_info_selenium():
               """
@@ -182,54 +321,19 @@ jobs:
                                       title = title_element.text if title_element else f"エピソード {episode_id}"
                                       
                                       # 日付要素を探す
-                                      date_str = None
-                                      try:
-                                          if parent:
-                                              date_element = parent.find_element(By.CSS_SELECTOR, "time, .date, .episode-date")
-                                              date_str = date_element.text.strip()
-                                      except:
-                                          date_str = None
-                                      
-                                      # 日付を解析（様々なフォーマットに対応）
                                       episode_date = None
-                                      if date_str:
-                                          try:
-                                              # 日付フォーマットのパターンを試行
-                                              date_formats = [
-                                                  "%Y年%m月%d日",
-                                                  "%Y/%m/%d",
-                                                  "%m月%d日",
-                                                  "%m/%d"
-                                              ]
-                                              
-                                              for date_format in date_formats:
-                                                  try:
-                                                      if "年" not in date_str and "/" not in date_str:
-                                                          # 「3日前」などの相対日付の場合
-                                                          episode_date = datetime.now()
-                                                          break
-                                                      
-                                                      if "年" not in date_str and ("月" in date_str or "/" in date_str):
-                                                          # 年が省略されている場合は現在の年を使用
-                                                          current_year = datetime.now().year
-                                                          parsed_date = datetime.strptime(date_str, date_format)
-                                                          episode_date = parsed_date.replace(year=current_year)
-                                                          break
-                                                      
-                                                      # 完全な日付
-                                                      episode_date = datetime.strptime(date_str, date_format)
-                                                      break
-                                                  except ValueError:
-                                                      continue
-                                          except Exception as e:
-                                              print(f"日付の解析中にエラーが発生しました: {e}")
-                                      
+                                      date_str = None
+
+                                      # 改良された日付解析関数を使用
+                                      episode_date, date_str = parse_date_from_element(parent)
+
                                       # 日付が解析できなかった場合は現在の日付を使用
                                       if episode_date is None:
                                           print(f"日付を解析できませんでした: {date_str}")
                                           episode_date = datetime.now()
-                                      
-                                      date_str = episode_date.strftime("%Y-%m-%d")
+
+                                      # 日付と時間を含むフォーマットで保存
+                                      date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
                                       
                                       # エピソード情報を追加
                                       episodes.append({
