@@ -70,7 +70,7 @@ jobs:
           CHANNEL_URL = f"https://voicy.jp/channel/{CHANNEL_ID}"  # チャンネルトップページ
 
           # ダウンロードする最新エピソード数
-          MAX_EPISODES = 3
+          MAX_EPISODES = 7
 
           # ディレクトリ設定
           MP3_DIR = "mp3_downloads"
