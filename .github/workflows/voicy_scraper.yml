@@ -257,7 +257,8 @@ jobs:
               try:
                   # Chromeオプションの設定
                   chrome_options = Options()
-                  chrome_options.add_argument("--headless")  # ヘッドレスモード
+                  # ヘッドレスモードを無効化（検出回避のため）
+                  # chrome_options.add_argument("--headless")
                   chrome_options.add_argument("--no-sandbox")
                   chrome_options.add_argument("--disable-dev-shm-usage")
                   chrome_options.add_argument("--disable-gpu")
@@ -266,7 +267,8 @@ jobs:
                   chrome_options.add_argument("--disable-infobars")
                   chrome_options.add_argument("--disable-notifications")
                   chrome_options.add_argument("--lang=ja")
-                  chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                  # 一般的なUser-Agentを設定
+                  chrome_options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"')
                   
                   # ウェブドライバーの初期化
                   service = Service()
@@ -322,34 +324,154 @@ jobs:
                       # 追加の待機時間を設定
                       time.sleep(5)
                   
+                  # スクロール処理を改善
+                  print("スクロール処理を開始します...")
+                  
+                  # 初期HTMLをデバッグ用に保存
+                  with open(os.path.join(DEBUG_DIR, "initial_page.html"), "w", encoding="utf-8") as f:
+                      f.write(driver.page_source)
+                  
                   # スクロール回数のカウンター
                   scroll_count = 0
+                  total_scrolls = 10  # より多くのスクロール回数
                   
                   # 目標エピソード数に達するか、最大スクロール回数に達するまでスクロールを繰り返す
-                  while scroll_count < MAX_SCROLL_ATTEMPTS and len(episodes) < TARGET_EPISODES:
-                      # 現在のページの高さを取得
-                      last_height = driver.execute_script("return document.body.scrollHeight")
-                      
-                      # ページの下部までスクロール
-                      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                      
-                      # スクロール後の待機
-                      time.sleep(SCROLL_PAUSE_TIME)
-                      
-                      # 新しい高さを取得
-                      new_height = driver.execute_script("return document.body.scrollHeight")
-                      
-                      # ページの高さが変わらなければスクロールの終了
-                      if new_height == last_height:
-                          print("これ以上スクロールできません。ページの終端に達しました。")
+                  while scroll_count < total_scrolls:
+                      try:
+                          # スクロール位置を計算（徐々に下へ）
+                          scroll_height = driver.execute_script("return document.body.scrollHeight")
+                          scroll_position = (scroll_count + 1) * scroll_height / total_scrolls
+                          
+                          # スクロール実行
+                          driver.execute_script(f"window.scrollTo(0, {scroll_position});")
+                          
+                          # スクロール後の待機
+                          time.sleep(SCROLL_PAUSE_TIME * 2)  # 待機時間を2倍に
+                          
+                          # 途中でスクリーンショットを取得（デバッグ用）
+                          if scroll_count % 3 == 0:  # 3回ごとにスクリーンショットを保存
+                              try:
+                                  driver.save_screenshot(os.path.join(DEBUG_DIR, f"scroll_{scroll_count}.png"))
+                              except Exception as e:
+                                  print(f"スクリーンショット保存中にエラーが発生しました: {e}")
+                          
+                          scroll_count += 1
+                          print(f"スクロール {scroll_count}/{total_scrolls} 完了")
+                          
+                          # 最後のスクロール後は少し長めに待機
+                          if scroll_count == total_scrolls:
+                              print("最終スクロール後の待機中...")
+                              time.sleep(3)
+                      except Exception as e:
+                          print(f"スクロール中にエラーが発生しました: {e}")
                           break
-                      
-                      scroll_count += 1
-                      print(f"スクロール {scroll_count}/{MAX_SCROLL_ATTEMPTS} 完了")
                   
-                  # エピソード要素を取得
-                  episode_elements = driver.find_elements(By.CSS_SELECTOR, ".episode-item, .episode-card")
-                  print(f"{len(episode_elements)} 件のエピソード要素を検出しました。")
+                  # 現在のHTMLをデバッグ用に保存
+                  with open(os.path.join(DEBUG_DIR, "after_scroll.html"), "w", encoding="utf-8") as f:
+                      f.write(driver.page_source)
+                  
+                  # エピソード要素を取得（複数のセレクタを試行）
+                  episode_elements = []
+                  
+                  # セレクタ候補（Voicyのサイト構造が変わっている可能性があるため複数試す）
+                  selectors = [
+                      ".episode-item, .episode-card",  # 元のセレクタ
+                      "div[class*='episodeItem']",  # クラス名に'episodeItem'を含む要素
+                      "div.episodeItem",  # 直接クラスで検索
+                      "div[class*='episode']",  # クラス名に'episode'を含む要素
+                      "div.episode",  # 直接クラスで検索
+                      "a[href*='/episode/']",  # エピソードへのリンク
+                      "div.sc-iNGGcK",  # 可能性のあるクラス
+                      "div[class*='epfKLr']",  # 可能性のあるクラス
+                      "div.epfKLr",  # 可能性のあるクラス
+                      "div[class*='card']",  # カードスタイルの要素
+                      "div.card"  # カードスタイルの要素
+                  ]
+                  
+                  # 各セレクタで試行
+                  for selector in selectors:
+                      try:
+                          elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                          if elements:
+                              episode_elements = elements
+                              print(f"セレクタ '{selector}' で {len(elements)} 件のエピソード要素を検出しました。")
+                              break
+                      except Exception as e:
+                          print(f"セレクタ '{selector}' の検索中にエラーが発生しました: {str(e)}")
+                  
+                  # エピソード要素が見つからない場合のフォールバック処理
+                  if not episode_elements:
+                      print("通常のセレクタでエピソード要素が見つかりませんでした。フォールバック方法を試行します。")
+                      
+                      try:
+                          # すべてのリンクを取得してエピソードURLを抽出
+                          all_links = driver.find_elements(By.TAG_NAME, "a")
+                          episode_links = []
+                          
+                          for link in all_links:
+                              try:
+                                  href = link.get_attribute("href")
+                                  if href and ("/episode/" in href or f"/channel/{CHANNEL_ID}/" in href):
+                                      episode_links.append(link)
+                              except:
+                                  continue
+                          
+                          print(f"{len(episode_links)} 件のエピソードらしきリンクを検出しました。")
+                          
+                          # リンクからエピソード情報を直接抽出
+                          for link in episode_links:
+                              try:
+                                  href = link.get_attribute("href")
+                                  if not href:
+                                      continue
+                                      
+                                  # エピソードIDを抽出
+                                  if "/episode/" in href:
+                                      episode_id = href.split("/episode/")[1].split("/")[0]
+                                  else:
+                                      episode_id = href.split(f"/channel/{CHANNEL_ID}/")[1].split("/")[0]
+                                  
+                                  # 既存のエピソードIDと重複チェック
+                                  if episode_id in existing_episode_ids:
+                                      continue
+                                  
+                                  # タイトルを取得（可能であれば）
+                                  title = "タイトル不明"
+                                  try:
+                                      # リンク内のテキストを取得
+                                      title_text = link.text.strip()
+                                      if title_text:
+                                          title = title_text
+                                      else:
+                                          # 親要素内のテキストを取得
+                                          parent = link.find_element(By.XPATH, "./..")
+                                          title = parent.text.strip()
+                                  except:
+                                      pass
+                                  
+                                  # 日付情報（現在時刻をデフォルトとして使用）
+                                  date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                  
+                                  # エピソード情報を辞書として保存
+                                  episode_info = {
+                                      "id": episode_id,
+                                      "title": title,
+                                      "date": date_str,
+                                      "url": href,
+                                      "is_paid": False  # デフォルトは無料と仮定
+                                  }
+                                  
+                                  episodes.append(episode_info)
+                                  new_episode_count += 1
+                              except Exception as e:
+                                  print(f"リンクからのエピソード情報抽出中にエラーが発生しました: {e}")
+                                  continue
+                      except Exception as e:
+                          print(f"フォールバック処理中にエラーが発生しました: {e}")
+                  
+                  # 通常のエピソード要素処理
+                  if episode_elements:
+                      print(f"{len(episode_elements)} 件のエピソード要素を検出しました。")
                   
                   # 各エピソード要素から情報を抽出
                   for element in tqdm(episode_elements, desc="エピソード情報の抽出"):
