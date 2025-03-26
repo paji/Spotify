@@ -109,6 +109,59 @@ jobs:
               
               return existing_episodes, existing_episode_ids
 
+          def check_premium_content(parent):
+              """
+              親要素から有料配信かどうかを判定する関数
+              
+              Args:
+                  parent: 親要素（Seleniumの要素オブジェクト）
+                  
+              Returns:
+                  bool: 有料配信の場合はTrue、無料配信の場合はFalse
+              """
+              try:
+                  # 方法1: Pアイコンを直接検索
+                  try:
+                      p_icon = parent.find_element(By.CSS_SELECTOR, ".premium-icon, .paid-icon, .p-icon, [class*='premium'], [class*='paid']")
+                      if p_icon:
+                          return True
+                  except NoSuchElementException:
+                      pass
+                  
+                  # 方法2: 「P」テキストを含む要素を検索
+                  try:
+                      p_text_elements = parent.find_elements(By.XPATH, ".//*[contains(text(), 'P') or contains(text(), 'プレミアム')]")
+                      for element in p_text_elements:
+                          if element.text.strip() == "P" or "プレミアム" in element.text:
+                              return True
+                  except:
+                      pass
+                  
+                  # 方法3: 画像やSVGのalt属性やsrc属性を確認
+                  try:
+                      images = parent.find_elements(By.CSS_SELECTOR, "img, svg")
+                      for img in images:
+                          alt = img.get_attribute("alt") or ""
+                          src = img.get_attribute("src") or ""
+                          if "premium" in alt.lower() or "paid" in alt.lower() or "p-icon" in src.lower() or "premium" in src.lower():
+                              return True
+                  except:
+                      pass
+                  
+                  # 方法4: クラス名に「premium」や「paid」が含まれる要素を探す
+                  try:
+                      elements = parent.find_elements(By.XPATH, ".//*")
+                      for element in elements:
+                          class_name = element.get_attribute("class") or ""
+                          if "premium" in class_name.lower() or "paid" in class_name.lower():
+                              return True
+                  except:
+                      pass
+                  
+                  return False
+              except:
+                  return False
+          
           def parse_date_from_element(parent):
               """
               親要素からtimeタグやdata属性を使用して日付情報を取得する関数
@@ -371,12 +424,18 @@ jobs:
                                       # ISO形式の日付も追加（ソート用）
                                       date_iso = episode_date.isoformat()
                                       
+                                      # 有料配信かどうかを判定
+                                      is_premium = check_premium_content(parent)
+                                      if is_premium:
+                                          print(f"有料配信を検出しました: {title}")
+                                      
                                       # エピソード情報を追加
                                       episodes.append({
                                           "id": episode_id,
                                           "title": title,
                                           "date": date_str,
                                           "date_iso": date_iso,  # ISO形式の日付を追加
+                                          "is_premium": is_premium,  # 有料配信ステータスを追加
                                           "url": href
                                       })
                                       
