@@ -348,8 +348,8 @@ jobs:
                   filtered_episodes = []
                   for episode in episodes_data:
                       if f"/channel/{CHANNEL_ID}/" in episode["url"]:
-                          # is_premium情報を追加（実際の判定はdownload_episode関数で行われる）
-                          episode["is_premium"] = False
+                          # is_premiumの値はJSONファイルから取得したものをそのまま使用
+                          # episode["is_premium"]の値はすでにJSONファイルに含まれているので変更しない
                           filtered_episodes.append(episode)
                   
                   if not filtered_episodes:
@@ -734,12 +734,51 @@ jobs:
                   print("エピソードが見つかりませんでした")
                   return
               
-              # 最新のエピソードを処理
-              latest_episodes = episodes[:MAX_EPISODES]
-              print(f"最新の{len(latest_episodes)}件のエピソードを処理します")
+              # 既存のmp3ファイルからエピソードIDを抽出
+              existing_episode_ids = []
+              mp3_files = [f for f in os.listdir(MP3_DIR) if f.endswith('.mp3')]
+              for mp3_file in mp3_files:
+                  # 無料放送: 日付_タイトル_ID.mp3
+                  match = re.match(r'.*?_(\d+)\.mp3$', mp3_file)
+                  if match:
+                      episode_id = match.group(1)
+                      existing_episode_ids.append(episode_id)
+              
+              print(f"既存のmp3ファイルから抽出したエピソードID: {existing_episode_ids}")
+              
+              # 最新のエピソードを処理（有料配信と既存エピソードをフィルタリング）
+              filtered_episodes = []
+              skipped_premium_count = 0
+              skipped_existing_count = 0
+              
+              for episode in episodes:
+                  episode_id = episode["id"]
+                  is_premium = episode["is_premium"]
+                  
+                  # 有料配信はスキップ
+                  if is_premium:
+                      print(f"有料配信のためスキップ: {episode['title']} (ID: {episode_id})")
+                      skipped_premium_count += 1
+                      continue
+                  
+                  # 既存のエピソードIDをチェック
+                  if episode_id in existing_episode_ids:
+                      print(f"既存のmp3ファイルが存在するためスキップ: {episode['title']} (ID: {episode_id})")
+                      skipped_existing_count += 1
+                      continue
+                  
+                  filtered_episodes.append(episode)
+                  
+                  # 最大エピソード数に達したらループを終了
+                  if len(filtered_episodes) >= MAX_EPISODES:
+                      break
+              
+              print(f"有料配信のためスキップしたエピソード数: {skipped_premium_count}")
+              print(f"既存のmp3ファイルが存在するためスキップしたエピソード数: {skipped_existing_count}")
+              print(f"処理対象のエピソード数: {len(filtered_episodes)}")
               
               downloaded_files = []
-              for episode in latest_episodes:
+              for episode in filtered_episodes:
                   mp3_file = download_episode(episode)
                   if mp3_file:
                       downloaded_files.append(mp3_file)
