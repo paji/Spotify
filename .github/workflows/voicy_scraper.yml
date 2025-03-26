@@ -223,241 +223,200 @@ jobs:
                   
                   # ページの完全な読み込みを待機
                   try:
-                      WebDriverWait(driver, 30).until(
+                      WebDriverWait(driver, 45).until(
                           lambda d: d.execute_script("return document.readyState") == "complete"
                       )
-                      # 追加の待機時間
-                      time.sleep(5)
+                      print("ページの読み込みが完了しました")
+                      
+                      # スクリーンショットを保存してデバッグに使用
+                      driver.save_screenshot(os.path.join(DEBUG_DIR, "page_loaded.png"))
+                      
+                      # ページソースをデバッグ用に保存
+                      with open(os.path.join(DEBUG_DIR, "page_source.html"), "w", encoding="utf-8") as f:
+                          f.write(driver.page_source)
+                          
+                      # HTMLに基本的な要素が含まれているか確認
+                      if "<html" in driver.page_source and "<body" in driver.page_source:
+                          print("HTMLの基本構造を確認: OK")
+                      else:
+                          print("警告: HTMLの基本構造が見つかりません")
+                      
+                      # JavaScriptを実行して要素の数を確認
+                      links_count = driver.execute_script("return document.getElementsByTagName('a').length")
+                      print(f"JavaScriptで検出したリンク数: {links_count}")
+                      
+                      # 明示的に待機してJavaScriptコンテンツの読み込みを待つ
+                      time.sleep(10)
+                      
                   except Exception as e:
-                      print(f"ページの読み込みがタイムアウトしましたが、処理を続行します。")
-                      # 追加の待機時間を設定
-                      time.sleep(5)
+                      print(f"ページの読み込み待機中にエラーが発生しましたが、処理を続行します: {str(e)}")
+                      driver.save_screenshot(os.path.join(DEBUG_DIR, "page_load_error.png"))
                   
-                  # スクロール処理を改善
-                  print("スクロール処理を開始します...")
-                  
-                  # 初期HTMLをデバッグ用に保存
-                  with open(os.path.join(DEBUG_DIR, "initial_page.html"), "w", encoding="utf-8") as f:
-                      f.write(driver.page_source)
-                  
-                  # スクロール回数のカウンター
-                  scroll_count = 0
-                  total_scrolls = 10  # より多くのスクロール回数
-                  
-                  # 目標エピソード数に達するか、最大スクロール回数に達するまでスクロールを繰り返す
-                  while scroll_count < total_scrolls:
-                      try:
-                          # スクロール位置を計算（徐々に下へ）
-                          scroll_height = driver.execute_script("return document.body.scrollHeight")
-                          scroll_position = (scroll_count + 1) * scroll_height / total_scrolls
+                  # より堅牢なアプローチでリンクを探す
+                  try:
+                      # 方法1: JavaScriptを使用してリンクを直接取得
+                      episode_urls = driver.execute_script("""
+                          var links = document.querySelectorAll('a[href*="/episode/"]');
+                          var urls = [];
+                          for (var i = 0; i < links.length; i++) {
+                              urls.push(links[i].href);
+                          }
+                          return urls;
+                      """)
+                      
+                      print(f"JavaScriptで検出したエピソードURL数: {len(episode_urls)}")
+                      
+                      # JavaScriptでURLが見つかった場合はそれを使用
+                      if episode_urls and len(episode_urls) > 0:
+                          for url in episode_urls:
+                              if "/episode/" in url:
+                                  episode_id = url.split("/episode/")[1].split("/")[0]
+                                  if episode_id not in existing_episode_ids:
+                                      # タイトルは仮のものを設定
+                                      episodes.append({
+                                          "id": episode_id,
+                                          "title": "Episode " + episode_id,
+                                          "url": url,
+                                          "is_paid": False  # デフォルトは無料と仮定
+                                      })
+                          print(f"JavaScriptで {len(episodes)} 件のエピソードを抽出しました")
+                      else:
+                          # 方法2: HTMLパースを使用
+                          from bs4 import BeautifulSoup
+                          soup = BeautifulSoup(driver.page_source, 'html.parser')
+                          links = soup.find_all('a', href=lambda href: href and '/episode/' in href)
                           
-                          # スクロール実行
-                          driver.execute_script(f"window.scrollTo(0, {scroll_position});")
+                          print(f"BeautifulSoupで検出したエピソードリンク数: {len(links)}")
                           
-                          # スクロール後の待機
-                          time.sleep(SCROLL_PAUSE_TIME * 2)  # 待機時間を2倍に
+                          for link in links:
+                              href = link.get('href')
+                              if href and '/episode/' in href:
+                                  # 相対パスの場合は絶対パスに変換
+                                  if href.startswith('/'):
+                                      href = 'https://voicy.jp' + href
+                                      
+                                  episode_id = href.split("/episode/")[1].split("/")[0]
+                                  if episode_id not in existing_episode_ids:
+                                      # リンクのテキストをタイトルとして使用
+                                      title = link.get_text().strip() or "Episode " + episode_id
+                                      episodes.append({
+                                          "id": episode_id,
+                                          "title": title,
+                                          "url": href,
+                                          "is_paid": False  # デフォルトは無料と仮定
+                                      })
+                          print(f"BeautifulSoupで {len(episodes)} 件のエピソードを抽出しました")
                           
-                          # 途中でスクリーンショットを取得（デバッグ用）
-                          if scroll_count % 3 == 0:  # 3回ごとにスクリーンショットを保存
-                              try:
-                                  driver.save_screenshot(os.path.join(DEBUG_DIR, f"scroll_{scroll_count}.png"))
-                              except Exception as e:
-                                  print(f"スクリーンショット保存中にエラーが発生しました: {e}")
+                      # 方法3: 代替アプローチとしてHTTPリクエストを使用
+                      if len(episodes) == 0:
+                          print("Seleniumでのスクレイピングが失敗したため、直接HTTPリクエストを試みます")
+                          import requests
                           
-                          scroll_count += 1
-                          print(f"スクロール {scroll_count}/{total_scrolls} 完了")
+                          # User-Agentを設定
+                          headers = {
+                              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                              'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8'
+                          }
                           
-                          # 最後のスクロール後は少し長めに待機
-                          if scroll_count == total_scrolls:
-                              print("最終スクロール後の待機中...")
-                              time.sleep(3)
-                      except Exception as e:
-                          print(f"スクロール中にエラーが発生しました: {e}")
-                          break
-                  
-                  # 現在のHTMLをデバッグ用に保存
-                  with open(os.path.join(DEBUG_DIR, "after_scroll.html"), "w", encoding="utf-8") as f:
-                      f.write(driver.page_source)
-                  
-                  # エピソード要素を検出（複数のセレクタを試行）
-                  episode_elements = []
-                  selectors = [
-                      "div.sc-iNGGcK.epfKLr",  # 元のセレクタ
-                      "div[class*='episodeItem']",  # クラス名に'episodeItem'を含む要素
-                      "div.episodeItem",  # 直接クラスで検索
-                      "div[class*='episode']",  # クラス名に'episode'を含む要素
-                      "div.episode",  # 直接クラスで検索
-                      "a[href*='/episode/']",  # エピソードへのリンク
-                      "a[href*='/channel/']",  # チャンネルページ内のリンク
-                      "div.MuiCardContent-root",  # MUIカードコンテンツ
-                      "div.MuiCard-root",  # MUIカード
-                      "div.card",  # 一般的なカードクラス
-                      "article"  # 記事要素
-                  ]
-                  
-                  # 各セレクタで試行
-                  for selector in selectors:
-                      try:
-                          elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                          if elements:
-                              episode_elements = elements
-                              print(f"セレクタ '{selector}' で {len(elements)} 件のエピソード要素を検出しました。")
-                              break
-                      except Exception as e:
-                          print(f"セレクタ '{selector}' の検索中にエラーが発生しました: {e}")
-                  
-                  print(f"{len(episode_elements)} 件のエピソード要素を検出しました。")
-                  
-                  # エピソード要素が見つからない場合のフォールバック
-                  if not episode_elements:
-                      print("エピソード要素が見つかりませんでした。すべてのリンクから抽出を試みます...")
-                      try:
-                          all_links = driver.find_elements(By.TAG_NAME, "a")
-                          episode_links = []
-                          for link in all_links:
-                              try:
-                                  href = link.get_attribute("href")
-                                  if href and ("/episode/" in href or "/channel/" in href):
-                                      episode_links.append(link)
-                              except:
-                                  continue
-                          
-                          print(f"{len(episode_links)} 件のエピソードリンクを検出しました。")
-                          
-                          # リンクからエピソード情報を抽出
-                          for link in episode_links:
-                              try:
-                                  href = link.get_attribute("href")
-                                  if not href:
-                                      continue
-                                  
-                                  # エピソードIDを抽出
-                                  episode_id = None
-                                  if "/episode/" in href:
+                          response = requests.get(CHANNEL_URL, headers=headers)
+                          if response.status_code == 200:
+                              soup = BeautifulSoup(response.text, 'html.parser')
+                              links = soup.find_all('a', href=lambda href: href and '/episode/' in href)
+                              
+                              print(f"HTTPリクエストで検出したエピソードリンク数: {len(links)}")
+                              
+                              for link in links:
+                                  href = link.get('href')
+                                  if href and '/episode/' in href:
+                                      # 相対パスの場合は絶対パスに変換
+                                      if href.startswith('/'):
+                                          href = 'https://voicy.jp' + href
+                                          
                                       episode_id = href.split("/episode/")[1].split("/")[0]
-                                  elif "/channel/" in href:
-                                      parts = href.split("/")
-                                      if len(parts) > 4:
-                                          episode_id = parts[-1]
-                                  
-                                  if not episode_id or episode_id in existing_episode_ids:
-                                      continue
-                                  
-                                  # タイトルを取得
-                                  title = "タイトル不明"
-                                  try:
-                                      # リンク内のテキストを取得
-                                      title = link.text.strip()
-                                      if not title:
-                                          # h2, h3, spanなどのタグを探す
-                                          for tag in ["h2", "h3", "span", "p", "div"]:
-                                              elements = link.find_elements(By.TAG_NAME, tag)
-                                              if elements and elements[0].text.strip():
-                                                  title = elements[0].text.strip()
-                                                  break
-                                  except:
-                                      pass
-                                  
-                                  # エピソード情報を作成
-                                  episode = {
-                                      "id": episode_id,
-                                      "title": title,
-                                      "url": href,
-                                      "is_paid": False  # デフォルトは無料と仮定
-                                  }
-                                  
-                                  # 有料/無料ステータスを判定
-                                  try:
-                                      # 「P」アイコンや「プレミアム」表示を探す
-                                      paid_indicators = [
-                                          "premium", "プレミアム", "有料", "paid", "P", "p-icon"
-                                      ]
-                                      
-                                      link_html = link.get_attribute("outerHTML")
-                                      is_paid = any(indicator in link_html.lower() for indicator in paid_indicators)
-                                      
-                                      if is_paid:
-                                          episode["is_paid"] = True
-                                  except:
-                                      pass
-                                  
-                                  episodes.append(episode)
-                              except Exception as e:
-                                  print(f"エピソード情報の抽出中にエラーが発生しました: {e}")
-                      except Exception as e:
-                          print(f"フォールバック処理中にエラーが発生しました: {e}")
+                                      if episode_id not in existing_episode_ids:
+                                          # リンクのテキストをタイトルとして使用
+                                          title = link.get_text().strip() or "Episode " + episode_id
+                                          episodes.append({
+                                              "id": episode_id,
+                                              "title": title,
+                                              "url": href,
+                                              "is_paid": False  # デフォルトは無料と仮定
+                                          })
+                              print(f"HTTPリクエストで {len(episodes)} 件のエピソードを抽出しました")
+                          else:
+                              print(f"HTTPリクエストが失敗しました。ステータスコード: {response.status_code}")
+                  
+                  except Exception as e:
+                      print(f"エピソード情報の抽出中にエラーが発生しました: {str(e)}")
+                      import traceback
+                      traceback.print_exc()
+                      
+                  if not episodes:
+                      print("警告: エピソードが見つかりませんでした。デバッグ情報を確認してください。")
                   else:
-                      # 通常の処理（エピソード要素が見つかった場合）
-                      for element in episode_elements:
+                      print(f"合計 {len(episodes)} 件のエピソードを見つけました。")
+                      
+                      # 有料/無料ステータスを判定
+                      for episode in episodes:
                           try:
-                              # リンク要素を取得
-                              link_element = element.find_element(By.TAG_NAME, "a")
-                              episode_url = link_element.get_attribute("href")
+                              # エピソードURLにアクセス
+                              driver.get(episode["url"])
                               
-                              # URLからエピソードIDを抽出
-                              episode_id = None
-                              if "/episode/" in episode_url:
-                                  episode_id = episode_url.split("/episode/")[1].split("/")[0]
-                              elif "/channel/" in episode_url:
-                                  parts = episode_url.split("/")
-                                  if len(parts) > 4:
-                                      episode_id = parts[-1]
-                              
-                              # 既存のエピソードはスキップ
-                              if not episode_id or episode_id in existing_episode_ids:
-                                  continue
-                              
-                              # タイトル要素を取得
-                              title = "タイトル不明"
+                              # ページの読み込みを待機
                               try:
-                                  # h2, h3, spanなどのタグを探す
-                                  for tag in ["h2", "h3", "span", "p", "div"]:
-                                      title_elements = element.find_elements(By.TAG_NAME, tag)
-                                      if title_elements and title_elements[0].text.strip():
-                                          title = title_elements[0].text.strip()
-                                          break
-                              except:
-                                  pass
-                              
-                              # 日付情報を取得
-                              episode_date, date_str = parse_date_from_element(element)
+                                  WebDriverWait(driver, 30).until(
+                                      lambda d: d.execute_script("return document.readyState") == "complete"
+                                  )
+                                  time.sleep(2)  # 追加の待機
+                              except Exception as e:
+                                  print(f"ページの読み込み待機中にエラーが発生しましたが、処理を続行します: {e}")
+                                  time.sleep(3)  # エラー時は長めに待機
                               
                               # 有料/無料ステータスを判定
                               is_paid = False
+                              
                               try:
-                                  # 「P」アイコンや「プレミアム」表示を探す
-                                  paid_indicators = [
-                                      "premium", "プレミアム", "有料", "paid", "P", "p-icon"
-                                  ]
+                                  # 方法1: JavaScriptを使用して「P」アイコンや「プレミアム」表示を探す
+                                  paid_indicators = ["premium", "プレミアム", "有料", "paid", "P", "p-icon"]
+                                  page_html = driver.page_source.lower()
                                   
-                                  element_html = element.get_attribute("outerHTML")
-                                  is_paid = any(indicator in element_html.lower() for indicator in paid_indicators)
-                              except:
-                                  pass
+                                  is_paid = any(indicator in page_html for indicator in paid_indicators)
+                                  
+                                  # 方法2: 「プレミアムリスナーに参加」ボタンを探す
+                                  premium_buttons = driver.execute_script("""
+                                      var elements = document.querySelectorAll('*');
+                                      for (var i = 0; i < elements.length; i++) {
+                                          var text = elements[i].textContent || elements[i].innerText;
+                                          if (text && (text.includes('プレミアム') || text.includes('premium'))) {
+                                              return true;
+                                          }
+                                      }
+                                      return false;
+                                  """)
+                                  
+                                  if premium_buttons:
+                                      is_paid = True
+                                  
+                              except Exception as e:
+                                  print(f"有料/無料ステータスの判定中にエラーが発生しました: {e}")
                               
-                              # エピソード情報を作成
-                              episode = {
-                                  "id": episode_id,
-                                  "title": title,
-                                  "url": episode_url,
-                                  "is_paid": is_paid
-                              }
+                              # ステータスを更新
+                              episode["is_paid"] = is_paid
                               
-                              # 日付情報があれば追加
-                              if episode_date:
-                                  episode["date"] = episode_date.strftime("%Y-%m-%d %H:%M:%S")
-                              if date_str:
-                                  episode["date_str"] = date_str
+                              # ランダムな待機（サーバー負荷軽減）
+                              random_sleep(1.0, 2.0)
                               
-                              episodes.append(episode)
                           except Exception as e:
-                              print(f"エピソード情報の抽出中にエラーが発生しました: {e}")
-                  
-                  print(f"{len(episodes)} 件の新規エピソードを検出しました。")
+                              print(f"エピソード {episode.get('id', 'unknown')} の処理中にエラーが発生しました: {e}")
                   
               except Exception as e:
                   print(f"スクレイピング中にエラーが発生しました: {e}")
                   traceback.print_exc()
+                  # デバッグ用にスクリーンショット保存
+                  try:
+                      driver.save_screenshot(os.path.join(DEBUG_DIR, "error_screenshot.png"))
+                  except:
+                      pass
               
               return episodes
 
