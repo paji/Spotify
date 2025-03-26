@@ -737,15 +737,23 @@ jobs:
               # 既存のmp3ファイルからエピソードIDを抽出
               existing_episode_ids = []
               mp3_files = [f for f in os.listdir(MP3_DIR) if f.endswith('.mp3')]
-              for mp3_file in mp3_files:
+              print(f"検出されたmp3ファイル数: {len(mp3_files)}")
+              
+              print("既存のmp3ファイルの詳細:")
+              for i, mp3_file in enumerate(mp3_files, 1):
+                  print(f"  {i}. ファイル名: {mp3_file}")
                   # ファイル名の形式: 日付_タイトル_ID.mp3 または _日付_タイトル_ID.mp3
                   # 末尾の数字部分（エピソードID）を抽出
                   match = re.search(r'_(\d+)\.mp3$', mp3_file)
                   if match:
                       episode_id = match.group(1)
                       existing_episode_ids.append(episode_id)
+                      print(f"     抽出されたエピソードID: {episode_id}")
+                  else:
+                      print(f"     エピソードIDを抽出できませんでした")
               
-              print(f"既存のmp3ファイルから抽出したエピソードID: {existing_episode_ids}")
+              print(f"既存のmp3ファイルから抽出したエピソードID一覧: {existing_episode_ids}")
+              print(f"抽出されたエピソードID数: {len(existing_episode_ids)}")
               
               # 最新のエピソードを処理（有料配信と既存エピソードをフィルタリング）
               filtered_episodes = []
@@ -765,6 +773,8 @@ jobs:
                   # 既存のエピソードIDをチェック
                   if episode_id in existing_episode_ids:
                       print(f"既存のmp3ファイルが存在するためスキップ: {episode['title']} (ID: {episode_id})")
+                      print(f"  一致したエピソードID: {episode_id}")
+                      print(f"  既存のmp3ファイル: {[f for f in mp3_files if f'_{episode_id}.mp3' in f]}")
                       skipped_existing_count += 1
                       continue
                   
