@@ -666,12 +666,13 @@ jobs:
                   
                   # ファイル名の作成（日付_タイトル_ID.mp3）
                   if is_premium:
-                      mp3_filename = f"_{episode_date}_{safe_title}_{episode_id}.mp3"
-                      print(f"有料放送用ファイル名: {mp3_filename}")
+                      print(f"有料放送のため、ダウンロードをスキップします: {episode_title} ({episode_id})")
+                      print(f"::endgroup::")
+                      return None
                   else:
                       mp3_filename = f"{episode_date}_{safe_title}_{episode_id}.mp3"
                       print(f"無料放送用ファイル名: {mp3_filename}")
-                  mp3_path = os.path.join(MP3_DIR, mp3_filename)
+                      mp3_path = os.path.join(MP3_DIR, mp3_filename)
                   
                   # 既にダウンロード済みかチェック
                   # 1. 直接ファイルパスをチェック
