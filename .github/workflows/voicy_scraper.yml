@@ -363,23 +363,38 @@ jobs:
                               # 日付文字列のフォーマットを統一
                               date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
                           
-                          # 有料配信かどうかを判定（「P」アイコンの有無を確認）
+                          # 有料配信かどうかを判定
                           is_paid = False
                           try:
-                              # 「P」アイコンを探す（黄色い円形のアイコン）
-                              paid_icon = element.find_elements(By.CSS_SELECTOR, ".paid-icon, img[src*='paid'], div[class*='paid']")
+                              # 方法1: 「P」アイコンを探す（黄色い円形のアイコン）
+                              paid_icon = element.find_elements(By.CSS_SELECTOR, ".paid-icon, img[src*='paid'], div[class*='paid'], .premium-icon")
                               if paid_icon:
                                   is_paid = True
-                              else:
-                                  # 画像の「P」アイコンを探す
-                                  img_elements = element.find_elements(By.TAG_NAME, "img")
-                                  for img in img_elements:
-                                      src = img.get_attribute("src")
-                                      alt = img.get_attribute("alt")
-                                      if (src and ("paid" in src.lower() or "premium" in src.lower())) or \
-                                         (alt and ("paid" in alt.lower() or "premium" in alt.lower() or "p" == alt.lower())):
-                                          is_paid = True
-                                          break
+                              
+                              # 方法2: 「プレミアムリスナーに参加」ボタンを探す（有料配信の特徴）
+                              premium_buttons = element.find_elements(By.XPATH, ".//button[contains(text(), 'プレミアムリスナーに参加')] | .//a[contains(text(), 'プレミアムリスナーに参加')]")
+                              if premium_buttons:
+                                  is_paid = True
+                              
+                              # 方法3: 「再生する」ボタンを探す（無料配信の特徴）
+                              play_buttons = element.find_elements(By.XPATH, ".//button[contains(text(), '再生する')] | .//a[contains(text(), '再生する')]")
+                              if play_buttons:
+                                  is_paid = False
+                              
+                              # 方法4: 画像の「P」アイコンを探す
+                              img_elements = element.find_elements(By.TAG_NAME, "img")
+                              for img in img_elements:
+                                  src = img.get_attribute("src")
+                                  alt = img.get_attribute("alt")
+                                  if (src and ("paid" in src.lower() or "premium" in src.lower())) or \
+                                     (alt and ("paid" in alt.lower() or "premium" in alt.lower() or "p" == alt.lower())):
+                                      is_paid = True
+                                      break
+                                      
+                              # 方法5: プレミアムに関連するテキストを探す
+                              premium_text = element.find_elements(By.XPATH, ".//*[contains(text(), 'プレミアム') or contains(text(), '有料')]")
+                              if premium_text:
+                                  is_paid = True
                           except:
                               # エラーが発生した場合は無料と判定
                               is_paid = False
@@ -408,6 +423,66 @@ jobs:
               
               return episodes
 
+          def update_existing_episodes_paid_status(driver, existing_episodes):
+              """
+              既存のエピソードの有料/無料ステータスを更新する関数
+              
+              Args:
+                  driver: Seleniumのウェブドライバー
+                  existing_episodes: 既存のエピソードリスト
+                  
+              Returns:
+                  list: 有料/無料ステータスが更新されたエピソードリスト
+              """
+              print("既存エピソードの有料/無料ステータスを更新しています...")
+              updated_episodes = []
+              
+              for episode in tqdm(existing_episodes, desc="既存エピソードの有料/無料ステータス更新"):
+                  try:
+                      # エピソードURLにアクセス
+                      driver.get(episode["url"])
+                      time.sleep(2)  # ページ読み込み待機
+                      
+                      # 有料配信かどうかを判定
+                      is_paid = False
+                      
+                      try:
+                          # 方法1: 「プレミアムリスナーに参加」ボタンを探す（有料配信の特徴）
+                          premium_buttons = driver.find_elements(By.XPATH, "//button[contains(text(), 'プレミアムリスナーに参加')] | //a[contains(text(), 'プレミアムリスナーに参加')]")
+                          if premium_buttons:
+                              is_paid = True
+                          
+                          # 方法2: 「再生する」ボタンを探す（無料配信の特徴）
+                          play_buttons = driver.find_elements(By.XPATH, "//button[contains(text(), '再生する')] | //a[contains(text(), '再生する')]")
+                          if play_buttons:
+                              is_paid = False
+                          
+                          # 方法3: 「P」アイコンを探す
+                          paid_icons = driver.find_elements(By.CSS_SELECTOR, ".paid-icon, img[src*='paid'], div[class*='paid'], .premium-icon")
+                          if paid_icons:
+                              is_paid = True
+                              
+                          # 方法4: プレミアムに関連するテキストを探す
+                          premium_text = driver.find_elements(By.XPATH, "//*[contains(text(), 'プレミアム') or contains(text(), '有料')]")
+                          if premium_text:
+                              is_paid = True
+                      except:
+                          # エラーが発生した場合は既存の値を維持するか、デフォルトで無料と判定
+                          is_paid = episode.get("is_paid", False)
+                      
+                      # エピソード情報を更新
+                      updated_episode = episode.copy()
+                      updated_episode["is_paid"] = is_paid
+                      updated_episodes.append(updated_episode)
+                      
+                  except Exception as e:
+                      print(f"エピソード {episode.get('id', 'unknown')} の有料/無料ステータス更新中にエラーが発生しました: {e}")
+                      # エラーが発生した場合は元のエピソード情報を維持
+                      updated_episodes.append(episode)
+              
+              print(f"{len(updated_episodes)} 件のエピソードの有料/無料ステータスを更新しました。")
+              return updated_episodes
+
           def merge_episodes(existing_episodes, new_episodes):
               """
               既存のエピソードと新規エピソードをマージする関数
@@ -430,9 +505,9 @@ jobs:
                       merged_episodes.append(episode)
                       existing_ids.add(episode["id"])
               
-              # 既存のエピソードと新規エピソードを結合して返す
-              return existing_episodes + episodes
-
+              # マージされたエピソードリストを返す
+              return merged_episodes
+              
           def save_episodes_to_json(episodes, is_temp=False):
               """
               エピソード情報をJSONファイルに保存する関数
@@ -499,16 +574,19 @@ jobs:
                   # エピソード情報をスクレイピング
                   episodes = scrape_voicy_episodes(driver, existing_episode_ids)
                   
+                  # 既存エピソードの有料/無料ステータスを更新
+                  updated_existing_episodes = update_existing_episodes_paid_status(driver, existing_episodes)
+                  
                   # 新規エピソードがある場合
                   if episodes:
                       print(f"{len(episodes)} 件の新規エピソードを取得しました。")
                       
                       # 一時ファイルとして保存（デバッグ用）
                       if len(episodes) > 0:
-                          save_episodes_to_json(existing_episodes + episodes, is_temp=True)
+                          save_episodes_to_json(merge_episodes(updated_existing_episodes, episodes), is_temp=True)
                       
                       # 既存のエピソードと新規エピソードをマージ
-                      all_episodes = existing_episodes + episodes
+                      all_episodes = merge_episodes(updated_existing_episodes, episodes)
                       
                       # JSONファイルに保存
                       save_episodes_to_json(all_episodes)
@@ -520,9 +598,10 @@ jobs:
                       return True
                   else:
                       print("新規エピソードは見つかりませんでした。")
-                      # 追加エピソードがない場合でも、配信日時でソートして更新
-                      save_episodes_to_json(existing_episodes)
-                      save_urls_only_to_json(existing_episodes)
+                      # 追加エピソードがない場合でも、有料/無料ステータスを更新して保存
+                      save_episodes_to_json(updated_existing_episodes)
+                      save_urls_only_to_json(updated_existing_episodes)
+                      print(f"既存の {len(updated_existing_episodes)} 件のエピソードの有料/無料ステータスを更新しました。")
                       return False
                   
               except Exception as e:
