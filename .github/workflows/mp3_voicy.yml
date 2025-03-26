@@ -734,13 +734,38 @@ jobs:
                   print("エピソードが見つかりませんでした")
                   return
               
+              # GitHubリポジトリからmp3ファイル一覧を取得
+              def get_github_mp3_files():
+                  """GitHubリポジトリからmp3ファイル一覧を取得する関数"""
+                  print(f"::group::GitHubリポジトリからmp3ファイル一覧を取得")
+                  github_api_url = "https://api.github.com/repos/paji/Spotify/contents/docs/podcast?ref=gh-pages"
+                  print(f"GitHub API URL: {github_api_url}")
+                  
+                  try:
+                      response = requests.get(github_api_url)
+                      response.raise_for_status()
+                      files_data = response.json()
+                      
+                      # mp3ファイルのみをフィルタリング
+                      mp3_files = [file['name'] for file in files_data if file['name'].endswith('.mp3')]
+                      print(f"GitHubリポジトリから取得したmp3ファイル数: {len(mp3_files)}")
+                      print(f"::endgroup::")
+                      return mp3_files
+                  except Exception as e:
+                      print(f"GitHubリポジトリからのファイル取得中にエラーが発生しました: {str(e)}")
+                      traceback.print_exc()
+                      print(f"::endgroup::")
+                      return []
+              
+              # GitHubリポジトリからmp3ファイル一覧を取得
+              github_mp3_files = get_github_mp3_files()
+              
               # 既存のmp3ファイルからエピソードIDを抽出
               existing_episode_ids = []
-              mp3_files = [f for f in os.listdir(MP3_DIR) if f.endswith('.mp3')]
-              print(f"検出されたmp3ファイル数: {len(mp3_files)}")
+              print(f"検出されたGitHubのmp3ファイル数: {len(github_mp3_files)}")
               
-              print("既存のmp3ファイルの詳細:")
-              for i, mp3_file in enumerate(mp3_files, 1):
+              print("GitHubリポジトリの既存mp3ファイルの詳細:")
+              for i, mp3_file in enumerate(github_mp3_files, 1):
                   print(f"  {i}. ファイル名: {mp3_file}")
                   # ファイル名の形式: 日付_タイトル_ID.mp3 または _日付_タイトル_ID.mp3
                   # 末尾の数字部分（エピソードID）を抽出
@@ -752,7 +777,7 @@ jobs:
                   else:
                       print(f"     エピソードIDを抽出できませんでした")
               
-              print(f"既存のmp3ファイルから抽出したエピソードID一覧: {existing_episode_ids}")
+              print(f"GitHubリポジトリから抽出したエピソードID一覧: {existing_episode_ids}")
               print(f"抽出されたエピソードID数: {len(existing_episode_ids)}")
               
               # 最新のエピソードを処理（有料配信と既存エピソードをフィルタリング）
@@ -770,11 +795,11 @@ jobs:
                       skipped_premium_count += 1
                       continue
                   
-                  # 既存のエピソードIDをチェック
+                  # GitHubリポジトリの既存のエピソードIDをチェック
                   if episode_id in existing_episode_ids:
-                      print(f"既存のmp3ファイルが存在するためスキップ: {episode['title']} (ID: {episode_id})")
+                      print(f"GitHubリポジトリに既存のmp3ファイルが存在するためスキップ: {episode['title']} (ID: {episode_id})")
                       print(f"  一致したエピソードID: {episode_id}")
-                      print(f"  既存のmp3ファイル: {[f for f in mp3_files if f'_{episode_id}.mp3' in f]}")
+                      print(f"  既存のmp3ファイル: {[f for f in github_mp3_files if f'_{episode_id}.mp3' in f or f.endswith(f'_{episode_id}.mp3')]}")
                       skipped_existing_count += 1
                       continue
                   
