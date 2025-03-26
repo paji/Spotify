@@ -452,8 +452,11 @@ jobs:
                   if is_temp:
                       output_path = os.path.join(OUTPUT_DIR, f"voicy_episodes_temp_{len(episodes)}.json")
                   
+                  # エピソードを配信日時の新しい順に並び替え
+                  sorted_episodes = sorted(episodes, key=lambda x: datetime.fromisoformat(x.get("date_iso", "1970-01-01T00:00:00")) if x.get("date_iso") else datetime.min, reverse=True)
+                  
                   with open(output_path, 'w', encoding='utf-8') as f:
-                      json.dump(episodes, f, ensure_ascii=False, indent=2)
+                      json.dump(sorted_episodes, f, ensure_ascii=False, indent=2)
                   
                   if is_temp:
                       print(f"一時エピソード情報をJSONファイルに保存しました: {output_path}")
