@@ -257,6 +257,15 @@ jobs:
               try:
                   # Chromeオプションの設定
                   chrome_options = Options()
+                  
+                  # ユーザーデータディレクトリに一意の値を設定
+                  import uuid
+                  import tempfile
+                  
+                  # 一時ディレクトリに一意のユーザーデータディレクトリを作成
+                  unique_dir = os.path.join(tempfile.gettempdir(), f"chrome_user_data_{uuid.uuid4().hex}")
+                  chrome_options.add_argument(f"--user-data-dir={unique_dir}")
+                  
                   # ヘッドレスモードを無効化（検出回避のため）
                   # chrome_options.add_argument("--headless")
                   chrome_options.add_argument("--no-sandbox")
@@ -275,7 +284,7 @@ jobs:
                   driver = webdriver.Chrome(service=service, options=chrome_options)
                   
                   # タイムアウト設定
-                  driver.set_page_load_timeout(60)  # 30秒から60秒に延長
+                  driver.set_page_load_timeout(60)  # 60秒のタイムアウト
                   
                   # 暗黙的な待機を設定（すべてのfind_element操作に適用）
                   driver.implicitly_wait(20)
@@ -286,7 +295,36 @@ jobs:
               except Exception as e:
                   print(f"ウェブドライバーのセットアップ中にエラーが発生しました: {e}")
                   traceback.print_exc()
-                  raise
+                  
+                  # リトライを試みる
+                  try:
+                      print("別の設定でリトライします...")
+                      chrome_options = Options()
+                      chrome_options.add_argument("--no-sandbox")
+                      chrome_options.add_argument("--disable-dev-shm-usage")
+                      chrome_options.add_argument("--headless")  # リトライ時はヘッドレスモードを使用
+                      
+                      # ユーザーデータディレクトリを使用しないように設定
+                      chrome_options.add_argument("--user-data-dir=")  # 空の値を設定
+                      
+                      # 一般的なUser-Agentを設定
+                      chrome_options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"')
+                      
+                      service = Service()
+                      driver = webdriver.Chrome(service=service, options=chrome_options)
+                      
+                      # タイムアウト設定
+                      driver.set_page_load_timeout(60)
+                      
+                      # 暗黙的な待機を設定
+                      driver.implicitly_wait(20)
+                      
+                      print("リトライ成功: ウェブドライバーをセットアップしました。")
+                      return driver
+                  except Exception as retry_e:
+                      print(f"リトライも失敗しました: {retry_e}")
+                      traceback.print_exc()
+                      raise
 
           def scrape_voicy_episodes(driver, existing_episode_ids):
               """
