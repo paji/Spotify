@@ -273,7 +273,10 @@ jobs:
                   driver = webdriver.Chrome(service=service, options=chrome_options)
                   
                   # タイムアウト設定
-                  driver.set_page_load_timeout(30)
+                  driver.set_page_load_timeout(60)  # 30秒から60秒に延長
+                  
+                  # 暗黙的な待機を設定（すべてのfind_element操作に適用）
+                  driver.implicitly_wait(20)
                   
                   print("ウェブドライバーを正常にセットアップしました。")
                   return driver
@@ -302,11 +305,22 @@ jobs:
                   driver.get(CHANNEL_URL)
                   
                   # ページの読み込みを待機
-                  WebDriverWait(driver, 10).until(
-                      EC.presence_of_element_located((By.CSS_SELECTOR, ".episode-list, .episodes-container"))
-                  )
-                  
-                  print("ページの読み込みが完了しました。エピソードの取得を開始します。")
+                  try:
+                      # ページが完全に読み込まれるまで待機
+                      WebDriverWait(driver, 30).until(
+                          lambda d: d.execute_script("return document.readyState") == "complete"
+                      )
+                      
+                      # エピソードリスト要素が表示されるまで待機
+                      WebDriverWait(driver, 30).until(
+                          EC.presence_of_element_located((By.CSS_SELECTOR, ".episode-list, .episodes-container"))
+                      )
+                      
+                      print("ページの読み込みが完了しました。エピソードの取得を開始します。")
+                  except TimeoutException:
+                      print("ページの読み込みがタイムアウトしましたが、処理を続行します。")
+                      # 追加の待機時間を設定
+                      time.sleep(5)
                   
                   # スクロール回数のカウンター
                   scroll_count = 0
@@ -441,7 +455,22 @@ jobs:
                   try:
                       # エピソードURLにアクセス
                       driver.get(episode["url"])
-                      time.sleep(2)  # ページ読み込み待機
+                      
+                      # ページの読み込みを待機
+                      try:
+                          # ページが完全に読み込まれるまで待機
+                          WebDriverWait(driver, 30).until(
+                              lambda d: d.execute_script("return document.readyState") == "complete"
+                          )
+                          
+                          # コンテンツが表示されるまで待機
+                          WebDriverWait(driver, 30).until(
+                              EC.presence_of_element_located((By.CSS_SELECTOR, ".episode-content, .episode-detail, .episode-info"))
+                          )
+                      except TimeoutException:
+                          print(f"エピソード {episode.get('id', 'unknown')} のページ読み込みがタイムアウトしましたが、処理を続行します。")
+                          # 追加の待機時間を設定
+                          time.sleep(5)
                       
                       # 有料配信かどうかを判定
                       is_paid = False
