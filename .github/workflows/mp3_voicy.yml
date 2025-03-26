@@ -738,8 +738,9 @@ jobs:
               existing_episode_ids = []
               mp3_files = [f for f in os.listdir(MP3_DIR) if f.endswith('.mp3')]
               for mp3_file in mp3_files:
-                  # 無料放送: 日付_タイトル_ID.mp3
-                  match = re.match(r'.*?_(\d+)\.mp3$', mp3_file)
+                  # ファイル名の形式: 日付_タイトル_ID.mp3 または _日付_タイトル_ID.mp3
+                  # 末尾の数字部分（エピソードID）を抽出
+                  match = re.search(r'_(\d+)\.mp3$', mp3_file)
                   if match:
                       episode_id = match.group(1)
                       existing_episode_ids.append(episode_id)
