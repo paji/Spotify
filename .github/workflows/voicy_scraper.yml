@@ -368,12 +368,15 @@ jobs:
 
                                       # 日付と時間を含むフォーマットで保存
                                       date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
+                                      # ISO形式の日付も追加（ソート用）
+                                      date_iso = episode_date.isoformat()
                                       
                                       # エピソード情報を追加
                                       episodes.append({
                                           "id": episode_id,
                                           "title": title,
                                           "date": date_str,
+                                          "date_iso": date_iso,  # ISO形式の日付を追加
                                           "url": href
                                       })
                                       
@@ -452,8 +455,27 @@ jobs:
                   if is_temp:
                       output_path = os.path.join(OUTPUT_DIR, f"voicy_episodes_temp_{len(episodes)}.json")
                   
+                  # 日付でソートするための関数
+                  def get_episode_date(episode):
+                      # まずdate_isoを探す
+                      if "date_iso" in episode and episode["date_iso"]:
+                          try:
+                              return datetime.fromisoformat(episode["date_iso"])
+                          except:
+                              pass
+                      
+                      # 次にdateフィールドを試す
+                      if "date" in episode and episode["date"]:
+                          try:
+                              return datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S")
+                          except:
+                              pass
+                      
+                      # どちらも失敗した場合は最古の日付を返す
+                      return datetime.min
+                  
                   # エピソードを配信日時の新しい順に並び替え
-                  sorted_episodes = sorted(episodes, key=lambda x: datetime.fromisoformat(x.get("date_iso", "1970-01-01T00:00:00")) if x.get("date_iso") else datetime.min, reverse=True)
+                  sorted_episodes = sorted(episodes, key=get_episode_date, reverse=True)
                   
                   with open(output_path, 'w', encoding='utf-8') as f:
                       json.dump(sorted_episodes, f, ensure_ascii=False, indent=2)
