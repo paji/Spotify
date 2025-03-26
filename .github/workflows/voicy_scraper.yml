@@ -89,8 +89,6 @@ jobs:
               for directory in [OUTPUT_DIR, DEBUG_DIR]:
                   os.makedirs(directory, exist_ok=True)
                   print(f"ディレクトリを確認/作成しました: {directory}")
-EOF
-          cat >> voicy_url_scraper.py << 'EOF'
 
           def random_sleep(min_seconds=0.5, max_seconds=1.5):
               """ランダムな時間スリープする（サーバー負荷軽減のため）"""
@@ -126,9 +124,6 @@ EOF
                   print(f"既存のJSONファイル {OUTPUT_JSON} が見つかりませんでした。新規作成します。")
               
               return existing_episodes, existing_episode_ids
-EOF
-          # 残りのスクリプトを追加
-          cat >> voicy_url_scraper.py << 'EOF'
 
           def setup_webdriver():
               """
@@ -208,9 +203,6 @@ EOF
                       print(f"リトライも失敗しました: {retry_e}")
                       traceback.print_exc()
                       raise
-EOF
-          # 残りのスクリプトを追加
-          cat >> voicy_url_scraper.py << 'EOF'
 
           # メイン関数
           def main():
