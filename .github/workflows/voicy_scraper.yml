@@ -263,7 +263,7 @@ jobs:
 
           if __name__ == "__main__":
               main()
-EOF
+          EOF
 
       - name: Xvfbを使用してスクリプトを実行
         run: |
