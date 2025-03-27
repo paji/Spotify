@@ -346,10 +346,10 @@ jobs:
               with open(OUTPUT_FILE, 'wb') as f:
                   f.write(final_xml.encode('utf-8'))
               
-              # 強制的に更新したことを示すフラグファイルを作成
+              # 常に強制的に更新するためのフラグファイルを作成（タイムスタンプを含めて毎回異なる内容にする）
               flag_file = os.path.join(OUTPUT_DIR, '.feed_updated')
               with open(flag_file, 'w') as f:
-                  f.write(f"Last updated: {datetime.datetime.now().isoformat()}")
+                  f.write(f"Last updated: {datetime.datetime.now().isoformat()} - {time.time()}")
               
               print(f"Podcast RSS feed generated successfully: {OUTPUT_FILE}")
               print(f"RSSフィードには無料配信のみが含まれています（有料配信は除外）")
@@ -396,12 +396,9 @@ jobs:
           
           # 常に変更をコミットして強制的に更新する
           # フラグファイル(.feed_updated)が存在する場合は強制的にコミット
-          if [ -f "docs/.feed_updated" ] || ! git diff --staged --quiet; then
-            git commit -m "自動更新: podcast RSS feed $(date +'%Y-%m-%d %H:%M:%S')"
-            git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/paji/Spotify.git gh-pages
-            echo "gh-pagesブランチに変更をプッシュしました"
-            # フラグファイルを削除
-            rm -f docs/.feed_updated
-          else
-            echo "gh-pagesブランチにコミットする変更はありません"
-          fi
+          # 常に更新するために条件チェックを省略し、無条件でコミットする
+          git commit -m "自動更新: podcast RSS feed $(date +'%Y-%m-%d %H:%M:%S')"
+          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/paji/Spotify.git gh-pages
+          echo "gh-pagesブランチに変更をプッシュしました"
+          # フラグファイルを削除
+          rm -f docs/.feed_updated
