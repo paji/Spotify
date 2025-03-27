@@ -258,9 +258,13 @@ jobs:
                       episode_id = extract_id_from_filename(meta['filename'])
                       if episode_id and episode_id in episode_dates:
                           meta['voicy_date'] = episode_dates[episode_id]
+                      else:
+                          # IDが見つからない場合でも、常に最新のJSONデータでソートするために
+                          # 元のdateより古い日付を設定（ソート時に後ろに配置される）
+                          meta['voicy_date'] = "1970-01-01 00:00:00"
                   
-                  # voicy_dateがある場合はそれでソート、なければ元のdateでソート
-                  mp3_metadata.sort(key=lambda x: x.get('voicy_date', x['date']), reverse=True)
+                  # 必ずvoicy_dateでソート（JSONファイルのdateの最新順）
+                  mp3_metadata.sort(key=lambda x: x['voicy_date'], reverse=True)
               except Exception as e:
                   print(f"voicy_episodes.jsonの取得に失敗しました: {e}")
                   # 失敗した場合は元の方法でソート
