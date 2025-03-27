@@ -241,10 +241,14 @@ jobs:
               import urllib.request
               
               try:
-                  # voicy_episodes.jsonを取得
-                  voicy_episodes_url = "https://raw.githubusercontent.com/paji/Spotify/main/output/voicy_episodes.json"
+                  # 常に最新のvoicy_episodes.jsonを取得（キャッシュを回避するためにタイムスタンプを付加）
+                  voicy_episodes_url = f"https://raw.githubusercontent.com/paji/Spotify/main/output/voicy_episodes.json?t={int(time.time())}"
                   with urllib.request.urlopen(voicy_episodes_url) as response:
                       voicy_episodes = json.loads(response.read().decode())
+                  
+                  # 日付でエピソードをソート（最新順）
+                  sorted_episodes = sorted(voicy_episodes, key=lambda x: x["date"], reverse=True)
+                  print(f"JSONファイルから{len(sorted_episodes)}件のエピソード情報を取得し、日付順にソートしました")
                   
                   # ファイル名からIDを抽出する関数
                   def extract_id_from_filename(filename):
@@ -255,7 +259,7 @@ jobs:
                       return None
                   
                   # エピソードIDとdateのマッピングを作成
-                  episode_dates = {str(episode["id"]): episode["date"] for episode in voicy_episodes}
+                  episode_dates = {str(episode["id"]): episode["date"] for episode in sorted_episodes}
                   print(f"JSONファイルから{len(episode_dates)}件のエピソード情報を取得しました")
                   
                   # mp3_metadataにvoicy_episodes.jsonのdateを追加
