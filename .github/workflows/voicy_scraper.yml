@@ -710,8 +710,8 @@ jobs:
                                       # 日付の元の表現は既に取得済み
                                       # original_date_text変数にparse_date_from_element関数から取得した値が入っている
                                       
-                                      # 日付と時間を含むフォーマットで保存
-                                      date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
+                                      # 日付と時間を含むフォーマットで保存（JST明示）
+                                      date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S (JST)")
                                       # ISO形式の日付も追加（ソート用）
                                       date_iso = episode_date.isoformat()  # JSTタイムゾーン情報を含む
                                       # 日付の信頼性情報を追加
@@ -857,7 +857,7 @@ jobs:
                       # 次にdateフィールドを試す
                       if "date" in episode and episode["date"]:
                           try:
-                              return to_jst(datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S"))
+                              return to_jst(datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S (JST)"))
                           except Exception as e:
                               print(f"date解析エラー: {e} - {episode['date']}")
                               pass
