@@ -710,20 +710,19 @@ jobs:
                                       # 日付の元の表現は既に取得済み
                                       # original_date_text変数にparse_date_from_element関数から取得した値が入っている
                                       
-                                      # 日付と時間を含むフォーマットで保存（シンプルな形式）
-                                      # タイムゾーン情報を確実に付与
+                                      # 日付と時間を含むフォーマットで保存
+                                      # タイムゾーン情報を確認・設定
                                       if episode_date.tzinfo is None:
-                                          episode_date = episode_date.replace(tzinfo=JST)
-                                      else:
-                                          episode_date = episode_date.astimezone(JST)
+                                          # タイムゾーン情報がない場合はUTCとして扱う
+                                          episode_date = episode_date.replace(tzinfo=timezone.utc)
                                       
-                                      # UTCに変換してから「yyyy-mm-dd hh:mm:ss」形式で日付を保存
-                                      utc_date = episode_date.astimezone(timezone.utc)
-                                      date_str = utc_date.strftime("%Y-%m-%d %H:%M:%S")
+                                      # UTCのISO形式として保存（オリジナルデータ保持）
+                                      date_iso = episode_date.isoformat()
                                       
-                                      # ISO形式の日付も追加（ソート用）- UTCタイムゾーンで保存
-                                      # date_isoはUTCで保持
-                                      date_iso = utc_date.isoformat()  # UTCタイムゾーン情報を含む
+                                      # JSTに変換して表示用dateフィールドを作成
+                                      jst_date = episode_date.astimezone(timezone(timedelta(hours=9)))
+                                      date_str = jst_date.strftime("%Y-%m-%d %H:%M:%S")
+                                      
                                       # 日付の信頼性情報を追加
                                       date_source = "hierarchical_extraction"
                                       
@@ -828,7 +827,7 @@ jobs:
                           episode: エピソード情報の辞書
                           
                       Returns:
-                          datetime: エピソードの日時（JSTタイムゾーン情報付き）
+                          datetime: エピソードの日時（タイムゾーン情報付き）
                       """
                       # まずoriginal_date_textを確認し、相対時間表現を優先的に処理
                       if "original_date_text" in episode and episode["original_date_text"]:
@@ -856,24 +855,29 @@ jobs:
                               now = datetime.now(JST)
                               return now - timedelta(days=2)
                       
-                      # 次にdate_isoを探す（タイムゾーン情報付きのISO形式）
+                      # 次にdate_isoを探す（UTCのISO形式）
                       if "date_iso" in episode and episode["date_iso"]:
                           try:
-                              return to_jst(datetime.fromisoformat(episode["date_iso"]))
+                              # ISO形式からdatetimeオブジェクトに変換
+                              return datetime.fromisoformat(episode["date_iso"])
                           except Exception as e:
                               print(f"date_iso解析エラー: {e} - {episode['date_iso']}")
                               pass
                       
-                      # 次にdateフィールドを試す
+                      # 次にdateフィールドを試す（JST）
                       if "date" in episode and episode["date"]:
                           try:
-                              return to_jst(datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S (JST)"))
+                              # JST時間をdatetimeオブジェクトに変換
+                              dt = datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S")
+                              # タイムゾーン情報をJSTとして設定
+                              dt = dt.replace(tzinfo=timezone(timedelta(hours=9)))
+                              return dt
                           except Exception as e:
                               print(f"date解析エラー: {e} - {episode['date']}")
                               pass
                       
                       # どちらも失敗した場合は最古の日付を返す
-                      return datetime.min
+                      return datetime.min.replace(tzinfo=timezone.utc)
                   
                   # エピソードを配信日時の新しい順に並び替え
                   sorted_episodes = sorted(episodes, key=get_episode_date, reverse=True)
