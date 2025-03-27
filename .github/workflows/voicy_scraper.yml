@@ -39,7 +39,24 @@ jobs:
           import json
           import time
           import random
-          from datetime import datetime, timedelta
+          from datetime import datetime, timedelta, timezone
+
+          # JSTタイムゾーンの定義
+          JST = timezone(timedelta(hours=9))
+          
+          def to_jst(dt):
+              """
+              タイムゾーン情報のないdatetimeオブジェクトをJSTに変換する
+              
+              Args:
+                  dt: 変換するdatetimeオブジェクト
+                  
+              Returns:
+                  datetime: JSTタイムゾーン情報を持つdatetimeオブジェクト
+              """
+              if dt.tzinfo is None:
+                  return dt.replace(tzinfo=JST)
+              return dt.astimezone(JST)
           from bs4 import BeautifulSoup
           import traceback
           from tqdm import tqdm
@@ -241,7 +258,7 @@ jobs:
                   timestamp = element.get_attribute("data-timestamp")
                   if timestamp and timestamp.isdigit():
                       # Unixタイムスタンプを日時に変換
-                      date_obj = datetime.fromtimestamp(int(timestamp))
+                      date_obj = datetime.fromtimestamp(int(timestamp), JST)
                       return date_obj, element.text.strip(), 10, "timestamp_attribute"
                   
                   # 2. datetime属性を確認（ISO形式の日時）
@@ -249,7 +266,7 @@ jobs:
                   if datetime_attr:
                       try:
                           # ISO形式の日時を解析
-                          date_obj = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
+                          date_obj = to_jst(datetime.fromisoformat(datetime_attr.replace("Z", "+00:00")))
                           return date_obj, element.text.strip(), 9, "datetime_attribute"
                       except ValueError:
                           pass
@@ -261,7 +278,7 @@ jobs:
                           # 様々な形式を試す
                           for fmt in ["%Y-%m-%d", "%Y/%m/%d", "%Y%m%d"]:
                               try:
-                                  date_obj = datetime.strptime(date_attr, fmt)
+                                  date_obj = to_jst(datetime.strptime(date_attr, fmt))
                                   return date_obj, element.text.strip(), 8, "date_attribute"
                               except ValueError:
                                   continue
@@ -370,11 +387,11 @@ jobs:
                           if (len(date_format.split()) > 0 and "年" not in date_format.split()[0] and "/" not in date_format.split()[0] and "-" not in date_format.split()[0]) and \
                              (len(text.split()) > 0 and "年" not in text.split()[0] and "/" not in text.split()[0] and "-" not in text.split()[0]):
                               # 現在の年を使用
-                              parsed_date = datetime.strptime(text, date_format)
+                              parsed_date = to_jst(datetime.strptime(text, date_format))
                               return parsed_date.replace(year=now.year), score, method
                           
                           # 完全な日付
-                          return datetime.strptime(text, date_format), score, method
+                          return to_jst(datetime.strptime(text, date_format)), score, method
                       except (ValueError, IndexError):
                           continue
               except Exception as e:
@@ -487,7 +504,7 @@ jobs:
                   return None
               
               # 現在の日時を取得（相対日付計算用）
-              now = datetime.now()
+              now = datetime.now(JST)
               
               try:
                   # 1. 相対日付の解析（例: 3日前、1週間前、2時間前）
@@ -543,11 +560,11 @@ jobs:
                           if (len(date_format.split()) > 0 and "年" not in date_format.split()[0] and "/" not in date_format.split()[0] and "-" not in date_format.split()[0]) and \
                              (len(date_str.split()) > 0 and "年" not in date_str.split()[0] and "/" not in date_str.split()[0] and "-" not in date_str.split()[0]):
                               # 現在の年を使用
-                              parsed_date = datetime.strptime(date_str, date_format)
+                              parsed_date = to_jst(datetime.strptime(date_str, date_format))
                               return parsed_date.replace(year=now.year)
                           
                           # 完全な日付
-                          return datetime.strptime(date_str, date_format)
+                          return to_jst(datetime.strptime(date_str, date_format))
                       except (ValueError, IndexError):
                           continue
               
@@ -673,12 +690,12 @@ jobs:
                                       # 日付が解析できなかった場合は現在の日付を使用
                                       if episode_date is None:
                                           print(f"日付を解析できませんでした: {date_str}")
-                                          episode_date = datetime.now()
+                                          episode_date = datetime.now(JST)
 
                                       # 日付と時間を含むフォーマットで保存
                                       date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
                                       # ISO形式の日付も追加（ソート用）
-                                      date_iso = episode_date.isoformat()
+                                      date_iso = episode_date.isoformat()  # JSTタイムゾーン情報を含む
                                       # 日付の信頼性情報を追加
                                       date_source = "hierarchical_extraction"
                                       
@@ -778,14 +795,14 @@ jobs:
                       # まずdate_isoを探す
                       if "date_iso" in episode and episode["date_iso"]:
                           try:
-                              return datetime.fromisoformat(episode["date_iso"])
+                              return to_jst(datetime.fromisoformat(episode["date_iso"]))
                           except:
                               pass
                       
                       # 次にdateフィールドを試す
                       if "date" in episode and episode["date"]:
                           try:
-                              return datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S")
+                              return to_jst(datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S"))
                           except:
                               pass
                       
