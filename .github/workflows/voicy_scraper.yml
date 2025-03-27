@@ -712,7 +712,12 @@ jobs:
                                       
                                       # 日付と時間を含むフォーマットで保存（JST明示）
                                       date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S (JST)")
-                                      # ISO形式の日付も追加（ソート用）
+                                      # ISO形式の日付も追加（ソート用）- 明示的にJSTタイムゾーンを設定
+                                      # タイムゾーン情報がない場合は追加、ある場合はJSTに変換
+                                      if episode_date.tzinfo is None:
+                                          episode_date = episode_date.replace(tzinfo=JST)
+                                      else:
+                                          episode_date = episode_date.astimezone(JST)
                                       date_iso = episode_date.isoformat()  # JSTタイムゾーン情報を含む
                                       # 日付の信頼性情報を追加
                                       date_source = "hierarchical_extraction"
