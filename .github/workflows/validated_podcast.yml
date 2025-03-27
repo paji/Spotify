@@ -154,13 +154,16 @@ jobs:
 
           def format_rfc822_date(dt):
               """
-              日付をRFC 822形式にフォーマットする
-              例: Wed, 02 Oct 2002 13:00:00 GMT
+              日付をRFC 822形式にフォーマットする（JST表記）
+              例: Wed, 02 Oct 2002 13:00:00 +0900
               """
+              # UTCからJSTに変換（+9時間）
+              jst = dt.replace(tzinfo=datetime.timezone.utc).astimezone(datetime.timezone(datetime.timedelta(hours=9)))
+              
               # 日時分秒を正確に反映するため、formatdateではなく手動でフォーマット
-              weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dt.weekday()]
-              month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][dt.month - 1]
-              return f"{weekday}, {dt.day:02d} {month} {dt.year} {dt.hour:02d}:{dt.minute:02d}:{dt.second:02d} -0000"
+              weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][jst.weekday()]
+              month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][jst.month - 1]
+              return f"{weekday}, {jst.day:02d} {month} {jst.year} {jst.hour:02d}:{jst.minute:02d}:{jst.second:02d} +0900"
 
           def generate_rss():
               # ElementTreeを使用してXMLを構築
