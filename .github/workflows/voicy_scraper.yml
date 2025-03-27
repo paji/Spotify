@@ -710,16 +710,15 @@ jobs:
                                       # 日付の元の表現は既に取得済み
                                       # original_date_text変数にparse_date_from_element関数から取得した値が入っている
                                       
-                                      # 日付と時間を含むフォーマットで保存（JSTのISO形式）
-                                      # ログで取得されたJST日時をそのまま使用
+                                      # 日付と時間を含むフォーマットで保存（シンプルな形式）
                                       # タイムゾーン情報を確実に付与
                                       if episode_date.tzinfo is None:
                                           episode_date = episode_date.replace(tzinfo=JST)
                                       else:
                                           episode_date = episode_date.astimezone(JST)
                                       
-                                      # JSTのISO形式で日付を保存
-                                      date_str = episode_date.isoformat()
+                                      # JSTの「yyyy-mm-dd hh:mm:ss」形式で日付を保存
+                                      date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
                                       
                                       # ISO形式の日付も追加（ソート用）- UTCタイムゾーンで保存
                                       # date_isoはUTCで保持
