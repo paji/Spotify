@@ -407,19 +407,24 @@ jobs:
                   parent: 親要素（Seleniumの要素オブジェクト）
                   
               Returns:
-                  tuple: (datetime オブジェクト, 日付文字列)
+                  tuple: (datetime オブジェクト, 日付文字列, 元の日時表現)
               """
               # 結果を格納する変数
               best_date = None
               best_date_str = None
               best_score = 0
               best_method = None
+              original_text = ""
               debug_info = {}
               
               # 1. 時間関連の要素を検索
               time_elements = find_time_elements(parent)
               
-              # 2. 各要素から日付情報を抽出
+              # 元の日時表現を取得
+              for element, method, _ in time_elements:
+                  if element.text.strip():
+                      original_text = element.text.strip()
+                      break
               for element, search_method, base_priority in time_elements:
                   # 2.1 要素の属性から日付情報を抽出
                   date_obj, date_str, attr_score, attr_method = get_date_from_element_attributes(element)
@@ -488,7 +493,7 @@ jobs:
               if debug_info:
                   print(f"日付抽出方法: {best_method}, スコア: {best_score}")
               
-              return best_date, best_date_str
+              return best_date, best_date_str, original_text
 
           def parse_date_string(date_str):
               """
@@ -695,19 +700,15 @@ jobs:
                                       date_str = None
 
                                       # 改良された階層的日時抽出関数を使用
-                                      episode_date, date_str = parse_date_from_element(parent)
+                                      episode_date, date_str, original_date_text = parse_date_from_element(parent)
 
                                       # 日付が解析できなかった場合は現在の日付を使用
                                       if episode_date is None:
                                           print(f"日付を解析できませんでした: {date_str}")
                                           episode_date = datetime.now(JST)
 
-                                      # 日付の元の表現も保存
-                                      original_date_text = ""
-                                      for time_element, method, _ in time_elements:
-                                          if time_element.text.strip():
-                                              original_date_text = time_element.text.strip()
-                                              break
+                                      # 日付の元の表現は既に取得済み
+                                      # original_date_text変数にparse_date_from_element関数から取得した値が入っている
                                       
                                       # 日付と時間を含むフォーマットで保存
                                       date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
