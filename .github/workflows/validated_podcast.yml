@@ -111,8 +111,9 @@ jobs:
                       
                   try:
                       # 日付文字列をパースしてUTCタイムゾーンを設定
+                      # 時間は12:00:00（正午）とセットして毎回同じになるように
                       pub_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
-                      pub_date = pub_date.replace(tzinfo=datetime.timezone.utc)
+                      pub_date = pub_date.replace(hour=12, minute=0, second=0, tzinfo=datetime.timezone.utc)
                       return {
                           'title': title,
                           'date': pub_date,
@@ -258,6 +259,7 @@ jobs:
                   print(f"JSONファイルから{len(episode_dates)}件のエピソード情報を取得しました")
                   
                   # mp3_metadataにvoicy_episodes.jsonのdateを追加
+                  import random
                   for meta in mp3_metadata:
                       episode_id = extract_id_from_filename(meta['filename'])
                       if episode_id and episode_id in episode_dates:
@@ -269,15 +271,36 @@ jobs:
                               meta['voicy_date'] = json_date_str
                               meta['json_date'] = json_date  # datetime形式の日付
                               meta['sort_date'] = json_date  # ソート用日付
+                              print(f"エピソードID {episode_id} の日時: {json_date_str}")
                           except (ValueError, TypeError) as e:
                               print(f"日付変換エラー ({episode_id}): {e}")
+                              # エラー時はファイル名から取得した日付に、時刻をランダムに振る
+                              random_time = datetime.time(
+                                  hour=random.randint(10, 20),
+                                  minute=random.randint(0, 59),
+                                  second=random.randint(0, 59)
+                              )
+                              random_date = meta['date'].replace(
+                                  hour=random_time.hour,
+                                  minute=random_time.minute,
+                                  second=random_time.second
+                              )
                               meta['voicy_date'] = "1970-01-01 00:00:00"
-                              meta['sort_date'] = meta['date']  # 元の日付をソート用に使用
+                              meta['sort_date'] = random_date  # ランダム時刻を設定した日付をソート用に使用
                       else:
-                          # IDが見つからない場合でも、常に最新のJSONデータでソートするために
-                          # 元のdateより古い日付を設定（ソート時に後ろに配置される）
+                          # IDが見つからない場合は元の日付を使用し、時刻をランダムに設定
+                          random_time = datetime.time(
+                              hour=random.randint(10, 20),
+                              minute=random.randint(0, 59),
+                              second=random.randint(0, 59)
+                          )
+                          random_date = meta['date'].replace(
+                              hour=random_time.hour,
+                              minute=random_time.minute,
+                              second=random_time.second
+                          )
                           meta['voicy_date'] = "1970-01-01 00:00:00"
-                          meta['sort_date'] = meta['date']  # 元の日付をソート用に使用
+                          meta['sort_date'] = random_date  # ランダム時刻を設定した日付をソート用に使用
                   
                   # 必ずsort_dateでソート（JSONファイルのdateの最新順）
                   mp3_metadata.sort(key=lambda x: x['sort_date'], reverse=True)
@@ -316,6 +339,9 @@ jobs:
                   if 'json_date' in meta:
                       # 既に変換済みのdatetimeオブジェクトを使用
                       item_pubdate.text = format_rfc822_date(meta['json_date'])
+                  # sort_dateが設定されていれば使用（これにはランダム時刻が含まれている）
+                  elif 'sort_date' in meta:
+                      item_pubdate.text = format_rfc822_date(meta['sort_date'])
                   elif 'voicy_date' in meta and meta['voicy_date'] != "1970-01-01 00:00:00":
                       # JSONのdate文字列をdatetimeオブジェクトに変換してRFC 822形式に変換
                       try:
