@@ -296,18 +296,12 @@ jobs:
                   item_description.text = description_text
                   
                   item_pubdate = ET.SubElement(item, "pubDate")
-                  # JSONファイルのdateを使用してRFC 822形式の日付を設定
+                  # JSONファイルのdateをそのままpubDateに設定
                   if 'voicy_date' in meta and meta['voicy_date'] != "1970-01-01 00:00:00":
-                      # JSONのdate文字列をdatetimeオブジェクトに変換
-                      try:
-                          json_date = datetime.datetime.strptime(meta['voicy_date'], '%Y-%m-%d %H:%M:%S')
-                          json_date = json_date.replace(tzinfo=datetime.timezone.utc)
-                          item_pubdate.text = format_rfc822_date(json_date)
-                      except (ValueError, TypeError):
-                          # 日付の変換に失敗した場合は元の日付を使用
-                          item_pubdate.text = format_rfc822_date(meta['date'])
+                      # JSONのdateをそのまま使用
+                      item_pubdate.text = meta['voicy_date']
                   else:
-                      # voicy_dateがない場合は元の日付を使用
+                      # voicy_dateがない場合は元の日付を使用（RFC 822形式）
                       item_pubdate.text = format_rfc822_date(meta['date'])
                   
                   item_enclosure = ET.SubElement(item, "enclosure", {
