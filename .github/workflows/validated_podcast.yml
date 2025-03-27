@@ -156,7 +156,10 @@ jobs:
               日付をRFC 822形式にフォーマットする
               例: Wed, 02 Oct 2002 13:00:00 GMT
               """
-              return formatdate(time.mktime(dt.timetuple()), localtime=False)
+              # 日時分秒を正確に反映するため、formatdateではなく手動でフォーマット
+              weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dt.weekday()]
+              month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][dt.month - 1]
+              return f"{weekday}, {dt.day:02d} {month} {dt.year} {dt.hour:02d}:{dt.minute:02d}:{dt.second:02d} -0000"
 
           def generate_rss():
               # ElementTreeを使用してXMLを構築
