@@ -231,7 +231,40 @@ jobs:
               
               # 有料配信を除外したファイルリストを使用
               mp3_metadata = [get_mp3_metadata(f) for f in free_mp3_files]
-              mp3_metadata.sort(key=lambda x: x['date'], reverse=True)
+              
+              # GitHubのvoicy_episodes.jsonからエピソード情報を取得してdateでソート
+              import json
+              import urllib.request
+              
+              try:
+                  # voicy_episodes.jsonを取得
+                  voicy_episodes_url = "https://raw.githubusercontent.com/paji/Spotify/main/output/voicy_episodes.json"
+                  with urllib.request.urlopen(voicy_episodes_url) as response:
+                      voicy_episodes = json.loads(response.read().decode())
+                  
+                  # ファイル名からIDを抽出する関数
+                  def extract_id_from_filename(filename):
+                      parts = filename.split('_')
+                      for part in parts:
+                          if part.isdigit():
+                              return part
+                      return None
+                  
+                  # エピソードIDとdateのマッピングを作成
+                  episode_dates = {episode["id"]: episode["date"] for episode in voicy_episodes}
+                  
+                  # mp3_metadataにvoicy_episodes.jsonのdateを追加
+                  for meta in mp3_metadata:
+                      episode_id = extract_id_from_filename(meta['filename'])
+                      if episode_id and episode_id in episode_dates:
+                          meta['voicy_date'] = episode_dates[episode_id]
+                  
+                  # voicy_dateがある場合はそれでソート、なければ元のdateでソート
+                  mp3_metadata.sort(key=lambda x: x.get('voicy_date', x['date']), reverse=True)
+              except Exception as e:
+                  print(f"voicy_episodes.jsonの取得に失敗しました: {e}")
+                  # 失敗した場合は元の方法でソート
+                  mp3_metadata.sort(key=lambda x: x['date'], reverse=True)
               
               # 各エピソードの情報を追加
               for idx, meta in enumerate(mp3_metadata):
