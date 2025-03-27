@@ -717,12 +717,12 @@ jobs:
                                       else:
                                           episode_date = episode_date.astimezone(JST)
                                       
-                                      # JSTの「yyyy-mm-dd hh:mm:ss」形式で日付を保存
-                                      date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
+                                      # UTCに変換してから「yyyy-mm-dd hh:mm:ss」形式で日付を保存
+                                      utc_date = episode_date.astimezone(timezone.utc)
+                                      date_str = utc_date.strftime("%Y-%m-%d %H:%M:%S")
                                       
                                       # ISO形式の日付も追加（ソート用）- UTCタイムゾーンで保存
                                       # date_isoはUTCで保持
-                                      utc_date = episode_date.astimezone(timezone.utc)
                                       date_iso = utc_date.isoformat()  # UTCタイムゾーン情報を含む
                                       # 日付の信頼性情報を追加
                                       date_source = "hierarchical_extraction"
