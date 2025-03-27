@@ -342,15 +342,9 @@ jobs:
                   item_description.text = description_text
                   
                   item_pubdate = ET.SubElement(item, "pubDate")
-                  # JSONファイルのdateをRFC 822形式に変換してpubDateに設定
-                  if 'json_date' in meta:
-                      # 既に変換済みのdatetimeオブジェクトを使用
-                      item_pubdate.text = format_rfc822_date(meta['json_date'])
-                  # sort_dateが設定されていれば使用（これにはランダム時刻が含まれている）
-                  elif 'sort_date' in meta:
-                      item_pubdate.text = format_rfc822_date(meta['sort_date'])
-                  elif 'voicy_date' in meta and meta['voicy_date'] != "1970-01-01 00:00:00":
-                      # JSONのdate文字列をdatetimeオブジェクトに変換してRFC 822形式に変換
+                  # voicy_episodes.jsonのdateを直接pubDateに使用
+                  if 'voicy_date' in meta and meta['voicy_date'] != "1970-01-01 00:00:00":
+                      # JSONのdate文字列をそのままRFC 822形式に変換
                       try:
                           json_date = datetime.datetime.strptime(meta['voicy_date'], '%Y-%m-%d %H:%M:%S')
                           json_date = json_date.replace(tzinfo=datetime.timezone.utc)
@@ -358,8 +352,14 @@ jobs:
                       except (ValueError, TypeError):
                           # 日付の変換に失敗した場合は元の日付を使用
                           item_pubdate.text = format_rfc822_date(meta['date'])
+                  # json_dateが設定されていれば使用
+                  elif 'json_date' in meta:
+                      item_pubdate.text = format_rfc822_date(meta['json_date'])
+                  # sort_dateが設定されていれば使用
+                  elif 'sort_date' in meta:
+                      item_pubdate.text = format_rfc822_date(meta['sort_date'])
                   else:
-                      # voicy_dateがない場合は元の日付を使用
+                      # 上記のいずれもない場合は元の日付を使用
                       item_pubdate.text = format_rfc822_date(meta['date'])
                   
                   item_enclosure = ET.SubElement(item, "enclosure", {
