@@ -327,8 +327,14 @@ jobs:
               final_xml = xml_declaration + xml_str
               
               # 文字化け防止のためUTF-8で明示的に保存
+              # 常にfeed.rssを更新するために強制的に書き込み
               with open(OUTPUT_FILE, 'wb') as f:
                   f.write(final_xml.encode('utf-8'))
+              
+              # 強制的に更新したことを示すフラグファイルを作成
+              flag_file = os.path.join(OUTPUT_DIR, '.feed_updated')
+              with open(flag_file, 'w') as f:
+                  f.write(f"Last updated: {datetime.datetime.now().isoformat()}")
               
               print(f"Podcast RSS feed generated successfully: {OUTPUT_FILE}")
               print(f"RSSフィードには無料配信のみが含まれています（有料配信は除外）")
@@ -371,13 +377,16 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          git add docs/feed.rss docs/rss.xml docs/.nojekyll
+          git add docs/feed.rss docs/rss.xml docs/.nojekyll docs/.feed_updated
           
-          # 変更があるかチェック
-          if git diff --staged --quiet; then
-            echo "gh-pagesブランチにコミットする変更はありません"
-          else
+          # 常に変更をコミットして強制的に更新する
+          # フラグファイル(.feed_updated)が存在する場合は強制的にコミット
+          if [ -f "docs/.feed_updated" ] || ! git diff --staged --quiet; then
             git commit -m "自動更新: podcast RSS feed $(date +'%Y-%m-%d %H:%M:%S')"
             git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/paji/Spotify.git gh-pages
             echo "gh-pagesブランチに変更をプッシュしました"
+            # フラグファイルを削除
+            rm -f docs/.feed_updated
+          else
+            echo "gh-pagesブランチにコミットする変更はありません"
           fi
