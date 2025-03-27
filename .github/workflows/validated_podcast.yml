@@ -246,25 +246,38 @@ jobs:
                   def extract_id_from_filename(filename):
                       parts = filename.split('_')
                       for part in parts:
-                          if part.isdigit():
+                          if part.isdigit() and len(part) > 4:  # 数字のみでかつ4桁以上の場合はIDと見なす
                               return part
                       return None
                   
                   # エピソードIDとdateのマッピングを作成
-                  episode_dates = {episode["id"]: episode["date"] for episode in voicy_episodes}
+                  episode_dates = {str(episode["id"]): episode["date"] for episode in voicy_episodes}
+                  print(f"JSONファイルから{len(episode_dates)}件のエピソード情報を取得しました")
                   
                   # mp3_metadataにvoicy_episodes.jsonのdateを追加
                   for meta in mp3_metadata:
                       episode_id = extract_id_from_filename(meta['filename'])
                       if episode_id and episode_id in episode_dates:
-                          meta['voicy_date'] = episode_dates[episode_id]
+                          # JSONからの日付文字列をdatetimeオブジェクトに変換
+                          try:
+                              json_date_str = episode_dates[episode_id]
+                              json_date = datetime.datetime.strptime(json_date_str, '%Y-%m-%d %H:%M:%S')
+                              json_date = json_date.replace(tzinfo=datetime.timezone.utc)
+                              meta['voicy_date'] = json_date_str
+                              meta['json_date'] = json_date  # datetime形式の日付
+                              meta['sort_date'] = json_date  # ソート用日付
+                          except (ValueError, TypeError) as e:
+                              print(f"日付変換エラー ({episode_id}): {e}")
+                              meta['voicy_date'] = "1970-01-01 00:00:00"
+                              meta['sort_date'] = meta['date']  # 元の日付をソート用に使用
                       else:
                           # IDが見つからない場合でも、常に最新のJSONデータでソートするために
                           # 元のdateより古い日付を設定（ソート時に後ろに配置される）
                           meta['voicy_date'] = "1970-01-01 00:00:00"
+                          meta['sort_date'] = meta['date']  # 元の日付をソート用に使用
                   
-                  # 必ずvoicy_dateでソート（JSONファイルのdateの最新順）
-                  mp3_metadata.sort(key=lambda x: x['voicy_date'], reverse=True)
+                  # 必ずsort_dateでソート（JSONファイルのdateの最新順）
+                  mp3_metadata.sort(key=lambda x: x['sort_date'], reverse=True)
               except Exception as e:
                   print(f"voicy_episodes.jsonの取得に失敗しました: {e}")
                   # 失敗した場合は元の方法でソート
@@ -297,7 +310,10 @@ jobs:
                   
                   item_pubdate = ET.SubElement(item, "pubDate")
                   # JSONファイルのdateをRFC 822形式に変換してpubDateに設定
-                  if 'voicy_date' in meta and meta['voicy_date'] != "1970-01-01 00:00:00":
+                  if 'json_date' in meta:
+                      # 既に変換済みのdatetimeオブジェクトを使用
+                      item_pubdate.text = format_rfc822_date(meta['json_date'])
+                  elif 'voicy_date' in meta and meta['voicy_date'] != "1970-01-01 00:00:00":
                       # JSONのdate文字列をdatetimeオブジェクトに変換してRFC 822形式に変換
                       try:
                           json_date = datetime.datetime.strptime(meta['voicy_date'], '%Y-%m-%d %H:%M:%S')
