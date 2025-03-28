@@ -6,7 +6,7 @@ permissions:
 
 on:
   schedule:
-    - cron: '36 * * * *'  # 毎時間36分に実行
+    - cron: '38 * * * *'  # 毎時間36分に実行
   workflow_dispatch:  # 手動実行用
   push:
     paths:
