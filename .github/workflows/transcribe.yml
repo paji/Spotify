@@ -2,8 +2,8 @@ name: Transcribe Audio Files
 
 on:
   schedule:
-    - cron: '38 6 * * *'  # 6時38分に実行
-    - cron: '8 18 * * *'  # 18時08分に実行
+    - cron: '38 9 * * *'  # 6時38分に実行
+    - cron: '8 21 * * *'  # 18時08分に実行
   workflow_dispatch:  # 手動実行用
 
 jobs:
