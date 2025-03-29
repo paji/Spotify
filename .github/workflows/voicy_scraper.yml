@@ -2,9 +2,9 @@ name: Voicy URL Scraper
 
 on:
   schedule:
-    - cron: '31 * * * *'  # 毎時31分に実行
+    - cron: '31 6 * * *'  # 6時38分に実行
+    - cron: '1 18 * * *'  # 18時08分に実行
   workflow_dispatch:  # 手動実行用
-
 # 明示的に権限を設定
 permissions:
   contents: write
