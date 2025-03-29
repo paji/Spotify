@@ -2,7 +2,8 @@ name: Voicy MP3 Downloader
 
 on:
   schedule:
-    - cron: '33 * * * *'  # 毎時31分に実行
+    - cron: '33 6 * * *'  # 6時33分に実行
+    - cron: '1 18 * * *'  # 18時01分に実行
   workflow_dispatch:  # 手動実行用
 
 # 明示的に権限を設定
