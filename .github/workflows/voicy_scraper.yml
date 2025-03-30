@@ -2,9 +2,9 @@ name: Voicy URL Scraper
 
 on:
   schedule:
-    - cron: '31 * * * *'  # 毎時31分に実行
+    - cron: '31 9 * * *'  # 6時38分に実行
+    - cron: '1 21 * * *'  # 18時01分に実行
   workflow_dispatch:  # 手動実行用
-
 # 明示的に権限を設定
 permissions:
   contents: write
@@ -39,7 +39,24 @@ jobs:
           import json
           import time
           import random
-          from datetime import datetime, timedelta
+          from datetime import datetime, timedelta, timezone
+
+          # JSTタイムゾーンの定義
+          JST = timezone(timedelta(hours=9))
+          
+          def to_jst(dt):
+              """
+              タイムゾーン情報のないdatetimeオブジェクトをJSTに変換する
+              
+              Args:
+                  dt: 変換するdatetimeオブジェクト
+                  
+              Returns:
+                  datetime: JSTタイムゾーン情報を持つdatetimeオブジェクト
+              """
+              if dt.tzinfo is None:
+                  return dt.replace(tzinfo=JST)
+              return dt.astimezone(JST)
           from bs4 import BeautifulSoup
           import traceback
           from tqdm import tqdm
@@ -241,7 +258,7 @@ jobs:
                   timestamp = element.get_attribute("data-timestamp")
                   if timestamp and timestamp.isdigit():
                       # Unixタイムスタンプを日時に変換
-                      date_obj = datetime.fromtimestamp(int(timestamp))
+                      date_obj = datetime.fromtimestamp(int(timestamp), JST)
                       return date_obj, element.text.strip(), 10, "timestamp_attribute"
                   
                   # 2. datetime属性を確認（ISO形式の日時）
@@ -249,7 +266,7 @@ jobs:
                   if datetime_attr:
                       try:
                           # ISO形式の日時を解析
-                          date_obj = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
+                          date_obj = to_jst(datetime.fromisoformat(datetime_attr.replace("Z", "+00:00")))
                           return date_obj, element.text.strip(), 9, "datetime_attribute"
                       except ValueError:
                           pass
@@ -261,7 +278,7 @@ jobs:
                           # 様々な形式を試す
                           for fmt in ["%Y-%m-%d", "%Y/%m/%d", "%Y%m%d"]:
                               try:
-                                  date_obj = datetime.strptime(date_attr, fmt)
+                                  date_obj = to_jst(datetime.strptime(date_attr, fmt))
                                   return date_obj, element.text.strip(), 8, "date_attribute"
                               except ValueError:
                                   continue
@@ -370,11 +387,11 @@ jobs:
                           if (len(date_format.split()) > 0 and "年" not in date_format.split()[0] and "/" not in date_format.split()[0] and "-" not in date_format.split()[0]) and \
                              (len(text.split()) > 0 and "年" not in text.split()[0] and "/" not in text.split()[0] and "-" not in text.split()[0]):
                               # 現在の年を使用
-                              parsed_date = datetime.strptime(text, date_format)
+                              parsed_date = to_jst(datetime.strptime(text, date_format))
                               return parsed_date.replace(year=now.year), score, method
                           
                           # 完全な日付
-                          return datetime.strptime(text, date_format), score, method
+                          return to_jst(datetime.strptime(text, date_format)), score, method
                       except (ValueError, IndexError):
                           continue
               except Exception as e:
@@ -390,19 +407,24 @@ jobs:
                   parent: 親要素（Seleniumの要素オブジェクト）
                   
               Returns:
-                  tuple: (datetime オブジェクト, 日付文字列)
+                  tuple: (datetime オブジェクト, 日付文字列, 元の日時表現)
               """
               # 結果を格納する変数
               best_date = None
               best_date_str = None
               best_score = 0
               best_method = None
+              original_text = ""
               debug_info = {}
               
               # 1. 時間関連の要素を検索
               time_elements = find_time_elements(parent)
               
-              # 2. 各要素から日付情報を抽出
+              # 元の日時表現を取得
+              for element, method, _ in time_elements:
+                  if element.text.strip():
+                      original_text = element.text.strip()
+                      break
               for element, search_method, base_priority in time_elements:
                   # 2.1 要素の属性から日付情報を抽出
                   date_obj, date_str, attr_score, attr_method = get_date_from_element_attributes(element)
@@ -471,7 +493,7 @@ jobs:
               if debug_info:
                   print(f"日付抽出方法: {best_method}, スコア: {best_score}")
               
-              return best_date, best_date_str
+              return best_date, best_date_str, original_text
 
           def parse_date_string(date_str):
               """
@@ -487,18 +509,28 @@ jobs:
                   return None
               
               # 現在の日時を取得（相対日付計算用）
-              now = datetime.now()
+              now = datetime.now(JST)
               
               try:
-                  # 1. 相対日付の解析（例: 3日前、1週間前、2時間前）
-                  relative_match = re.search(r'(\d+)\s*(時間|日|週間|ヶ月|カ月|ヵ月|か月|年)\s*前', date_str)
+                  # 1. 分前の解析（例: 5分前）- 最優先
+                  minute_match = re.search(r'(\d+)\s*分\s*前', date_str)
+                  if minute_match:
+                      value = int(minute_match.group(1))
+                      return now - timedelta(minutes=value)
+                  
+                  # 2. 時間前の解析（例: 3時間前）- 次に優先
+                  hour_match = re.search(r'(\d+)\s*時間\s*前', date_str)
+                  if hour_match:
+                      value = int(hour_match.group(1))
+                      return now - timedelta(hours=value)
+                  
+                  # 3. その他の相対日付の解析（例: 3日前、1週間前）
+                  relative_match = re.search(r'(\d+)\s*(日|週間|ヶ月|カ月|ヵ月|か月|年)\s*前', date_str)
                   if relative_match:
                       value = int(relative_match.group(1))
                       unit = relative_match.group(2)
                       
-                      if unit == '時間':
-                          return now - timedelta(hours=value)
-                      elif unit == '日':
+                      if unit == '日':
                           return now - timedelta(days=value)
                       elif unit == '週間':
                           return now - timedelta(weeks=value)
@@ -509,7 +541,7 @@ jobs:
                           # 年も近似値を使用
                           return now - timedelta(days=value * 365)
                   
-                  # 2. 「今日」「昨日」「一昨日」などの特殊な相対日付
+                  # 2. 「今日」「昨日」「一昨日」などの特殊な相対日付 - 高優先度
                   if '今日' in date_str:
                       return now
                   elif '昨日' in date_str:
@@ -543,11 +575,11 @@ jobs:
                           if (len(date_format.split()) > 0 and "年" not in date_format.split()[0] and "/" not in date_format.split()[0] and "-" not in date_format.split()[0]) and \
                              (len(date_str.split()) > 0 and "年" not in date_str.split()[0] and "/" not in date_str.split()[0] and "-" not in date_str.split()[0]):
                               # 現在の年を使用
-                              parsed_date = datetime.strptime(date_str, date_format)
+                              parsed_date = to_jst(datetime.strptime(date_str, date_format))
                               return parsed_date.replace(year=now.year)
                           
                           # 完全な日付
-                          return datetime.strptime(date_str, date_format)
+                          return to_jst(datetime.strptime(date_str, date_format))
                       except (ValueError, IndexError):
                           continue
               
@@ -668,17 +700,29 @@ jobs:
                                       date_str = None
 
                                       # 改良された階層的日時抽出関数を使用
-                                      episode_date, date_str = parse_date_from_element(parent)
+                                      episode_date, date_str, original_date_text = parse_date_from_element(parent)
 
                                       # 日付が解析できなかった場合は現在の日付を使用
                                       if episode_date is None:
                                           print(f"日付を解析できませんでした: {date_str}")
-                                          episode_date = datetime.now()
+                                          episode_date = datetime.now(JST)
 
+                                      # 日付の元の表現は既に取得済み
+                                      # original_date_text変数にparse_date_from_element関数から取得した値が入っている
+                                      
                                       # 日付と時間を含むフォーマットで保存
-                                      date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
-                                      # ISO形式の日付も追加（ソート用）
+                                      # タイムゾーン情報を確認・設定
+                                      if episode_date.tzinfo is None:
+                                          # タイムゾーン情報がない場合はUTCとして扱う
+                                          episode_date = episode_date.replace(tzinfo=timezone.utc)
+                                      
+                                      # UTCのISO形式として保存（オリジナルデータ保持）
                                       date_iso = episode_date.isoformat()
+                                      
+                                      # JSTに変換して表示用dateフィールドを作成
+                                      jst_date = episode_date.astimezone(timezone(timedelta(hours=9)))
+                                      date_str = jst_date.strftime("%Y-%m-%d %H:%M:%S")
+                                      
                                       # 日付の信頼性情報を追加
                                       date_source = "hierarchical_extraction"
                                       
@@ -694,6 +738,7 @@ jobs:
                                           "date": date_str,
                                           "date_iso": date_iso,  # ISO形式の日付を追加
                                           "date_source": date_source,  # 日付の取得方法を記録
+                                          "original_date_text": original_date_text,  # 元の日時表現を保存
                                           "is_premium": is_premium,  # 有料配信ステータスを追加
                                           "url": href
                                       })
@@ -775,26 +820,74 @@ jobs:
                   
                   # 日付でソートするための関数
                   def get_episode_date(episode):
-                      # まずdate_isoを探す
+                      """
+                      エピソードの日時を取得する関数
+                      
+                      Args:
+                          episode: エピソード情報の辞書
+                          
+                      Returns:
+                          datetime: エピソードの日時（タイムゾーン情報付き）
+                      """
+                      # まずoriginal_date_textを確認し、相対時間表現を優先的に処理
+                      if "original_date_text" in episode and episode["original_date_text"]:
+                          original_text = episode["original_date_text"]
+                          
+                          # 分前の解析（例: 5分前）- 最優先
+                          minute_match = re.search(r'(\d+)\s*分\s*前', original_text)
+                          if minute_match:
+                              value = int(minute_match.group(1))
+                              now = datetime.now(JST)
+                              return now - timedelta(minutes=value)
+                          
+                          # 時間前の解析（例: 3時間前）- 次に優先
+                          hour_match = re.search(r'(\d+)\s*時間\s*前', original_text)
+                          if hour_match:
+                              value = int(hour_match.group(1))
+                              now = datetime.now(JST)
+                              return now - timedelta(hours=value)
+                          
+                          # 昨日、一昨日の解析 - 高優先度
+                          if '昨日' in original_text:
+                              now = datetime.now(JST)
+                              return now - timedelta(days=1)
+                          elif '一昨日' in original_text or '2日前' in original_text:
+                              now = datetime.now(JST)
+                              return now - timedelta(days=2)
+                      
+                      # 次にdate_isoを探す（UTCのISO形式）
                       if "date_iso" in episode and episode["date_iso"]:
                           try:
+                              # ISO形式からdatetimeオブジェクトに変換
                               return datetime.fromisoformat(episode["date_iso"])
-                          except:
+                          except Exception as e:
+                              print(f"date_iso解析エラー: {e} - {episode['date_iso']}")
                               pass
                       
-                      # 次にdateフィールドを試す
+                      # 次にdateフィールドを試す（JST）
                       if "date" in episode and episode["date"]:
                           try:
-                              return datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S")
-                          except:
+                              # JST時間をdatetimeオブジェクトに変換
+                              dt = datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S")
+                              # タイムゾーン情報をJSTとして設定
+                              dt = dt.replace(tzinfo=timezone(timedelta(hours=9)))
+                              return dt
+                          except Exception as e:
+                              print(f"date解析エラー: {e} - {episode['date']}")
                               pass
                       
                       # どちらも失敗した場合は最古の日付を返す
-                      return datetime.min
+                      return datetime.min.replace(tzinfo=timezone.utc)
                   
                   # エピソードを配信日時の新しい順に並び替え
                   sorted_episodes = sorted(episodes, key=get_episode_date, reverse=True)
                   
+                  # デバッグ出力：ソート結果の上位エピソードとその日時情報を表示
+                  print("\n=== ソート結果の上位エピソード ===")
+                  for i, episode in enumerate(sorted_episodes[:5]):
+                      episode_date = get_episode_date(episode)
+                      print(f"{i+1}. {episode['title']} - {episode['original_date_text']} -> {episode_date.isoformat()}")
+                  print("===============================\n")
                   with open(output_path, 'w', encoding='utf-8') as f:
                       json.dump(sorted_episodes, f, ensure_ascii=False, indent=2)
                   
