@@ -73,7 +73,6 @@ jobs:
           
           # JSONファイルのURL
           VOICY_EPISODES_URL = "https://raw.githubusercontent.com/paji/Spotify/main/output/voicy_episodes.json"
-          # ローカルにvoicy_episodes.jsonが存在する場合のパス
           LOCAL_JSON_PATH = "output/voicy_episodes.json"
 
           # ポッドキャスト情報
@@ -96,6 +95,17 @@ jobs:
               timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
               print(f"[{timestamp}] {message}")
               sys.stdout.flush()  # 即時出力を保証
+
+          def debug_json_data(json_data):
+              """JSONデータの内容をデバッグ出力する"""
+              if not json_data:
+                  log("JSONデータがありません")
+                  return
+                  
+              # サンプルとして最初の5件のエピソード情報を出力
+              log(f"JSONデータサンプル（最初の5件）:")
+              for i, episode in enumerate(json_data[:5]):
+                  log(f"  {i+1}. ID: {episode.get('id')}, タイトル: {episode.get('title')}, 日付: {episode.get('date')}")
 
           def get_mp3_files():
               """MP3ファイルのリストを取得する（無料配信のみ）"""
@@ -160,6 +170,7 @@ jobs:
                       with open(LOCAL_JSON_PATH, 'r', encoding='utf-8') as f:
                           data = json.load(f)
                       log(f"ローカルJSONデータ読み込み成功: {len(data)}件のエピソード情報")
+                      debug_json_data(data)
                       return data
                   except Exception as e:
                       log(f"ローカルJSONデータ読み込みエラー: {e}")
@@ -174,6 +185,7 @@ jobs:
                       data = json.loads(response.read().decode())
                   
                   log(f"リモートJSONデータ取得成功: {len(data)}件のエピソード情報")
+                  debug_json_data(data)
                   return data
               except Exception as e:
                   log(f"リモートJSONデータ取得エラー: {e}")
@@ -204,6 +216,10 @@ jobs:
               # 各ファイルの基本メタデータを取得
               episodes = [get_basic_metadata(f) for f in mp3_files]
               
+              # IDが抽出できたMP3ファイルのIDを出力
+              mp3_ids = [ep['id'] for ep in episodes if ep['id']]
+              log(f"MP3から抽出されたエピソードID: {', '.join(mp3_ids[:10]) + ('...' if len(mp3_ids) > 10 else '')}")
+              
               # Voicy JSONデータを取得
               voicy_episodes = get_voicy_episodes()
               
@@ -211,12 +227,13 @@ jobs:
               voicy_episodes_by_id = {str(episode["id"]): episode for episode in voicy_episodes}
               log(f"JSONデータをIDでインデックス化: {len(voicy_episodes_by_id)}件")
               
-              # デバッグ: 全てのJSONエピソードIDとMP3から抽出したIDの比較
-              mp3_ids = set(ep['id'] for ep in episodes if ep['id'])
-              json_ids = set(voicy_episodes_by_id.keys())
-              log(f"MP3から抽出したID: {len(mp3_ids)}件")
-              log(f"JSONに含まれるID: {len(json_ids)}件")
-              log(f"共通ID: {len(mp3_ids.intersection(json_ids))}件")
+              # デバッグ: MP3から抽出したIDとJSONデータの対応関係を確認
+              for ep_id in mp3_ids[:5]:  # 最初の5件のIDを確認
+                  if ep_id in voicy_episodes_by_id:
+                      json_ep = voicy_episodes_by_id[ep_id]
+                      log(f"ID {ep_id} のJSON情報: タイトル={json_ep.get('title')}, 日付={json_ep.get('date')}")
+                  else:
+                      log(f"ID {ep_id} に対応するJSON情報が見つかりません")
               
               # JSONデータでエピソード情報を補完
               enriched_episodes = []
@@ -242,12 +259,20 @@ jobs:
                       log(f"ID '{episode_id}' に対応するJSON情報が見つかりません: {episode['clean_title']}")
                       enriched_episodes.append(episode)
               
-              # 日付でソート（JSONデータの日付を優先）
+              # 日付でソート（JSONデータの日付を優先、日付がない場合は最も古い日付とする）
               def get_sort_date(ep):
-                  return ep.get('voicy_date', '1970-01-01 00:00:00')
+                  if 'voicy_date' in ep and ep['voicy_date']:
+                      return ep['voicy_date']
+                  return '1970-01-01 00:00:00'  # デフォルト日付（最も古い）
               
+              # JSONの日付で降順ソート（最新が先頭）
               enriched_episodes.sort(key=get_sort_date, reverse=True)
               log(f"エピソードを日付順にソートしました: {len(enriched_episodes)}件")
+              
+              # ソート結果を確認
+              log("ソート結果（最初の5件）:")
+              for i, ep in enumerate(enriched_episodes[:5]):
+                  log(f"  {i+1}. ID: {ep.get('id')}, タイトル: {ep.get('clean_title')}, 日付: {ep.get('voicy_date', 'なし')}")
               
               # RSS XMLを生成
               rss = ET.Element("rss", {
@@ -292,6 +317,9 @@ jobs:
               
               ET.SubElement(channel, "itunes:image", {"href": PODCAST_IMAGE_URL})
               
+              # RSSアイテムのリスト（デバッグ用）
+              items_debug = []
+              
               # エピソードアイテムを追加
               for episode in enriched_episodes:
                   # URLエンコードされたファイル名
@@ -312,25 +340,31 @@ jobs:
                   add_simple_element(item, "title", title)
                   add_simple_element(item, "description", description)
                   
-                  # エピソードIDからJSONの日付を取得してpubDateに設定
+                  # エピソードのpubDateに、対応するJSONデータの日付をそのまま使用
+                  json_date = None
                   if episode['id'] and episode['id'] in voicy_episodes_by_id:
-                      json_date = voicy_episodes_by_id[episode['id']].get('date', '')
-                      if json_date:
-                          # JSONの日付をRFC 822形式に変換（JSTとして）
-                          pub_date = format_rfc822_date(json_date)
-                          log(f"エピソードID {episode['id']} の日付: {json_date} → {pub_date}")
-                      else:
-                          # JSONに日付がない場合は現在時刻を使用
-                          now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                          pub_date = format_rfc822_date(now_str)
-                          log(f"エピソードID {episode['id']} の日付がJSONにないため現在時刻を使用: {now_str}")
+                      json_episode = voicy_episodes_by_id[episode['id']]
+                      json_date = json_episode.get('date', '')
+                  
+                  if json_date:
+                      # JSONの日付をRFC 822形式に変換（JSTとして）
+                      pub_date = format_rfc822_date(json_date)
+                      log(f"エピソード '{title}' (ID: {episode['id']}) の日付: {json_date} → {pub_date}")
                   else:
-                      # IDがない場合は現在時刻を使用
+                      # JSONに日付がない場合は現在時刻を使用
                       now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                       pub_date = format_rfc822_date(now_str)
-                      log(f"エピソード '{title}' にIDがないため現在時刻を使用: {now_str}")
+                      log(f"エピソード '{title}' の日付が見つからないため現在時刻を使用: {now_str}")
                   
                   add_simple_element(item, "pubDate", pub_date)
+                  
+                  # デバッグ用にアイテム情報を保存
+                  items_debug.append({
+                      'title': title,
+                      'id': episode.get('id', 'なし'),
+                      'json_date': json_date or 'なし',
+                      'pub_date': pub_date
+                  })
                   
                   # エンクロージャー（mp3ファイル情報）
                   ET.SubElement(item, "enclosure", {
@@ -350,6 +384,9 @@ jobs:
               
               # XMLを保存
               save_xml(rss)
+              
+              # 詳細なデバッグ情報をファイルに出力
+              save_debug_info(items_debug)
               
               # 補助ファイルを作成
               create_support_files()
@@ -379,22 +416,23 @@ jobs:
                   f.write(final_xml.encode('utf-8'))
               
               log(f"XMLを保存しました: {OUTPUT_FILE}")
-              
-              # デバッグ用に日付情報をファイルに出力
+
+          def save_debug_info(items_debug):
+              """詳細なデバッグ情報をファイルに保存する"""
               debug_file = os.path.join(OUTPUT_DIR, 'rss_debug.log')
               with open(debug_file, 'w', encoding='utf-8') as f:
                   f.write(f"RSS生成日時: {datetime.datetime.now().isoformat()}\n")
-                  f.write(f"RSSファイル: {OUTPUT_FILE}\n")
-                  f.write("各エピソードのpubDate情報とタイトル:\n")
+                  f.write(f"RSSファイル: {OUTPUT_FILE}\n\n")
                   
-                  # XMLから全エピソードの日付情報を抽出
-                  tree = ET.ElementTree(root)
-                  items = tree.findall('.//item')
-                  for item in items:
-                      title = item.find('title')
-                      pubdate = item.find('pubDate')
-                      if title is not None and pubdate is not None:
-                          f.write(f"- {title.text}: {pubdate.text}\n")
+                  f.write("各エピソードの詳細情報:\n")
+                  f.write("-" * 80 + "\n")
+                  
+                  for i, item in enumerate(items_debug):
+                      f.write(f"{i+1}. タイトル: {item['title']}\n")
+                      f.write(f"   ID: {item['id']}\n")
+                      f.write(f"   JSON日付: {item['json_date']}\n")
+                      f.write(f"   pubDate: {item['pub_date']}\n")
+                      f.write("-" * 80 + "\n")
               
               log(f"デバッグログを保存しました: {debug_file}")
 
