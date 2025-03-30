@@ -112,13 +112,33 @@ jobs:
                       return part
               return None
 
+          def clean_title(title):
+              """タイトルから日付、ID、余分なスペースなどを削除する"""
+              # IDを削除 (例: _6548787, 6548787)
+              title = re.sub(r'_?\d{5,}', '', title)
+              
+              # 日付形式を削除 (例: 2025-03-24, 20250324)
+              title = re.sub(r'\d{4}-\d{2}-\d{2}', '', title)
+              title = re.sub(r'\d{8}', '', title)
+              
+              # アンダースコアをスペースに変換
+              title = title.replace('_', ' ')
+              
+              # 複数の連続スペースを1つに統合
+              title = re.sub(r'\s+', ' ', title)
+              
+              # 先頭と末尾のスペースを削除
+              title = title.strip()
+              
+              return title
+
           def get_basic_metadata(filepath):
               """ファイルから基本的なメタデータを抽出する"""
               filename = os.path.basename(filepath)
               file_size = os.path.getsize(filepath)
               
-              # タイトルはファイル名から取得（拡張子なし、アンダースコアをスペースに）
-              title = os.path.splitext(filename)[0].replace('_', ' ')
+              # タイトルはファイル名から取得
+              raw_title = os.path.splitext(filename)[0]
               
               # ID抽出を試行
               episode_id = extract_id_from_filename(filename)
@@ -126,7 +146,7 @@ jobs:
               return {
                   'filename': filename,
                   'file_size': file_size,
-                  'title': title,
+                  'raw_title': raw_title,
                   'id': episode_id,
                   'file_path': filepath
               }
@@ -191,6 +211,13 @@ jobs:
               voicy_episodes_by_id = {str(episode["id"]): episode for episode in voicy_episodes}
               log(f"JSONデータをIDでインデックス化: {len(voicy_episodes_by_id)}件")
               
+              # デバッグ: 全てのJSONエピソードIDとMP3から抽出したIDの比較
+              mp3_ids = set(ep['id'] for ep in episodes if ep['id'])
+              json_ids = set(voicy_episodes_by_id.keys())
+              log(f"MP3から抽出したID: {len(mp3_ids)}件")
+              log(f"JSONに含まれるID: {len(json_ids)}件")
+              log(f"共通ID: {len(mp3_ids.intersection(json_ids))}件")
+              
               # JSONデータでエピソード情報を補完
               enriched_episodes = []
               for episode in episodes:
@@ -198,17 +225,21 @@ jobs:
                   if episode_id and episode_id in voicy_episodes_by_id:
                       voicy_data = voicy_episodes_by_id[episode_id]
                       
-                      # JSON情報でエピソードを補完（タイトルは元のJSON値をそのまま使用）
+                      # JSON情報でエピソードを補完
                       episode['voicy_title'] = voicy_data.get('title', '')
                       episode['voicy_date'] = voicy_data.get('date', '')
                       episode['voicy_url'] = voicy_data.get('url', '')
                       episode['voicy_is_premium'] = voicy_data.get('is_premium', False)
                       
+                      # クリーンなタイトルを作成（IDと日付を削除）
+                      episode['clean_title'] = clean_title(episode['voicy_title'])
+                      
                       log(f"エピソードID {episode_id} を補完: {episode['voicy_title']} ({episode['voicy_date']})")
                       enriched_episodes.append(episode)
                   else:
-                      log(f"ID '{episode_id}' に対応するJSON情報が見つかりません: {episode['title']}")
-                      # JSONに情報がない場合はmp3から抽出した基本情報を使用
+                      # JSONに情報がない場合はファイル名からタイトルを作成
+                      episode['clean_title'] = clean_title(episode['raw_title'])
+                      log(f"ID '{episode_id}' に対応するJSON情報が見つかりません: {episode['clean_title']}")
                       enriched_episodes.append(episode)
               
               # 日付でソート（JSONデータの日付を優先）
@@ -267,23 +298,8 @@ jobs:
                   encoded_filename = urllib.parse.quote(episode['filename'])
                   file_url = f"{MP3_BASE_URL}/{encoded_filename}"
                   
-                  # タイトル（JSONデータを優先、ただしエピソード名だけを使用）
-                  # 日付やIDなどは削除し、純粋なエピソードタイトルのみを使用
-                  if 'voicy_title' in episode and episode['voicy_title']:
-                      title = episode['voicy_title']
-                  else:
-                      # JSONにタイトルがない場合はmp3ファイル名から抽出
-                      title = episode['title']
-                      
-                      # ファイル名からIDや日付を取り除く処理
-                      # IDを取り除く
-                      title = re.sub(r'_\d{5,}', '', title)
-                      # 日付形式（YYYY-MM-DD）を取り除く
-                      title = re.sub(r'\d{4}-\d{2}-\d{2}', '', title)
-                      # 余分なアンダースコアとスペースを整理
-                      title = re.sub(r'_+', ' ', title)
-                      title = re.sub(r'\s+', ' ', title)
-                      title = title.strip()
+                  # クリーンなタイトル（IDと日付を削除済み）
+                  title = episode['clean_title']
                   
                   # 説明文
                   description = f"Episode: {title}"
@@ -296,15 +312,23 @@ jobs:
                   add_simple_element(item, "title", title)
                   add_simple_element(item, "description", description)
                   
-                  # 配信日時（JSONからの日付をそのままJSTとして使用）
-                  if 'voicy_date' in episode and episode['voicy_date']:
-                      pub_date = format_rfc822_date(episode['voicy_date'])
-                      log(f"エピソード '{title}' の日付: {episode['voicy_date']} → {pub_date}")
+                  # エピソードIDからJSONの日付を取得してpubDateに設定
+                  if episode['id'] and episode['id'] in voicy_episodes_by_id:
+                      json_date = voicy_episodes_by_id[episode['id']].get('date', '')
+                      if json_date:
+                          # JSONの日付をRFC 822形式に変換（JSTとして）
+                          pub_date = format_rfc822_date(json_date)
+                          log(f"エピソードID {episode['id']} の日付: {json_date} → {pub_date}")
+                      else:
+                          # JSONに日付がない場合は現在時刻を使用
+                          now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                          pub_date = format_rfc822_date(now_str)
+                          log(f"エピソードID {episode['id']} の日付がJSONにないため現在時刻を使用: {now_str}")
                   else:
-                      # JSONに日付がない場合は現在時刻を使用
+                      # IDがない場合は現在時刻を使用
                       now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                       pub_date = format_rfc822_date(now_str)
-                      log(f"エピソード '{title}' の日付が見つからないため現在時刻を使用: {now_str} → {pub_date}")
+                      log(f"エピソード '{title}' にIDがないため現在時刻を使用: {now_str}")
                   
                   add_simple_element(item, "pubDate", pub_date)
                   
