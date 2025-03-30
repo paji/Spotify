@@ -1,10 +1,10 @@
-name: Voicy URL Scraper with RSS Debug
+name: Voicy URL Scraper
 
 on:
   schedule:
-    - cron: '31 9 * * *'  # 18:31 JST に実行
-    - cron: '1 21 * * *'  # 6:01 JST に実行
+    - cron: '31 * * * *'  # 毎時31分に実行
   workflow_dispatch:  # 手動実行用
+
 # 明示的に権限を設定
 permissions:
   contents: write
@@ -39,24 +39,7 @@ jobs:
           import json
           import time
           import random
-          from datetime import datetime, timedelta, timezone
-
-          # JSTタイムゾーンの定義
-          JST = timezone(timedelta(hours=9))
-          
-          def to_jst(dt):
-              """
-              タイムゾーン情報のないdatetimeオブジェクトをJSTに変換する
-              
-              Args:
-                  dt: 変換するdatetimeオブジェクト
-                  
-              Returns:
-                  datetime: JSTタイムゾーン情報を持つdatetimeオブジェクト
-              """
-              if dt.tzinfo is None:
-                  return dt.replace(tzinfo=JST)
-              return dt.astimezone(JST)
+          from datetime import datetime, timedelta
           from bs4 import BeautifulSoup
           import traceback
           from tqdm import tqdm
@@ -258,7 +241,7 @@ jobs:
                   timestamp = element.get_attribute("data-timestamp")
                   if timestamp and timestamp.isdigit():
                       # Unixタイムスタンプを日時に変換
-                      date_obj = datetime.fromtimestamp(int(timestamp), JST)
+                      date_obj = datetime.fromtimestamp(int(timestamp))
                       return date_obj, element.text.strip(), 10, "timestamp_attribute"
                   
                   # 2. datetime属性を確認（ISO形式の日時）
@@ -266,7 +249,7 @@ jobs:
                   if datetime_attr:
                       try:
                           # ISO形式の日時を解析
-                          date_obj = to_jst(datetime.fromisoformat(datetime_attr.replace("Z", "+00:00")))
+                          date_obj = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
                           return date_obj, element.text.strip(), 9, "datetime_attribute"
                       except ValueError:
                           pass
@@ -278,7 +261,7 @@ jobs:
                           # 様々な形式を試す
                           for fmt in ["%Y-%m-%d", "%Y/%m/%d", "%Y%m%d"]:
                               try:
-                                  date_obj = to_jst(datetime.strptime(date_attr, fmt))
+                                  date_obj = datetime.strptime(date_attr, fmt)
                                   return date_obj, element.text.strip(), 8, "date_attribute"
                               except ValueError:
                                   continue
@@ -387,11 +370,11 @@ jobs:
                           if (len(date_format.split()) > 0 and "年" not in date_format.split()[0] and "/" not in date_format.split()[0] and "-" not in date_format.split()[0]) and \
                              (len(text.split()) > 0 and "年" not in text.split()[0] and "/" not in text.split()[0] and "-" not in text.split()[0]):
                               # 現在の年を使用
-                              parsed_date = to_jst(datetime.strptime(text, date_format))
+                              parsed_date = datetime.strptime(text, date_format)
                               return parsed_date.replace(year=now.year), score, method
                           
                           # 完全な日付
-                          return to_jst(datetime.strptime(text, date_format)), score, method
+                          return datetime.strptime(text, date_format), score, method
                       except (ValueError, IndexError):
                           continue
               except Exception as e:
@@ -407,24 +390,19 @@ jobs:
                   parent: 親要素（Seleniumの要素オブジェクト）
                   
               Returns:
-                  tuple: (datetime オブジェクト, 日付文字列, 元の日時表現)
+                  tuple: (datetime オブジェクト, 日付文字列)
               """
               # 結果を格納する変数
               best_date = None
               best_date_str = None
               best_score = 0
               best_method = None
-              original_text = ""
               debug_info = {}
               
               # 1. 時間関連の要素を検索
               time_elements = find_time_elements(parent)
               
-              # 元の日時表現を取得
-              for element, method, _ in time_elements:
-                  if element.text.strip():
-                      original_text = element.text.strip()
-                      break
+              # 2. 各要素から日付情報を抽出
               for element, search_method, base_priority in time_elements:
                   # 2.1 要素の属性から日付情報を抽出
                   date_obj, date_str, attr_score, attr_method = get_date_from_element_attributes(element)
@@ -493,7 +471,7 @@ jobs:
               if debug_info:
                   print(f"日付抽出方法: {best_method}, スコア: {best_score}")
               
-              return best_date, best_date_str, original_text
+              return best_date, best_date_str
 
           def parse_date_string(date_str):
               """
@@ -509,28 +487,18 @@ jobs:
                   return None
               
               # 現在の日時を取得（相対日付計算用）
-              now = datetime.now(JST)
+              now = datetime.now()
               
               try:
-                  # 1. 分前の解析（例: 5分前）- 最優先
-                  minute_match = re.search(r'(\d+)\s*分\s*前', date_str)
-                  if minute_match:
-                      value = int(minute_match.group(1))
-                      return now - timedelta(minutes=value)
-                  
-                  # 2. 時間前の解析（例: 3時間前）- 次に優先
-                  hour_match = re.search(r'(\d+)\s*時間\s*前', date_str)
-                  if hour_match:
-                      value = int(hour_match.group(1))
-                      return now - timedelta(hours=value)
-                  
-                  # 3. その他の相対日付の解析（例: 3日前、1週間前）
-                  relative_match = re.search(r'(\d+)\s*(日|週間|ヶ月|カ月|ヵ月|か月|年)\s*前', date_str)
+                  # 1. 相対日付の解析（例: 3日前、1週間前、2時間前）
+                  relative_match = re.search(r'(\d+)\s*(時間|日|週間|ヶ月|カ月|ヵ月|か月|年)\s*前', date_str)
                   if relative_match:
                       value = int(relative_match.group(1))
                       unit = relative_match.group(2)
                       
-                      if unit == '日':
+                      if unit == '時間':
+                          return now - timedelta(hours=value)
+                      elif unit == '日':
                           return now - timedelta(days=value)
                       elif unit == '週間':
                           return now - timedelta(weeks=value)
@@ -541,7 +509,7 @@ jobs:
                           # 年も近似値を使用
                           return now - timedelta(days=value * 365)
                   
-                  # 2. 「今日」「昨日」「一昨日」などの特殊な相対日付 - 高優先度
+                  # 2. 「今日」「昨日」「一昨日」などの特殊な相対日付
                   if '今日' in date_str:
                       return now
                   elif '昨日' in date_str:
@@ -575,11 +543,11 @@ jobs:
                           if (len(date_format.split()) > 0 and "年" not in date_format.split()[0] and "/" not in date_format.split()[0] and "-" not in date_format.split()[0]) and \
                              (len(date_str.split()) > 0 and "年" not in date_str.split()[0] and "/" not in date_str.split()[0] and "-" not in date_str.split()[0]):
                               # 現在の年を使用
-                              parsed_date = to_jst(datetime.strptime(date_str, date_format))
+                              parsed_date = datetime.strptime(date_str, date_format)
                               return parsed_date.replace(year=now.year)
                           
                           # 完全な日付
-                          return to_jst(datetime.strptime(date_str, date_format))
+                          return datetime.strptime(date_str, date_format)
                       except (ValueError, IndexError):
                           continue
               
@@ -612,4 +580,290 @@ jobs:
                   chrome_options = Options()
                   chrome_options.add_argument("--headless")
                   chrome_options.add_argument("--no-sandbox")
-                  chrome_options.ad
+                  chrome_options.add_argument("--disable-dev-shm-usage")
+                  chrome_options.add_argument("--disable-gpu")
+                  chrome_options.add_argument("--window-size=1920,1080")
+                  chrome_options.add_argument("--disable-notifications")
+                  chrome_options.add_argument("--disable-extensions")
+                  chrome_options.add_argument("--disable-infobars")
+                  
+                  # WebDriverの初期化
+                  service = Service(ChromeDriverManager().install())
+                  driver = webdriver.Chrome(service=service, options=chrome_options)
+                  
+                  # タイムアウト設定
+                  driver.set_page_load_timeout(60)
+                  
+                  # 最初のページを読み込み
+                  driver.get(CHANNEL_URL)
+                  
+                  # ページが完全に読み込まれるまで待機
+                  WebDriverWait(driver, 30).until(
+                      EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/channel/'][href*='/']"))
+                  )
+                  
+                  # デバッグ用にHTMLを保存
+                  with open(os.path.join(DEBUG_DIR, "initial_page.html"), "w", encoding="utf-8") as f:
+                      f.write(driver.page_source)
+                  
+                  # プログレスバーの初期化（目標エピソード数: 2200）
+                  progress = tqdm(total=TARGET_EPISODES, desc="エピソード取得")
+                  
+                  # オートページローディングのためのスクロール処理
+                  scroll_count = 0
+                  no_new_episodes_count = 0
+                  max_no_new_episodes = 5  # 新しいエピソードが見つからない最大回数
+                  
+                  while scroll_count < MAX_SCROLL_ATTEMPTS and len(episodes) < TARGET_EPISODES:
+                      # 現在のエピソード数を記録
+                      current_episode_count = len(episodes)
+                      
+                      # ページの最下部までスクロール
+                      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                      random_sleep(SCROLL_PAUSE_TIME, SCROLL_PAUSE_TIME + 1)
+                      
+                      # 新しいコンテンツが読み込まれるのを待機
+                      try:
+                          WebDriverWait(driver, 5).until(
+                              lambda d: d.execute_script("return document.body.scrollHeight") > driver.execute_script("return window.innerHeight + window.pageYOffset")
+                          )
+                      except:
+                          pass
+                      
+                      # エピソードリンクを取得
+                      episode_links = driver.find_elements(By.CSS_SELECTOR, "a[href*='/channel/'][href*='/']")
+                      
+                      # エピソード情報を抽出
+                      for link in episode_links:
+                          try:
+                              href = link.get_attribute("href")
+                              # エピソードURLのパターンをチェック
+                              match = re.search(r'/channel/\d+/(\d+)$', href)
+                              if match:
+                                  episode_id = match.group(1)
+                                  if episode_id not in episode_ids_seen:
+                                      episode_ids_seen.add(episode_id)
+                                      
+                                      # 親要素を取得してタイトルと日付を探す
+                                      parent = link
+                                      title_element = None
+                                      
+                                      for _ in range(5):  # 最大5階層まで親を辿る
+                                          try:
+                                              parent = parent.find_element(By.XPATH, "..")
+                                              try:
+                                                  title_element = parent.find_element(By.CSS_SELECTOR, "h2, h3, .title, .episode-title")
+                                                  if title_element:
+                                                      break
+                                              except:
+                                                  pass
+                                          except:
+                                              break
+                                      
+                                      # タイトルを取得（見つからない場合はデフォルト値を使用）
+                                      title = title_element.text if title_element else f"エピソード {episode_id}"
+                                      
+                                      # 日付要素を探す
+                                      episode_date = None
+                                      date_str = None
+
+                                      # 改良された階層的日時抽出関数を使用
+                                      episode_date, date_str = parse_date_from_element(parent)
+
+                                      # 日付が解析できなかった場合は現在の日付を使用
+                                      if episode_date is None:
+                                          print(f"日付を解析できませんでした: {date_str}")
+                                          episode_date = datetime.now()
+
+                                      # 日付と時間を含むフォーマットで保存
+                                      date_str = episode_date.strftime("%Y-%m-%d %H:%M:%S")
+                                      # ISO形式の日付も追加（ソート用）
+                                      date_iso = episode_date.isoformat()
+                                      # 日付の信頼性情報を追加
+                                      date_source = "hierarchical_extraction"
+                                      
+                                      # 有料配信かどうかを判定
+                                      is_premium = check_premium_content(parent)
+                                      if is_premium:
+                                          print(f"有料配信を検出しました: {title}")
+                                      
+                                      # エピソード情報を追加
+                                      episodes.append({
+                                          "id": episode_id,
+                                          "title": title,
+                                          "date": date_str,
+                                          "date_iso": date_iso,  # ISO形式の日付を追加
+                                          "date_source": date_source,  # 日付の取得方法を記録
+                                          "is_premium": is_premium,  # 有料配信ステータスを追加
+                                          "url": href
+                                      })
+                                      
+                                      # プログレスバーを更新
+                                      progress.update(1)
+                                      progress.set_description(f"エピソード取得中 ({len(episodes)}/{TARGET_EPISODES})")
+                                      
+                                      # 定期的に中間結果を保存（100件ごと）
+                                      if len(episodes) % 100 == 0:
+                                          save_episodes_to_json(existing_episodes + episodes, is_temp=True)
+                                          print(f"現在 {len(episodes)} 件の新規エピソードを取得しました。")
+                                  else:
+                                      # 既に見たエピソードの場合はスキップ
+                                      print(f"エピソードID {episode_id} は既に存在するためスキップします。")
+                          except StaleElementReferenceException:
+                              print("要素が古くなりました。スキップします。")
+                              continue
+                          except Exception as e:
+                              print(f"エピソード情報の抽出中にエラーが発生しました: {e}")
+                              continue
+                      
+                      # スクロールカウントを増やす
+                      scroll_count += 1
+                      
+                      # 新しいエピソードが追加されたかチェック
+                      if len(episodes) > current_episode_count:
+                          no_new_episodes_count = 0  # リセット
+                      else:
+                          no_new_episodes_count += 1
+                          print(f"新しいエピソードが見つかりませんでした。({no_new_episodes_count}/{max_no_new_episodes})")
+                          
+                          if no_new_episodes_count >= max_no_new_episodes:
+                              print(f"連続 {max_no_new_episodes} 回新しいエピソードが見つかりませんでした。スクレイピングを終了します。")
+                              break
+                      
+                      # 100スクロールごとにステータス表示
+                      if scroll_count % 100 == 0:
+                          print(f"スクロール回数: {scroll_count}, 取得エピソード数: {len(episodes)}")
+                          
+                          # ページの高さを取得して表示（デバッグ用）
+                          page_height = driver.execute_script("return document.body.scrollHeight")
+                          window_height = driver.execute_script("return window.innerHeight")
+                          scroll_position = driver.execute_script("return window.pageYOffset")
+                          print(f"ページ高さ: {page_height}, ウィンドウ高さ: {window_height}, スクロール位置: {scroll_position}")
+                          
+                          # 現在のHTMLを保存（デバッグ用）
+                          with open(os.path.join(DEBUG_DIR, f"scroll_{scroll_count}.html"), "w", encoding="utf-8") as f:
+                              f.write(driver.page_source)
+                  
+                  # プログレスバーを閉じる
+                  progress.close()
+                  
+                  print(f"合計 {len(episodes)} 件の新規エピソードを取得しました。")
+                  print(f"スクロール回数: {scroll_count}")
+                  
+              except Exception as e:
+                  print(f"エピソード情報の取得中にエラーが発生しました: {e}")
+                  traceback.print_exc()
+              finally:
+                  if 'driver' in locals() and driver:
+                      driver.quit()
+              
+              # 既存のエピソードと新規エピソードを結合して返す
+              return existing_episodes + episodes
+
+          def save_episodes_to_json(episodes, is_temp=False):
+              """
+              エピソード情報をJSONファイルに保存する関数
+              
+              Args:
+                  episodes: エピソード情報のリスト
+                  is_temp: 一時ファイルとして保存するかどうか
+              """
+              try:
+                  output_path = OUTPUT_JSON
+                  if is_temp:
+                      output_path = os.path.join(OUTPUT_DIR, f"voicy_episodes_temp_{len(episodes)}.json")
+                  
+                  # 日付でソートするための関数
+                  def get_episode_date(episode):
+                      # まずdate_isoを探す
+                      if "date_iso" in episode and episode["date_iso"]:
+                          try:
+                              return datetime.fromisoformat(episode["date_iso"])
+                          except:
+                              pass
+                      
+                      # 次にdateフィールドを試す
+                      if "date" in episode and episode["date"]:
+                          try:
+                              return datetime.strptime(episode["date"], "%Y-%m-%d %H:%M:%S")
+                          except:
+                              pass
+                      
+                      # どちらも失敗した場合は最古の日付を返す
+                      return datetime.min
+                  
+                  # エピソードを配信日時の新しい順に並び替え
+                  sorted_episodes = sorted(episodes, key=get_episode_date, reverse=True)
+                  
+                  with open(output_path, 'w', encoding='utf-8') as f:
+                      json.dump(sorted_episodes, f, ensure_ascii=False, indent=2)
+                  
+                  if is_temp:
+                      print(f"一時エピソード情報をJSONファイルに保存しました: {output_path}")
+                  else:
+                      print(f"エピソード情報をJSONファイルに保存しました: {output_path}")
+              except Exception as e:
+                  print(f"JSONファイルの保存中にエラーが発生しました: {e}")
+
+          def save_urls_only_to_json(episodes):
+              """
+              URLのみのリストをJSONファイルに保存する関数
+              
+              Args:
+                  episodes: エピソード情報のリスト
+              """
+              try:
+                  urls_only = [episode["url"] for episode in episodes]
+                  with open(OUTPUT_URLS_ONLY, 'w', encoding='utf-8') as f:
+                      json.dump(urls_only, f, ensure_ascii=False, indent=2)
+                  print(f"URLのみのリストをJSONファイルに保存しました: {OUTPUT_URLS_ONLY}")
+              except Exception as e:
+                  print(f"URLのみのリストの保存中にエラーが発生しました: {e}")
+
+          def main():
+              """メイン関数"""
+              print("Voicy URL スクレイパーを開始します...")
+              start_time = time.time()
+              
+              # ディレクトリ設定
+              setup_directories()
+              
+              # エピソード情報を取得
+              episodes = get_episodes_info_selenium()
+              
+              # エピソード情報をJSONファイルに保存
+              save_episodes_to_json(episodes)
+              
+              # URLのみのリストも作成
+              save_urls_only_to_json(episodes)
+              
+              end_time = time.time()
+              elapsed_time = end_time - start_time
+              hours, remainder = divmod(elapsed_time, 3600)
+              minutes, seconds = divmod(remainder, 60)
+              
+              print(f"処理が完了しました。実行時間: {int(hours)}時間 {int(minutes)}分 {int(seconds)}秒")
+              print(f"取得したエピソード数: {len(episodes)}")
+
+          if __name__ == "__main__":
+              main()
+          EOF
+      
+      - name: スクリプトを実行
+        run: python voicy_url_scraper.py
+      
+      - name: 結果をアップロード
+        uses: actions/upload-artifact@v4
+        with:
+          name: voicy-episodes-json
+          path: |
+            output/voicy_episodes.json
+            output/voicy_urls_only.json
+      
+      - name: 結果をコミット
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add output/voicy_episodes.json output/voicy_urls_only.json
+          git commit -m "Update Voicy episodes JSON" || echo "No changes to commit"
+          git push
