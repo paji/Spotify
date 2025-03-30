@@ -6,45 +6,48 @@ permissions:
 
 on:
   schedule:
-    - cron: '38 9 * * *'  # 6時38分に実行
-    - cron: '8 21 * * *'  # 18時08分に実行
+    # UTC基準で指定 (コメントでJST表記)
+    - cron: '38 21 * * *'  # 毎日 06:38 JST
+    - cron: '8 9 * * *'   # 毎日 18:08 JST
   workflow_dispatch:  # 手動実行用
   push:
     paths:
-      - 'docs/podcast/**'  # podcast フォルダに変更があった場合に実行
-      - 'output/voicy_episodes.json'  # JSONファイルが更新された場合も実行
+      - 'docs/podcast/**.mp3'  # podcast フォルダ内のMP3ファイル変更時
+      - 'output/voicy_episodes.json' # JSONファイル更新時
 
 jobs:
   generate-rss:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout main repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          # メインブランチのコードとJSONファイルを取得
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
-          
+
       - name: Checkout gh-pages branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          # gh-pagesブランチのMP3ファイルと出力先を取得
           ref: gh-pages
           path: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}
-        
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install feedgen requests
-          
+          # 標準ライブラリのみ使用するため依存関係は不要
+
       - name: Create scripts directory
         run: mkdir -p .github/scripts
-        
+
       - name: Create Python script
         run: |
           cat > .github/scripts/generate_podcast_rss.py << 'EOF'
@@ -56,24 +59,30 @@ jobs:
           import datetime
           import time
           import re
-          import json
           import xml.etree.ElementTree as ET
           import urllib.parse
-          import urllib.request
-          import sys
           from xml.sax.saxutils import escape
+          # --- datetimeからtimezone, timedeltaをインポート ---
+          from datetime import timezone, timedelta
+          import json
+          import urllib.request
+
+          # --- 定数 ---
+          # JSTとUTCのタイムゾーンオブジェクト
+          JST_TZ = timezone(timedelta(hours=9))
+          UTC_TZ = timezone.utc
 
           # 基本設定
-          PODCAST_DIR = 'gh-pages/docs/podcast'  # gh-pagesブランチのパス
-          OUTPUT_DIR = 'gh-pages/docs'  # 出力先
-          OUTPUT_FILE = os.path.join(OUTPUT_DIR, 'feed.rss')  # RSSファイル
+          # gh-pagesブランチ内のパス (チェックアウト先が 'gh-pages')
+          PODCAST_DIR = 'gh-pages/docs/podcast'
+          OUTPUT_DIR = 'gh-pages/docs'
+          OUTPUT_FILE = os.path.join(OUTPUT_DIR, 'feed.rss')
+          # メインブランチのJSONファイルパス (リポジトリルートから)
+          JSON_FILE_PATH = 'output/voicy_episodes.json'
+          # URL設定 (GitHub Pages)
           BASE_URL = 'https://paji.github.io/Spotify'
-          MP3_BASE_URL = 'https://raw.githubusercontent.com/paji/Spotify/gh-pages/docs/podcast'
-          SELF_URL = 'https://paji.github.io/Spotify/feed.rss'
-          
-          # JSONファイルのURL
-          VOICY_EPISODES_URL = "https://raw.githubusercontent.com/paji/Spotify/main/output/voicy_episodes.json"
-          LOCAL_JSON_PATH = "output/voicy_episodes.json"
+          MP3_BASE_URL = f'{BASE_URL}/docs/podcast' # GitHub PagesのURLを使用
+          SELF_URL = f'{BASE_URL}/docs/feed.rss' # GitHub PagesのURLを使用
 
           # ポッドキャスト情報
           PODCAST_TITLE = '裏・パジちゃんねる'
@@ -81,411 +90,332 @@ jobs:
           PODCAST_AUTHOR = 'パジ'
           PODCAST_LINK = 'https://voicy.jp/channel/2834/all?premium=1'
           PODCAST_LANGUAGE = 'ja'
-          PODCAST_COPYRIGHT = '(C) 2025 パジ'
+          PODCAST_COPYRIGHT = f'(C) {datetime.datetime.now().year} パジ' # 年を動的に
           PODCAST_WEBMASTER = 'パジ <hajimeataka@gmail.com>'
           PODCAST_TTL = '60'
           PODCAST_EXPLICIT = 'false'
           PODCAST_OWNER_NAME = 'パジ'
           PODCAST_OWNER_EMAIL = 'hajimeataka@gmail.com'
           PODCAST_CATEGORY = 'Technology'
-          PODCAST_IMAGE_URL = 'https://paji.github.io/Spotify/profile1600.jpeg'
+          # GitHub Pages上の画像URL
+          PODCAST_IMAGE_URL = f'{BASE_URL}/profile1600.jpeg'
 
-          def log(message):
-              """ログメッセージを出力する"""
-              timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-              print(f"[{timestamp}] {message}")
-              sys.stdout.flush()  # 即時出力を保証
-
-          def debug_json_data(json_data):
-              """JSONデータの内容をデバッグ出力する"""
-              if not json_data:
-                  log("JSONデータがありません")
-                  return
-                  
-              # サンプルとして最初の5件のエピソード情報を出力
-              log(f"JSONデータサンプル（最初の5件）:")
-              for i, episode in enumerate(json_data[:5]):
-                  log(f"  {i+1}. ID: {episode.get('id')}, タイトル: {episode.get('title')}, 日付: {episode.get('date')}")
-
-          def get_mp3_files():
-              """MP3ファイルのリストを取得する（無料配信のみ）"""
-              all_files = glob.glob(os.path.join(PODCAST_DIR, '*.mp3'))
-              free_files = [f for f in all_files if not os.path.basename(f).startswith('_')]
-              log(f"MP3ファイル: 全{len(all_files)}件、無料配信{len(free_files)}件")
-              return free_files
-
-          def extract_id_from_filename(filename):
-              """ファイル名からVoicy IDを抽出する"""
-              parts = filename.split('_')
-              for part in parts:
-                  if part.isdigit() and len(part) > 4:  # 数字のみでかつ4桁以上の場合はIDと見なす
-                      return part
-              return None
-
-          def clean_title(title):
-              """タイトルから日付、ID、余分なスペースなどを削除する"""
-              # IDを削除 (例: _6548787, 6548787)
-              title = re.sub(r'_?\d{5,}', '', title)
-              
-              # 日付形式を削除 (例: 2025-03-24, 20250324)
-              title = re.sub(r'\d{4}-\d{2}-\d{2}', '', title)
-              title = re.sub(r'\d{8}', '', title)
-              
-              # アンダースコアをスペースに変換
-              title = title.replace('_', ' ')
-              
-              # 複数の連続スペースを1つに統合
-              title = re.sub(r'\s+', ' ', title)
-              
-              # 先頭と末尾のスペースを削除
-              title = title.strip()
-              
-              return title
-
-          def get_basic_metadata(filepath):
-              """ファイルから基本的なメタデータを抽出する"""
+          def get_mp3_metadata(filepath):
+              """
+              ファイル名からメタデータを抽出し、日付にタイムゾーンを設定する
+              """
               filename = os.path.basename(filepath)
-              file_size = os.path.getsize(filepath)
-              
-              # タイトルはファイル名から取得
-              raw_title = os.path.splitext(filename)[0]
-              
-              # ID抽出を試行
-              episode_id = extract_id_from_filename(filename)
-              
+              # ファイル名から日付とタイトルを抽出 (例: 2024-03-19_タイトル_6449675.mp3)
+              match = re.match(r'(_)?(\d{4}-\d{2}-\d{2})_(.+)\.mp3', filename)
+
+              pub_date_dt = None # タイムゾーン付きdatetimeオブジェクト
+              title = os.path.splitext(filename)[0] # デフォルトタイトル
+              is_premium = filename.startswith('_')
+
+              if match:
+                  is_premium = bool(match.group(1))
+                  date_str = match.group(2)
+                  title_raw = match.group(3)
+
+                  # タイトルから末尾のIDを除去 (5桁以上の数字)
+                  title_parts = title_raw.rsplit('_', 1)
+                  if len(title_parts) > 1 and title_parts[1].isdigit() and len(title_parts[1]) >= 5:
+                      title = title_parts[0].replace('_', ' ')
+                  else:
+                      title = title_raw.replace('_', ' ')
+
+                  if is_premium:
+                      title = "[Premium] " + title
+
+                  try:
+                      # ファイル名の日付文字列をパースし、UTCの正午とする
+                      naive_dt = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+                      pub_date_dt = naive_dt.replace(hour=12, minute=0, second=0, tzinfo=UTC_TZ)
+                  except ValueError:
+                      print(f"警告: ファイル名から日付を解析できませんでした: {filename}")
+                      pass # pub_date_dt は None のまま
+
+              # ファイル名から日付が取れなかった場合、ファイルの最終更新日時(UTC)を使用
+              if pub_date_dt is None:
+                  try:
+                      file_mtime = os.path.getmtime(filepath)
+                      pub_date_dt = datetime.datetime.fromtimestamp(file_mtime, tz=UTC_TZ)
+                      print(f"情報: ファイル更新日時を使用: {filename}")
+                  except OSError as e:
+                      print(f"エラー: ファイル更新日時を取得できませんでした: {filename} - {e}")
+                      # どうしても日付が取得できない場合は現在時刻(UTC)を仮に設定
+                      pub_date_dt = datetime.datetime.now(UTC_TZ)
+
+              # タイトル整形 (ファイル名マッチしなかった場合用)
+              if not match:
+                  title_parts = title.rsplit('_', 1)
+                  if len(title_parts) > 1 and title_parts[1].isdigit() and len(title_parts[1]) >= 5:
+                      title = title_parts[0]
+                  if is_premium:
+                      title = "[Premium] " + title.replace('_', ' ')
+                  else:
+                      title = title.replace('_', ' ')
+
               return {
+                  'title': title,
+                  'date_dt': pub_date_dt, # タイムゾーン付きdatetimeオブジェクト
                   'filename': filename,
-                  'file_size': file_size,
-                  'raw_title': raw_title,
-                  'id': episode_id,
-                  'file_path': filepath
+                  'is_premium': is_premium,
+                  'filepath': filepath # ファイルパスも保持
               }
 
-          def get_voicy_episodes():
-              """VoicyエピソードのJSONデータを取得する"""
-              # まずローカルファイルを試す
-              if os.path.exists(LOCAL_JSON_PATH):
-                  try:
-                      log(f"ローカルJSONファイルを読み込み中: {LOCAL_JSON_PATH}")
-                      with open(LOCAL_JSON_PATH, 'r', encoding='utf-8') as f:
-                          data = json.load(f)
-                      log(f"ローカルJSONデータ読み込み成功: {len(data)}件のエピソード情報")
-                      debug_json_data(data)
-                      return data
-                  except Exception as e:
-                      log(f"ローカルJSONデータ読み込みエラー: {e}")
-              
-              # ローカルファイルが存在しない、または読み込みに失敗した場合はGitHubから取得
+          def file_size(filepath):
+              """ファイルサイズをバイト単位で返す"""
               try:
-                  # キャッシュを回避するためにタイムスタンプを付加
-                  url = f"{VOICY_EPISODES_URL}?t={int(time.time())}"
-                  log(f"リモートJSONデータをダウンロード中: {url}")
-                  
-                  with urllib.request.urlopen(url) as response:
-                      data = json.loads(response.read().decode())
-                  
-                  log(f"リモートJSONデータ取得成功: {len(data)}件のエピソード情報")
-                  debug_json_data(data)
-                  return data
-              except Exception as e:
-                  log(f"リモートJSONデータ取得エラー: {e}")
-                  return []
+                  return os.path.getsize(filepath)
+              except OSError as e:
+                  print(f"エラー: ファイルサイズを取得できませんでした: {filepath} - {e}")
+                  return 0
 
-          def format_rfc822_date(date_str):
-              """日付文字列をRFC 822形式にフォーマットする（JSTとして）"""
-              try:
-                  # 日付文字列をdatetimeオブジェクトに変換
-                  dt = datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-                  
-                  # JSTタイムゾーン（+9時間）として扱う
-                  weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dt.weekday()]
-                  month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][dt.month - 1]
-                  return f"{weekday}, {dt.day:02d} {month} {dt.year} {dt.hour:02d}:{dt.minute:02d}:{dt.second:02d} +0900"
-              except Exception as e:
-                  log(f"日付変換エラー: {e}, date_str: {date_str}")
-                  # エラー時には現在時刻を使用
-                  now = datetime.datetime.now()
-                  weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][now.weekday()]
-                  month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][now.month - 1]
-                  return f"{weekday}, {now.day:02d} {month} {now.year} {now.hour:02d}:{now.minute:02d}:{now.second:02d} +0900"
+          def format_rfc822_date(dt):
+              """
+              タイムゾーン付きdatetimeオブジェクトをRFC 822形式(JST)にフォーマットする
+              """
+              if not isinstance(dt, datetime.datetime):
+                  print(f"エラー: 無効な日付オブジェクトです: {dt}")
+                  # フォールバックとして現在時刻を使用
+                  dt = datetime.datetime.now(JST_TZ)
+              elif dt.tzinfo is None:
+                  print(f"警告: タイムゾーン情報がない日付オブジェクトです: {dt}。UTCと仮定します。")
+                  dt = dt.replace(tzinfo=UTC_TZ)
+
+              # JSTに変換
+              jst_dt = dt.astimezone(JST_TZ)
+
+              # 手動でRFC 822形式（JST +0900）にフォーマット
+              weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][jst_dt.weekday()]
+              month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][jst_dt.month - 1]
+              return f"{weekday}, {jst_dt.day:02d} {month} {jst_dt.year} {jst_dt.hour:02d}:{jst_dt.minute:02d}:{jst_dt.second:02d} +0900"
+
+          def extract_id_from_filename(filename):
+              """ファイル名から末尾の数字ID(5桁以上)を抽出"""
+              parts = filename.split('_')
+              # 末尾から数字のみの部分を探す
+              for part in reversed(parts):
+                  part_cleaned = os.path.splitext(part)[0] # 拡張子除去
+                  if part_cleaned.isdigit() and len(part_cleaned) >= 5: # 5桁以上の数字
+                      return part_cleaned
+              return None
 
           def generate_rss():
-              # mp3ファイルのリストを取得（無料配信のみ）
-              mp3_files = get_mp3_files()
-              
-              # 各ファイルの基本メタデータを取得
-              episodes = [get_basic_metadata(f) for f in mp3_files]
-              
-              # IDが抽出できたMP3ファイルのIDを出力
-              mp3_ids = [ep['id'] for ep in episodes if ep['id']]
-              log(f"MP3から抽出されたエピソードID: {', '.join(mp3_ids[:10]) + ('...' if len(mp3_ids) > 10 else '')}")
-              
-              # Voicy JSONデータを取得
-              voicy_episodes = get_voicy_episodes()
-              
-              # IDでインデックス化
-              voicy_episodes_by_id = {str(episode["id"]): episode for episode in voicy_episodes}
-              log(f"JSONデータをIDでインデックス化: {len(voicy_episodes_by_id)}件")
-              
-              # デバッグ: MP3から抽出したIDとJSONデータの対応関係を確認
-              for ep_id in mp3_ids[:5]:  # 最初の5件のIDを確認
-                  if ep_id in voicy_episodes_by_id:
-                      json_ep = voicy_episodes_by_id[ep_id]
-                      log(f"ID {ep_id} のJSON情報: タイトル={json_ep.get('title')}, 日付={json_ep.get('date')}")
-                  else:
-                      log(f"ID {ep_id} に対応するJSON情報が見つかりません")
-              
-              # JSONデータでエピソード情報を補完
-              enriched_episodes = []
-              for episode in episodes:
-                  episode_id = episode['id']
-                  if episode_id and episode_id in voicy_episodes_by_id:
-                      voicy_data = voicy_episodes_by_id[episode_id]
-                      
-                      # JSON情報でエピソードを補完
-                      episode['voicy_title'] = voicy_data.get('title', '')
-                      episode['voicy_date'] = voicy_data.get('date', '')
-                      episode['voicy_url'] = voicy_data.get('url', '')
-                      episode['voicy_is_premium'] = voicy_data.get('is_premium', False)
-                      
-                      # クリーンなタイトルを作成（IDと日付を削除）
-                      episode['clean_title'] = clean_title(episode['voicy_title'])
-                      
-                      log(f"エピソードID {episode_id} を補完: {episode['voicy_title']} ({episode['voicy_date']})")
-                      enriched_episodes.append(episode)
-                  else:
-                      # JSONに情報がない場合はファイル名からタイトルを作成
-                      episode['clean_title'] = clean_title(episode['raw_title'])
-                      log(f"ID '{episode_id}' に対応するJSON情報が見つかりません: {episode['clean_title']}")
-                      enriched_episodes.append(episode)
-              
-              # 日付でソート（JSONデータの日付を優先、日付がない場合は最も古い日付とする）
-              def get_sort_date(ep):
-                  if 'voicy_date' in ep and ep['voicy_date']:
-                      return ep['voicy_date']
-                  return '1970-01-01 00:00:00'  # デフォルト日付（最も古い）
-              
-              # JSONの日付で降順ソート（最新が先頭）
-              enriched_episodes.sort(key=get_sort_date, reverse=True)
-              log(f"エピソードを日付順にソートしました: {len(enriched_episodes)}件")
-              
-              # ソート結果を確認
-              log("ソート結果（最初の5件）:")
-              for i, ep in enumerate(enriched_episodes[:5]):
-                  log(f"  {i+1}. ID: {ep.get('id')}, タイトル: {ep.get('clean_title')}, 日付: {ep.get('voicy_date', 'なし')}")
-              
-              # RSS XMLを生成
+              """RSSフィードを生成するメイン関数"""
               rss = ET.Element("rss", {
                   "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
                   "xmlns:atom": "http://www.w3.org/2005/Atom",
                   "version": "2.0"
               })
-              
               channel = ET.SubElement(rss, "channel")
-              
-              # atom:link要素を追加（self参照）
-              ET.SubElement(channel, "atom:link", {
-                  "href": SELF_URL,
-                  "rel": "self",
-                  "type": "application/rss+xml"
-              })
-              
-              # チャンネル基本情報
-              add_simple_element(channel, "title", PODCAST_TITLE)
-              add_simple_element(channel, "description", PODCAST_DESCRIPTION)
-              add_simple_element(channel, "link", PODCAST_LINK)
-              add_simple_element(channel, "language", PODCAST_LANGUAGE)
-              add_simple_element(channel, "copyright", PODCAST_COPYRIGHT)
-              add_simple_element(channel, "webMaster", PODCAST_WEBMASTER)
-              add_simple_element(channel, "ttl", PODCAST_TTL)
-              add_simple_element(channel, "itunes:explicit", PODCAST_EXPLICIT)
-              add_simple_element(channel, "itunes:author", PODCAST_AUTHOR)
-              
-              # オーナー情報
+
+              # --- チャンネル情報設定 ---
+              ET.SubElement(channel, "atom:link", {"href": SELF_URL, "rel": "self", "type": "application/rss+xml"})
+              ET.SubElement(channel, "title").text = PODCAST_TITLE
+              # description内の改行は削除またはスペースに置換
+              ET.SubElement(channel, "description").text = PODCAST_DESCRIPTION.replace('\n', ' ')
+              ET.SubElement(channel, "link").text = PODCAST_LINK
+              ET.SubElement(channel, "language").text = PODCAST_LANGUAGE
+              ET.SubElement(channel, "copyright").text = PODCAST_COPYRIGHT
+              ET.SubElement(channel, "lastBuildDate").text = format_rfc822_date(datetime.datetime.now(UTC_TZ)) # 最終ビルド日時(JST)
+              ET.SubElement(channel, "webMaster").text = PODCAST_WEBMASTER
+              ET.SubElement(channel, "ttl").text = PODCAST_TTL
+              ET.SubElement(channel, "itunes:explicit").text = PODCAST_EXPLICIT
+              ET.SubElement(channel, "itunes:author").text = PODCAST_AUTHOR
               owner = ET.SubElement(channel, "itunes:owner")
-              add_simple_element(owner, "itunes:name", PODCAST_OWNER_NAME)
-              add_simple_element(owner, "itunes:email", PODCAST_OWNER_EMAIL)
-              
-              # カテゴリ
+              ET.SubElement(owner, "itunes:name").text = PODCAST_OWNER_NAME
+              ET.SubElement(owner, "itunes:email").text = PODCAST_OWNER_EMAIL
               ET.SubElement(channel, "itunes:category", {"text": PODCAST_CATEGORY})
-              
-              # イメージ
               image = ET.SubElement(channel, "image")
-              add_simple_element(image, "url", PODCAST_IMAGE_URL)
-              add_simple_element(image, "title", PODCAST_TITLE)
-              add_simple_element(image, "link", PODCAST_LINK)
-              
+              ET.SubElement(image, "url").text = PODCAST_IMAGE_URL
+              ET.SubElement(image, "title").text = PODCAST_TITLE
+              ET.SubElement(image, "link").text = PODCAST_LINK
               ET.SubElement(channel, "itunes:image", {"href": PODCAST_IMAGE_URL})
-              
-              # RSSアイテムのリスト（デバッグ用）
-              items_debug = []
-              
-              # エピソードアイテムを追加
-              for episode in enriched_episodes:
-                  # URLエンコードされたファイル名
-                  encoded_filename = urllib.parse.quote(episode['filename'])
-                  file_url = f"{MP3_BASE_URL}/{encoded_filename}"
-                  
-                  # クリーンなタイトル（IDと日付を削除済み）
-                  title = episode['clean_title']
-                  
-                  # 説明文
-                  description = f"Episode: {title}"
-                  if 'voicy_url' in episode and episode['voicy_url']:
-                      description += f"\n配信元URL: {episode['voicy_url']}"
-                  
-                  # アイテム要素
-                  item = ET.SubElement(channel, "item")
-                  
-                  add_simple_element(item, "title", title)
-                  add_simple_element(item, "description", description)
-                  
-                  # エピソードのpubDateに、対応するJSONデータの日付をそのまま使用
-                  json_date = None
-                  if episode['id'] and episode['id'] in voicy_episodes_by_id:
-                      json_episode = voicy_episodes_by_id[episode['id']]
-                      json_date = json_episode.get('date', '')
-                  
-                  if json_date:
-                      # JSONの日付をRFC 822形式に変換（JSTとして）
-                      pub_date = format_rfc822_date(json_date)
-                      log(f"エピソード '{title}' (ID: {episode['id']}) の日付: {json_date} → {pub_date}")
+              # --- チャンネル情報設定ここまで ---
+
+              # --- MP3ファイルとJSON情報の処理 ---
+              mp3_files = glob.glob(os.path.join(PODCAST_DIR, '*.mp3'))
+              # 有料配信（ファイル名の先頭が '_'）を除外
+              free_mp3_files = [f for f in mp3_files if not os.path.basename(f).startswith('_')]
+              print(f"全ファイル数: {len(mp3_files)}")
+              print(f"無料配信ファイル数: {len(free_mp3_files)}")
+
+              # MP3ファイルから基本メタデータを取得
+              mp3_metadata = [get_mp3_metadata(f) for f in free_mp3_files]
+
+              # voicy_episodes.json からエピソード情報を読み込む
+              episode_dates = {}
+              try:
+                  # GitHub Actionsのワークスペース内のパスから読み込む
+                  with open(JSON_FILE_PATH, 'r', encoding='utf-8') as f:
+                      voicy_episodes = json.load(f)
+                  # IDをキー、日付文字列を値とする辞書を作成
+                  episode_dates = {str(episode["id"]): episode["date"] for episode in voicy_episodes if "id" in episode and "date" in episode}
+                  print(f"JSONファイル({JSON_FILE_PATH})から{len(episode_dates)}件のエピソード情報を取得しました")
+              except FileNotFoundError:
+                  print(f"警告: JSONファイルが見つかりません: {JSON_FILE_PATH}")
+              except json.JSONDecodeError as e:
+                  print(f"エラー: JSONファイルの解析に失敗しました: {JSON_FILE_PATH} - {e}")
+              except Exception as e:
+                  print(f"エラー: JSONファイルの処理中に予期せぬエラーが発生しました: {e}")
+
+              # メタデータにJSONの日付情報をマージし、ソート用の最終日付を設定
+              valid_metadata = []
+              for meta in mp3_metadata:
+                  if meta['date_dt'] is None: # 日付が取得できなかったものはスキップ
+                      print(f"警告: 日付が無効なためスキップします: {meta['filename']}")
+                      continue
+
+                  episode_id = extract_id_from_filename(meta['filename'])
+                  meta['final_date_dt'] = meta['date_dt'] # デフォルトはファイル由来の日付(UTC)
+
+                  if episode_id and episode_id in episode_dates:
+                      try:
+                          json_date_str = episode_dates[episode_id]
+                          # JSONの日付文字列 (JST) をタイムゾーン付きdatetimeオブジェクトに変換
+                          naive_dt = datetime.datetime.strptime(json_date_str, '%Y-%m-%d %H:%M:%S')
+                          jst_dt = naive_dt.replace(tzinfo=JST_TZ) # JSTタイムゾーンを付与
+                          meta['final_date_dt'] = jst_dt # JSONの日付(JST)を最終日付として採用
+                          print(f"ID {episode_id}: JSONの日付 {json_date_str} (JST) を使用")
+                      except (ValueError, TypeError) as e:
+                          print(f"警告: 日付変換エラー ({episode_id}: {json_date_str}): {e}. ファイル由来の日付を使用します。")
+                          # エラー時はファイル由来の日付(UTC)を使用 (final_date_dtは変更しない)
                   else:
-                      # JSONに日付がない場合は現在時刻を使用
-                      now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                      pub_date = format_rfc822_date(now_str)
-                      log(f"エピソード '{title}' の日付が見つからないため現在時刻を使用: {now_str}")
-                  
-                  add_simple_element(item, "pubDate", pub_date)
-                  
-                  # デバッグ用にアイテム情報を保存
-                  items_debug.append({
-                      'title': title,
-                      'id': episode.get('id', 'なし'),
-                      'json_date': json_date or 'なし',
-                      'pub_date': pub_date
-                  })
-                  
-                  # エンクロージャー（mp3ファイル情報）
+                      if episode_id:
+                          print(f"情報: ID {episode_id} はJSONに存在しません。ファイル由来の日付を使用します。")
+                      else:
+                          print(f"情報: ID抽出不可 ({meta['filename']})。ファイル由来の日付を使用します。")
+                      # IDがない場合もファイル由来の日付(UTC)を使用 (final_date_dtは変更しない)
+
+                  valid_metadata.append(meta) # 有効なメタデータのみ追加
+
+              # final_date_dt でソート (新しい順)
+              valid_metadata.sort(key=lambda x: x['final_date_dt'], reverse=True)
+
+              if valid_metadata:
+                  # ソート後の最新の日付をチャンネルのpubDateにも設定
+                  latest_pubdate = format_rfc822_date(valid_metadata[0]['final_date_dt'])
+                  ET.SubElement(channel, "pubDate").text = latest_pubdate
+                  print(f"チャンネルpubDateを設定: {latest_pubdate}")
+                  print(f"ソート後の先頭エピソードの日付: {valid_metadata[0]['final_date_dt']} (タイトル: {valid_metadata[0]['title']})")
+              else:
+                  print("警告: 有効なエピソードが見つかりませんでした。")
+                  # エピソードがない場合もpubDateを設定
+                  ET.SubElement(channel, "pubDate").text = format_rfc822_date(datetime.datetime.now(UTC_TZ))
+              # --- MP3ファイルとJSON情報の処理ここまで ---
+
+
+              # --- 各エピソードの情報を <item> として追加 ---
+              for meta in valid_metadata:
+                  filepath = meta['filepath']
+                  # URLエンコーディングをファイル名部分にのみ適用
+                  encoded_filename = urllib.parse.quote(meta['filename'])
+                  file_url = f"{MP3_BASE_URL}/{encoded_filename}"
+                  file_size_bytes = str(file_size(filepath))
+                  # タイトルと説明文をXMLエスケープ
+                  title_text = escape(meta['title'])
+                  # description も念のためエスケープ (現状はtitleと同じだが将来的に変更される可能性)
+                  description_text = escape(f"Episode: {meta['title']}")
+
+                  item = ET.SubElement(channel, "item")
+
+                  ET.SubElement(item, "title").text = title_text
+                  ET.SubElement(item, "description").text = description_text
+                  # final_date_dt を RFC 822 (JST) 形式でpubDateに設定
+                  ET.SubElement(item, "pubDate").text = format_rfc822_date(meta['final_date_dt'])
+
                   ET.SubElement(item, "enclosure", {
                       "url": file_url,
-                      "length": str(episode['file_size']),
+                      "length": file_size_bytes,
                       "type": "audio/mpeg"
                   })
-                  
-                  # podcast追加情報
-                  add_simple_element(item, "itunes:duration", "00:30:00")
-                  add_simple_element(item, "itunes:author", PODCAST_AUTHOR)
-                  add_simple_element(item, "itunes:summary", description)
-                  
-                  # GUID
-                  guid = ET.SubElement(item, "guid", {"isPermaLink": "false"})
-                  guid.text = file_url
-              
-              # XMLを保存
-              save_xml(rss)
-              
-              # 詳細なデバッグ情報をファイルに出力
-              save_debug_info(items_debug)
-              
-              # 補助ファイルを作成
-              create_support_files()
-              
-              log("RSS生成完了")
 
-          def add_simple_element(parent, name, text):
-              """単純な要素を追加するヘルパー関数"""
-              element = ET.SubElement(parent, name)
-              element.text = text
-              return element
+                  # itunes specific tags
+                  # duration は実際の音声ファイルから取得するのが理想だが、ここでは固定値または取得処理を追加
+                  # 例: duration = get_duration(filepath) # get_duration関数を別途実装する必要あり
+                  ET.SubElement(item, "itunes:duration").text = "00:30:00" # 仮の長さ（可能であれば取得する）
+                  ET.SubElement(item, "itunes:author").text = PODCAST_AUTHOR
+                  ET.SubElement(item, "itunes:summary").text = description_text # descriptionと同じで良いか確認
+                  ET.SubElement(item, "itunes:explicit").text = PODCAST_EXPLICIT
 
-          def save_xml(root):
-              """XMLを保存する"""
-              # XML宣言
-              xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>\n'
-              
-              # ElementTreeをXML文字列に変換
-              tree = ET.ElementTree(root)
-              xml_str = ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
-              
-              # 最終的なXML
-              final_xml = xml_declaration + xml_str
-              
-              # 文字化け防止のためUTF-8で明示的に保存
-              with open(OUTPUT_FILE, 'wb') as f:
-                  f.write(final_xml.encode('utf-8'))
-              
-              log(f"XMLを保存しました: {OUTPUT_FILE}")
+                  # GUID (Globally Unique Identifier) - ファイルURLを使用 (変更されない限り安定)
+                  ET.SubElement(item, "guid", {"isPermaLink": "false"}).text = file_url
+              # --- 各エピソードの追加ここまで ---
 
-          def save_debug_info(items_debug):
-              """詳細なデバッグ情報をファイルに保存する"""
-              debug_file = os.path.join(OUTPUT_DIR, 'rss_debug.log')
-              with open(debug_file, 'w', encoding='utf-8') as f:
-                  f.write(f"RSS生成日時: {datetime.datetime.now().isoformat()}\n")
-                  f.write(f"RSSファイル: {OUTPUT_FILE}\n\n")
-                  
-                  f.write("各エピソードの詳細情報:\n")
-                  f.write("-" * 80 + "\n")
-                  
-                  for i, item in enumerate(items_debug):
-                      f.write(f"{i+1}. タイトル: {item['title']}\n")
-                      f.write(f"   ID: {item['id']}\n")
-                      f.write(f"   JSON日付: {item['json_date']}\n")
-                      f.write(f"   pubDate: {item['pub_date']}\n")
-                      f.write("-" * 80 + "\n")
-              
-              log(f"デバッグログを保存しました: {debug_file}")
+              # --- XMLファイルの生成と保存 ---
+              # XMLツリーをインデント付きで整形 (デバッグ用に可読性を上げる場合)
+              # ET.indent(rss, space="  ", level=0) # Python 3.9+
 
-          def create_support_files():
-              """補助ファイルを作成する"""
-              # 更新フラグファイル
-              flag_file = os.path.join(OUTPUT_DIR, '.feed_updated')
-              with open(flag_file, 'w') as f:
-                  f.write(f"Last updated: {datetime.datetime.now().isoformat()} - {time.time()}")
-              
-              # .nojekyllファイル（Jekyllの処理を無効化）
-              nojekyll_path = os.path.join(OUTPUT_DIR, '.nojekyll')
-              with open(nojekyll_path, 'w') as f:
-                  f.write('# このファイルはJekyllの処理を無効化します')
-              
-              # HTMLリダイレクトファイル（rss.xmlからfeed.rssへのリダイレクト）
-              redirect_path = os.path.join(OUTPUT_DIR, 'rss.xml')
-              with open(redirect_path, 'w') as f:
-                  f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-                  f.write('<!DOCTYPE html>\n')
-                  f.write('<html>\n')
-                  f.write('<head>\n')
-                  f.write('  <meta http-equiv="refresh" content="0;URL=\'feed.rss\'" />\n')
-                  f.write('  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n')
-                  f.write('  <title>Redirecting to feed.rss</title>\n')
-                  f.write('</head>\n')
-                  f.write('<body>\n')
-                  f.write('  <p>このページは<a href="feed.rss">feed.rss</a>にリダイレクトされます。</p>\n')
-                  f.write('</body>\n')
-                  f.write('</html>\n')
-              
-              log("補助ファイルを作成しました")
+              tree = ET.ElementTree(rss)
+              # XML宣言を含めてUTF-8でファイルに書き込み
+              try:
+                  # 出力ディレクトリが存在しない場合は作成
+                  os.makedirs(OUTPUT_DIR, exist_ok=True)
+                  with open(OUTPUT_FILE, 'wb') as f:
+                      # tree.write(f, encoding='utf-8', xml_declaration=True, method='xml') # method='xml' をつけるとより厳密
+                      tree.write(f, encoding='utf-8', xml_declaration=True)
+                  print(f"Podcast RSS feed generated successfully: {OUTPUT_FILE}")
+              except IOError as e:
+                  print(f"エラー: RSSファイルの書き込みに失敗しました: {OUTPUT_FILE} - {e}")
+              # --- XMLファイルの生成と保存ここまで ---
+
+              # --- 後処理: .nojekyll とリダイレクトファイルの作成 ---
+              try:
+                  # .nojekyllファイルを作成 (GitHub PagesでJekyll処理を無効化)
+                  nojekyll_path = os.path.join(OUTPUT_DIR, '.nojekyll')
+                  if not os.path.exists(nojekyll_path):
+                      with open(nojekyll_path, 'w') as f:
+                          f.write('# This file disables Jekyll processing')
+                      print(f".nojekyllファイルを作成しました: {nojekyll_path}")
+
+                  # rss.xml から feed.rss へのリダイレクト用HTMLファイルを作成
+                  # (互換性のため、古いURLにアクセスされた場合用)
+                  redirect_path = os.path.join(OUTPUT_DIR, 'rss.xml')
+                  # サーバーサイドリダイレクトが望ましいが、静的HTMLで簡易的に実装
+                  redirect_html = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=feed.rss">
+  <title>Redirecting to feed.rss</title>
+  <link rel="canonical" href="feed.rss"/>
+</head>
+<body>
+  <p>This page has moved. You will be redirected to <a href="feed.rss">the new location (feed.rss)</a> automatically.</p>
+</body>
+</html>"""
+                  with open(redirect_path, 'w', encoding='utf-8') as f:
+                      f.write(redirect_html)
+                  print(f"リダイレクトファイルを作成しました: {redirect_path}")
+
+              except IOError as e:
+                  print(f"エラー: 後処理ファイルの作成中にエラーが発生しました: {e}")
+              # --- 後処理ここまで ---
 
           if __name__ == "__main__":
-              log("Podcast RSS生成処理を開始します")
+              print(f"実行開始: {datetime.datetime.now(JST_TZ)}")
               generate_rss()
-              log("処理完了")
+              print(f"実行完了: {datetime.datetime.now(JST_TZ)}")
           EOF
-          
+
       - name: Generate RSS feed
         run: |
           chmod +x .github/scripts/generate_podcast_rss.py
           python .github/scripts/generate_podcast_rss.py
-        
+
       - name: Commit and push changes to gh-pages branch
         run: |
           cd gh-pages
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          
-          git add docs/feed.rss docs/rss.xml docs/.nojekyll docs/.feed_updated docs/rss_debug.log
-          
-          # 常に変更をコミットして強制的に更新する
-          git commit -m "自動更新: Podcast RSS feed $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/paji/Spotify.git gh-pages
-          echo "gh-pagesブランチに変更をプッシュしました"
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions-bot@github.com" # より一般的なボット用メールアドレス
+
+          # 生成されたファイルと後処理ファイルをステージング
+          git add docs/feed.rss docs/rss.xml docs/.nojekyll
+
+          # 変更があった場合のみコミット＆プッシュ
+          if ! git diff --staged --quiet; then
+            echo "変更を検出しました。コミットとプッシュを実行します。"
+            # コミットメッセージを改善
+            commit_message="自動更新: Podcast RSS feed ($(date -u +'%Y-%m-%d %H:%M:%SZ
