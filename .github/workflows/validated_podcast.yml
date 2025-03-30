@@ -73,6 +73,8 @@ jobs:
           
           # JSONファイルのURL
           VOICY_EPISODES_URL = "https://raw.githubusercontent.com/paji/Spotify/main/output/voicy_episodes.json"
+          # ローカルにvoicy_episodes.jsonが存在する場合のパス
+          LOCAL_JSON_PATH = "output/voicy_episodes.json"
 
           # ポッドキャスト情報
           PODCAST_TITLE = '裏・パジちゃんねる'
@@ -131,18 +133,30 @@ jobs:
 
           def get_voicy_episodes():
               """VoicyエピソードのJSONデータを取得する"""
+              # まずローカルファイルを試す
+              if os.path.exists(LOCAL_JSON_PATH):
+                  try:
+                      log(f"ローカルJSONファイルを読み込み中: {LOCAL_JSON_PATH}")
+                      with open(LOCAL_JSON_PATH, 'r', encoding='utf-8') as f:
+                          data = json.load(f)
+                      log(f"ローカルJSONデータ読み込み成功: {len(data)}件のエピソード情報")
+                      return data
+                  except Exception as e:
+                      log(f"ローカルJSONデータ読み込みエラー: {e}")
+              
+              # ローカルファイルが存在しない、または読み込みに失敗した場合はGitHubから取得
               try:
                   # キャッシュを回避するためにタイムスタンプを付加
                   url = f"{VOICY_EPISODES_URL}?t={int(time.time())}"
-                  log(f"JSONデータをダウンロード中: {url}")
+                  log(f"リモートJSONデータをダウンロード中: {url}")
                   
                   with urllib.request.urlopen(url) as response:
                       data = json.loads(response.read().decode())
                   
-                  log(f"JSONデータ取得成功: {len(data)}件のエピソード情報")
+                  log(f"リモートJSONデータ取得成功: {len(data)}件のエピソード情報")
                   return data
               except Exception as e:
-                  log(f"JSONデータ取得エラー: {e}")
+                  log(f"リモートJSONデータ取得エラー: {e}")
                   return []
 
           def format_rfc822_date(date_str):
@@ -175,12 +189,14 @@ jobs:
               
               # IDでインデックス化
               voicy_episodes_by_id = {str(episode["id"]): episode for episode in voicy_episodes}
+              log(f"JSONデータをIDでインデックス化: {len(voicy_episodes_by_id)}件")
               
               # JSONデータでエピソード情報を補完
               enriched_episodes = []
               for episode in episodes:
-                  if episode['id'] and episode['id'] in voicy_episodes_by_id:
-                      voicy_data = voicy_episodes_by_id[episode['id']]
+                  episode_id = episode['id']
+                  if episode_id and episode_id in voicy_episodes_by_id:
+                      voicy_data = voicy_episodes_by_id[episode_id]
                       
                       # JSON情報でエピソードを補完
                       episode['voicy_title'] = voicy_data.get('title', episode['title'])
@@ -188,10 +204,11 @@ jobs:
                       episode['voicy_url'] = voicy_data.get('url', '')
                       episode['voicy_is_premium'] = voicy_data.get('is_premium', False)
                       
-                      log(f"エピソードID {episode['id']} の情報を補完: {episode['voicy_title']} ({episode['voicy_date']})")
+                      log(f"エピソードID {episode_id} を補完: {episode['voicy_title']} ({episode['voicy_date']})")
                       enriched_episodes.append(episode)
                   else:
-                      log(f"ID '{episode['id']}' のエピソード情報がJSONに見つかりません: {episode['title']}")
+                      log(f"ID '{episode_id}' に対応するJSON情報が見つかりません: {episode['title']}")
+                      # IDがない場合でもエピソードは含める
                       enriched_episodes.append(episode)
               
               # 日付でソート（JSONデータの日付を優先）
@@ -267,9 +284,12 @@ jobs:
                   # 配信日時（JSONからの日付を優先）
                   if 'voicy_date' in episode and episode['voicy_date']:
                       pub_date = format_rfc822_date(episode['voicy_date'])
+                      log(f"エピソード '{title}' の日付: {episode['voicy_date']} → {pub_date}")
                   else:
                       # JSONに日付がない場合は現在時刻を使用
-                      pub_date = format_rfc822_date(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                      now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                      pub_date = format_rfc822_date(now_str)
+                      log(f"エピソード '{title}' の日付が見つからないため現在時刻を使用: {now_str} → {pub_date}")
                   
                   add_simple_element(item, "pubDate", pub_date)
                   
@@ -320,6 +340,24 @@ jobs:
                   f.write(final_xml.encode('utf-8'))
               
               log(f"XMLを保存しました: {OUTPUT_FILE}")
+              
+              # デバッグ用に日付情報をファイルに出力
+              debug_file = os.path.join(OUTPUT_DIR, 'rss_debug.log')
+              with open(debug_file, 'w', encoding='utf-8') as f:
+                  f.write(f"RSS生成日時: {datetime.datetime.now().isoformat()}\n")
+                  f.write(f"RSSファイル: {OUTPUT_FILE}\n")
+                  f.write("各エピソードのpubDate情報:\n")
+                  
+                  # XMLから全エピソードの日付情報を抽出
+                  tree = ET.ElementTree(root)
+                  items = tree.findall('.//item')
+                  for item in items:
+                      title = item.find('title')
+                      pubdate = item.find('pubDate')
+                      if title is not None and pubdate is not None:
+                          f.write(f"- {title.text}: {pubdate.text}\n")
+              
+              log(f"デバッグログを保存しました: {debug_file}")
 
           def create_support_files():
               """補助ファイルを作成する"""
@@ -368,7 +406,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          git add docs/feed.rss docs/rss.xml docs/.nojekyll docs/.feed_updated
+          git add docs/feed.rss docs/rss.xml docs/.nojekyll docs/.feed_updated docs/rss_debug.log
           
           # 常に変更をコミットして強制的に更新する
           git commit -m "自動更新: Podcast RSS feed $(date +'%Y-%m-%d %H:%M:%S')"
