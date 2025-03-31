@@ -30,14 +30,14 @@
     "url": "https://voicy.jp/channel/2834/6575380"
   },
   {
-    "id": "6550290",
-    "title": "AI雑談",
-    "date": "2025-03-30 07:09:06",
-    "date_iso": "2025-03-29T22:09:06.703319+00:00",
+    "id": "6449675",
+    "title": "雑談回",
+    "date": "2025-03-30 07:09:08",
+    "date_iso": "2025-03-29T22:09:08.096793+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "昨日",
+    "original_date_text": "一昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6550290"
+    "url": "https://voicy.jp/channel/2834/6449675"
   },
   {
     "id": "6410286",
@@ -50,14 +50,14 @@
     "url": "https://voicy.jp/channel/2834/6410286"
   },
   {
-    "id": "6449675",
-    "title": "雑談回",
-    "date": "2025-03-30 07:09:08",
-    "date_iso": "2025-03-29T22:09:08.096793+00:00",
+    "id": "6550290",
+    "title": "AI雑談",
+    "date": "2025-03-30 07:09:06",
+    "date_iso": "2025-03-29T22:09:06.703319+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "一昨日",
+    "original_date_text": "昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6449675"
+    "url": "https://voicy.jp/channel/2834/6550290"
   },
   {
     "id": "6539797",
