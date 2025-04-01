@@ -82,8 +82,8 @@ jobs:
           # スクレイピング設定
           MAX_RETRIES = 5  # 最大リトライ回数
           SCROLL_PAUSE_TIME = 1  # スクロール間の待機時間（秒）
-          MAX_SCROLL_ATTEMPTS = 15  # 最大スクロール試行回数（より多くのエピソードを取得するため）
-          TARGET_EPISODES = 50  # 目標エピソード数（より多くのエピソードを取得するため）
+          MAX_SCROLL_ATTEMPTS = 2  # 最大スクロール試行回数（約20件のエピソードを取得するため）
+          TARGET_EPISODES = 20  # 目標エピソード数
 
           def setup_directories():
               """必要なディレクトリを作成"""
@@ -96,6 +96,35 @@ jobs:
               sleep_time = random.uniform(min_seconds, max_seconds)
               time.sleep(sleep_time)
               return sleep_time
+
+          def load_existing_episodes():
+              """
+              既存のJSONファイルからエピソード情報を読み込む関数
+              
+              Returns:
+                  tuple: (既存のエピソードリスト, 既存のエピソードIDのセット)
+              """
+              existing_episodes = []
+              existing_episode_ids = set()
+              
+              if os.path.exists(OUTPUT_JSON):
+                  try:
+                      with open(OUTPUT_JSON, 'r', encoding='utf-8') as f:
+                          existing_episodes = json.load(f)
+                          
+                      # エピソードIDのセットを作成
+                      for episode in existing_episodes:
+                          if "id" in episode:
+                              existing_episode_ids.add(episode["id"])
+                      
+                      print(f"既存のJSONファイルから {len(existing_episodes)} 件のエピソード情報を読み込みました。")
+                      print(f"重複チェック用に {len(existing_episode_ids)} 件のエピソードIDを準備しました。")
+                  except Exception as e:
+                      print(f"既存のJSONファイルの読み込み中にエラーが発生しました: {e}")
+              else:
+                  print(f"既存のJSONファイル {OUTPUT_JSON} が見つかりませんでした。新規作成します。")
+              
+              return existing_episodes, existing_episode_ids
 
           def check_premium_content(parent):
               """
@@ -567,14 +596,16 @@ jobs:
               Returns:
                   list: エピソード情報のリスト
               """
-              print(f"Voicyチャンネル {CHANNEL_URL} から最新のエピソード情報を取得します...")
+              print(f"Voicyチャンネル {CHANNEL_URL} からエピソード情報を取得します...")
               
-              # 新しく空のエピソードリストを作成（既存のデータは読み込まない）
+              # 既存のエピソード情報を読み込む（IDの重複チェック用のみ）
+              _, existing_episode_ids = load_existing_episodes()
+              
               episodes = []
-              episode_ids_seen = set()  # 重複チェック用の空のセット
+              episode_ids_seen = existing_episode_ids.copy()  # 既存のエピソードIDをコピー
               retry_count = 0
               
-              print(f"重複チェック用に空のエピソードIDセットを作成しました。")
+              print(f"重複チェック用に {len(episode_ids_seen)} 件の既存エピソードIDを読み込みました。")
               
               try:
                   # Chromeオプションの設定
@@ -583,31 +614,4 @@ jobs:
                   chrome_options.add_argument("--no-sandbox")
                   chrome_options.add_argument("--disable-dev-shm-usage")
                   chrome_options.add_argument("--disable-gpu")
-                  chrome_options.add_argument("--window-size=1920,1080")
-                  chrome_options.add_argument("--disable-notifications")
-                  chrome_options.add_argument("--disable-extensions")
-                  chrome_options.add_argument("--disable-infobars")
-                  
-                  # WebDriverの初期化
-                  service = Service(ChromeDriverManager().install())
-                  driver = webdriver.Chrome(service=service, options=chrome_options)
-                  
-                  # タイムアウト設定
-                  driver.set_page_load_timeout(60)
-                  
-                  # 最初のページを読み込み
-                  driver.get(CHANNEL_URL)
-                  
-                  # ページが完全に読み込まれるまで待機
-                  WebDriverWait(driver, 30).until(
-                      EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/channel/'][href*='/']"))
-                  )
-                  
-                  # デバッグ用にHTMLを保存
-                  with open(os.path.join(DEBUG_DIR, "initial_page.html"), "w", encoding="utf-8") as f:
-                      f.write(driver.page_source)
-                  
-                  # プログレスバーの初期化（目標エピソード数）
-                  progress = tqdm(total=TARGET_EPISODES, desc="エピソード取得")
-                  
-                  # オート
+                  chrome_options.add_argument
