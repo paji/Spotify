@@ -20,24 +20,14 @@
     "url": "https://voicy.jp/channel/2834/6578292"
   },
   {
-    "id": "6539799",
-    "title": "AI自動開発を体験して感じたこと",
-    "date": "2025-03-31 19:28:39",
-    "date_iso": "2025-03-31T10:28:39.461348+00:00",
+    "id": "6550290",
+    "title": "AI雑談",
+    "date": "2025-03-31 19:28:41",
+    "date_iso": "2025-03-31T10:28:41.834036+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "昨日",
+    "original_date_text": "一昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6539799"
-  },
-  {
-    "id": "6574799",
-    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
-    "date": "2025-03-31 19:28:40",
-    "date_iso": "2025-03-31T10:28:40.256939+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "昨日",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6574799"
+    "url": "https://voicy.jp/channel/2834/6550290"
   },
   {
     "id": "6575380",
@@ -50,14 +40,24 @@
     "url": "https://voicy.jp/channel/2834/6575380"
   },
   {
-    "id": "6550290",
-    "title": "AI雑談",
-    "date": "2025-03-31 19:28:41",
-    "date_iso": "2025-03-31T10:28:41.834036+00:00",
+    "id": "6574799",
+    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
+    "date": "2025-03-31 19:28:40",
+    "date_iso": "2025-03-31T10:28:40.256939+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "一昨日",
+    "original_date_text": "昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6550290"
+    "url": "https://voicy.jp/channel/2834/6574799"
+  },
+  {
+    "id": "6539799",
+    "title": "AI自動開発を体験して感じたこと",
+    "date": "2025-03-31 19:28:39",
+    "date_iso": "2025-03-31T10:28:39.461348+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "昨日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6539799"
   },
   {
     "id": "6410286",
