@@ -888,6 +888,9 @@ jobs:
                       episode_date = get_episode_date(episode)
                       print(f"{i+1}. {episode['title']} - {episode['original_date_text']} -> {episode_date.isoformat()}")
                   print("===============================\n")
+                  
+                  # ファイルが既に存在していても強制的に上書き
+                  print(f"JSONファイルを強制的に上書きモードで保存します: {output_path}")
                   with open(output_path, 'w', encoding='utf-8') as f:
                       json.dump(sorted_episodes, f, ensure_ascii=False, indent=2)
                   
@@ -907,6 +910,8 @@ jobs:
               """
               try:
                   urls_only = [episode["url"] for episode in episodes]
+                  # ファイルが既に存在していても強制的に上書き
+                  print(f"URLのみのリストを強制的に上書きモードで保存します: {OUTPUT_URLS_ONLY}")
                   with open(OUTPUT_URLS_ONLY, 'w', encoding='utf-8') as f:
                       json.dump(urls_only, f, ensure_ascii=False, indent=2)
                   print(f"URLのみのリストをJSONファイルに保存しました: {OUTPUT_URLS_ONLY}")
