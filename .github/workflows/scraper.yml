@@ -889,8 +889,13 @@ jobs:
                       print(f"{i+1}. {episode['title']} - {episode['original_date_text']} -> {episode_date.isoformat()}")
                   print("===============================\n")
                   
-                  # ファイルが既に存在していても強制的に上書き
-                  print(f"JSONファイルを強制的に上書きモードで保存します: {output_path}")
+                  # ファイルが既に存在する場合は明示的に削除してから新規作成（強制上書き）
+                  if os.path.exists(output_path):
+                      print(f"既存のJSONファイルを削除します: {output_path}")
+                      os.remove(output_path)
+                      print(f"既存のJSONファイルを削除しました")
+                  
+                  print(f"JSONファイルを新規作成します: {output_path}")
                   with open(output_path, 'w', encoding='utf-8') as f:
                       json.dump(sorted_episodes, f, ensure_ascii=False, indent=2)
                   
@@ -910,8 +915,14 @@ jobs:
               """
               try:
                   urls_only = [episode["url"] for episode in episodes]
-                  # ファイルが既に存在していても強制的に上書き
-                  print(f"URLのみのリストを強制的に上書きモードで保存します: {OUTPUT_URLS_ONLY}")
+                  
+                  # ファイルが既に存在する場合は明示的に削除してから新規作成（強制上書き）
+                  if os.path.exists(OUTPUT_URLS_ONLY):
+                      print(f"既存のURLリストファイルを削除します: {OUTPUT_URLS_ONLY}")
+                      os.remove(OUTPUT_URLS_ONLY)
+                      print(f"既存のURLリストファイルを削除しました")
+                  
+                  print(f"URLリストファイルを新規作成します: {OUTPUT_URLS_ONLY}")
                   with open(OUTPUT_URLS_ONLY, 'w', encoding='utf-8') as f:
                       json.dump(urls_only, f, ensure_ascii=False, indent=2)
                   print(f"URLのみのリストをJSONファイルに保存しました: {OUTPUT_URLS_ONLY}")
