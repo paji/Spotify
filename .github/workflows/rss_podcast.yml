@@ -6,8 +6,8 @@ permissions:
 
 on:
   schedule:
-    - cron: '38 9 * * *'  # 6時38分に実行
-    - cron: '8 21 * * *'  # 18時08分に実行
+    - cron: '8 9 * * *'  # 6時38分に実行
+    - cron: '38 21 * * *'  # 18時08分に実行
   workflow_dispatch:  # 手動実行用
   push:
     paths:
