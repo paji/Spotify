@@ -1,15 +1,5 @@
 [
   {
-    "id": "6594290",
-    "title": "『メタバース麻雀』二連覇",
-    "date": "2025-04-05 06:30:39",
-    "date_iso": "2025-04-04T21:30:39.861389+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6594290"
-  },
-  {
     "id": "6556324",
     "title": "AI自動開発「バイブコーティング」の実践",
     "date": "2025-04-04 06:30:59",
@@ -20,14 +10,14 @@
     "url": "https://voicy.jp/channel/2834/6556324"
   },
   {
-    "id": "6563953",
-    "title": "2025年春段階のAI自動開発",
-    "date": "2025-04-04 18:00:10",
-    "date_iso": "2025-04-04T09:00:10.048983+00:00",
+    "id": "6594290",
+    "title": "『メタバース麻雀』二連覇",
+    "date": "2025-04-05 06:30:39",
+    "date_iso": "2025-04-04T21:30:39.861389+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6563953"
+    "original_date_text": "8分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6594290"
   },
   {
     "id": "6554790",
@@ -38,6 +28,16 @@
     "original_date_text": "41分前",
     "is_premium": true,
     "url": "https://voicy.jp/channel/2834/6554790"
+  },
+  {
+    "id": "6563953",
+    "title": "2025年春段階のAI自動開発",
+    "date": "2025-04-04 18:00:10",
+    "date_iso": "2025-04-04T09:00:10.048983+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "41分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6563953"
   },
   {
     "id": "6413897",
@@ -80,14 +80,14 @@
     "url": "https://voicy.jp/channel/2834/6575475"
   },
   {
-    "id": "6578292",
-    "title": "現実はSFより奇なり、AGIで世界総生産が1000万倍になる世界線",
-    "date": "2025-04-01 08:26:58",
-    "date_iso": "2025-03-31T23:26:58.787883+00:00",
+    "id": "6574799",
+    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
+    "date": "2025-04-01 08:27:00",
+    "date_iso": "2025-03-31T23:27:00.329793+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "昨日",
+    "original_date_text": "一昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6578292"
+    "url": "https://voicy.jp/channel/2834/6574799"
   },
   {
     "id": "6539799",
@@ -100,14 +100,14 @@
     "url": "https://voicy.jp/channel/2834/6539799"
   },
   {
-    "id": "6574799",
-    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
-    "date": "2025-04-01 08:27:00",
-    "date_iso": "2025-03-31T23:27:00.329793+00:00",
+    "id": "6578292",
+    "title": "現実はSFより奇なり、AGIで世界総生産が1000万倍になる世界線",
+    "date": "2025-04-01 08:26:58",
+    "date_iso": "2025-03-31T23:26:58.787883+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "一昨日",
+    "original_date_text": "昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6574799"
+    "url": "https://voicy.jp/channel/2834/6578292"
   },
   {
     "id": "6575380",
@@ -448,5 +448,155 @@
     "original_date_text": "3月14日",
     "is_premium": false,
     "url": "https://voicy.jp/channel/2834/6514745"
+  },
+  {
+    "id": "6423622",
+    "title": "AGI時代",
+    "date": "2025-03-13 00:00:00",
+    "date_iso": "2025-03-13T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月13日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6423622"
+  },
+  {
+    "id": "6514627",
+    "title": "『メタバース麻雀』新ミームトークン「チュンチュン」即完！",
+    "date": "2025-03-13 00:00:00",
+    "date_iso": "2025-03-13T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月13日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6514627"
+  },
+  {
+    "id": "6519288",
+    "title": "NFTの落ち着いた販売を模索する",
+    "date": "2025-03-12 00:00:00",
+    "date_iso": "2025-03-12T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月12日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6519288"
+  },
+  {
+    "id": "6517882",
+    "title": "『メタバース麻雀』新ミームトークン「チュンチュン」兄弟（姉妹）発表",
+    "date": "2025-03-12 00:00:00",
+    "date_iso": "2025-03-12T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月12日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6517882"
+  },
+  {
+    "id": "6497476",
+    "title": "実はYouTubeブームが2025年説",
+    "date": "2025-03-11 00:00:00",
+    "date_iso": "2025-03-11T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月11日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6497476"
+  },
+  {
+    "id": "6504754",
+    "title": "さあお祭り当日『メタバース麻雀』新ミームトークン「チュンチュン」で踊ろう",
+    "date": "2025-03-11 00:00:00",
+    "date_iso": "2025-03-11T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月11日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6504754"
+  },
+  {
+    "id": "6506288",
+    "title": "AI覇権を取るかもしれないGrok3",
+    "date": "2025-03-10 00:00:00",
+    "date_iso": "2025-03-10T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月10日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6506288"
+  },
+  {
+    "id": "6513849",
+    "title": "『メタバース麻雀』決戦は今夜24:00ではないかもよ！？",
+    "date": "2025-03-10 00:00:00",
+    "date_iso": "2025-03-10T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月10日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6513849"
+  },
+  {
+    "id": "6444285",
+    "title": "雑談回",
+    "date": "2025-03-09 00:00:00",
+    "date_iso": "2025-03-09T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月9日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6444285"
+  },
+  {
+    "id": "6513785",
+    "title": "明日10時まで1万円から『メタバース麻雀』購入誓約キャンペーン",
+    "date": "2025-03-09 00:00:00",
+    "date_iso": "2025-03-09T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月9日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6513785"
+  },
+  {
+    "id": "6501136",
+    "title": "3月11日『メタバース麻雀』祭りに向けて大興奮",
+    "date": "2025-03-09 00:00:00",
+    "date_iso": "2025-03-09T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月9日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6501136"
+  },
+  {
+    "id": "6504439",
+    "title": "3月11日に決定！『メタバース麻雀』の新ミームトークン「チュンチュン」祭り",
+    "date": "2025-03-08 00:00:00",
+    "date_iso": "2025-03-08T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月8日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6504439"
+  },
+  {
+    "id": "6509783",
+    "title": "「Yukichi.fun」のNFTぽいFTを考える",
+    "date": "2025-03-07 00:00:00",
+    "date_iso": "2025-03-07T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月7日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6509783"
+  },
+  {
+    "id": "6494257",
+    "title": "『メタバース麻雀』アクティブコミュニティ1位",
+    "date": "2025-03-07 00:00:00",
+    "date_iso": "2025-03-07T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月7日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6494257"
+  },
+  {
+    "id": "6488300",
+    "title": "AI生成コンテンツに圧倒される",
+    "date": "2025-03-06 00:00:00",
+    "date_iso": "2025-03-06T00:00:00+09:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "3月6日",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6488300"
   }
 ]
