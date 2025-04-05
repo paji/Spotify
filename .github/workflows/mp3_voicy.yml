@@ -4,7 +4,7 @@ on:
  schedule:
   - cron: '33 21 * * *'  # JST 6時31分 (UTC 21:31)
   - cron: '3 9 * * *'    # JST 18時01分 (UTC 9:01)
-workflow_dispatch:  # 手動実行用
+ workflow_dispatch:  # 手動実行用
 
 # 明示的に権限を設定
 permissions:
