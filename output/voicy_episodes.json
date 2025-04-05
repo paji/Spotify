@@ -1,15 +1,5 @@
 [
   {
-    "id": "6556324",
-    "title": "AI自動開発「バイブコーティング」の実践",
-    "date": "2025-04-04 06:30:59",
-    "date_iso": "2025-04-03T21:30:59.034434+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6556324"
-  },
-  {
     "id": "6594290",
     "title": "『メタバース麻雀』二連覇",
     "date": "2025-04-05 06:30:39",
@@ -18,6 +8,16 @@
     "original_date_text": "8分前",
     "is_premium": false,
     "url": "https://voicy.jp/channel/2834/6594290"
+  },
+  {
+    "id": "6556324",
+    "title": "AI自動開発「バイブコーティング」の実践",
+    "date": "2025-04-04 06:30:59",
+    "date_iso": "2025-04-03T21:30:59.034434+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "8分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6556324"
   },
   {
     "id": "6556060",
@@ -30,16 +30,6 @@
     "url": "https://voicy.jp/channel/2834/6556060"
   },
   {
-    "id": "6554790",
-    "title": "AI雑談",
-    "date": "2025-04-03 18:00:22",
-    "date_iso": "2025-04-03T09:00:22.632479+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6554790"
-  },
-  {
     "id": "6563953",
     "title": "2025年春段階のAI自動開発",
     "date": "2025-04-04 18:00:10",
@@ -48,6 +38,16 @@
     "original_date_text": "41分前",
     "is_premium": true,
     "url": "https://voicy.jp/channel/2834/6563953"
+  },
+  {
+    "id": "6554790",
+    "title": "AI雑談",
+    "date": "2025-04-03 18:00:22",
+    "date_iso": "2025-04-03T09:00:22.632479+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "41分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6554790"
   },
   {
     "id": "6413897",
@@ -90,14 +90,14 @@
     "url": "https://voicy.jp/channel/2834/6575475"
   },
   {
-    "id": "6574799",
-    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
-    "date": "2025-04-01 08:27:00",
-    "date_iso": "2025-03-31T23:27:00.329793+00:00",
+    "id": "6578292",
+    "title": "現実はSFより奇なり、AGIで世界総生産が1000万倍になる世界線",
+    "date": "2025-04-01 08:26:58",
+    "date_iso": "2025-03-31T23:26:58.787883+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "一昨日",
+    "original_date_text": "昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6574799"
+    "url": "https://voicy.jp/channel/2834/6578292"
   },
   {
     "id": "6539799",
@@ -110,14 +110,14 @@
     "url": "https://voicy.jp/channel/2834/6539799"
   },
   {
-    "id": "6578292",
-    "title": "現実はSFより奇なり、AGIで世界総生産が1000万倍になる世界線",
-    "date": "2025-04-01 08:26:58",
-    "date_iso": "2025-03-31T23:26:58.787883+00:00",
+    "id": "6574799",
+    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
+    "date": "2025-04-01 08:27:00",
+    "date_iso": "2025-03-31T23:27:00.329793+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "昨日",
+    "original_date_text": "一昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6578292"
+    "url": "https://voicy.jp/channel/2834/6574799"
   },
   {
     "id": "6575380",
