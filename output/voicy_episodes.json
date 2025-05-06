@@ -1,23 +1,13 @@
 [
   {
-    "id": "6620298",
-    "title": "雑談回・Netflixの刺激的ではない作品",
-    "date": "2025-04-27 06:30:45",
-    "date_iso": "2025-04-26T21:30:45.132028+00:00",
+    "id": "6655488",
+    "title": "AIエージェントが他のAIエージェントを動かす時代",
+    "date": "2025-04-28 06:30:48",
+    "date_iso": "2025-04-27T21:30:48.635996+00:00",
     "date_source": "hierarchical_extraction",
     "original_date_text": "7分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6620298"
-  },
-  {
-    "id": "6618296",
-    "title": "AI化される社会でまだ残っている雑務",
-    "date": "2025-04-14 06:30:59",
-    "date_iso": "2025-04-13T21:30:59.591365+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "7分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6618296"
+    "url": "https://voicy.jp/channel/2834/6655488"
   },
   {
     "id": "6597287",
@@ -30,114 +20,24 @@
     "url": "https://voicy.jp/channel/2834/6597287"
   },
   {
-    "id": "6655488",
-    "title": "AIエージェントが他のAIエージェントを動かす時代",
-    "date": "2025-04-28 06:30:48",
-    "date_iso": "2025-04-27T21:30:48.635996+00:00",
+    "id": "6618296",
+    "title": "AI化される社会でまだ残っている雑務",
+    "date": "2025-04-14 06:30:59",
+    "date_iso": "2025-04-13T21:30:59.591365+00:00",
     "date_source": "hierarchical_extraction",
     "original_date_text": "7分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6655488"
+    "url": "https://voicy.jp/channel/2834/6618296"
   },
   {
-    "id": "6625790",
-    "title": "AIクローン時代が近づいている",
-    "date": "2025-04-21 06:31:07",
-    "date_iso": "2025-04-20T21:31:07.254758+00:00",
+    "id": "6620298",
+    "title": "雑談回・Netflixの刺激的ではない作品",
+    "date": "2025-04-27 06:30:45",
+    "date_iso": "2025-04-26T21:30:45.132028+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
+    "original_date_text": "7分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6625790"
-  },
-  {
-    "id": "6636297",
-    "title": "AIヤバい、o3は何かを超えてきている件",
-    "date": "2025-04-19 06:30:56",
-    "date_iso": "2025-04-18T21:30:56.178876+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6636297"
-  },
-  {
-    "id": "6561796",
-    "title": "AIエージェントの未来",
-    "date": "2025-04-13 06:30:46",
-    "date_iso": "2025-04-12T21:30:46.743490+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6561796"
-  },
-  {
-    "id": "6589499",
-    "title": "NFTはここまで簡単に購入できる",
-    "date": "2025-04-07 06:30:52",
-    "date_iso": "2025-04-06T21:30:52.745076+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6589499"
-  },
-  {
-    "id": "6513786",
-    "title": "AI雑感",
-    "date": "2025-04-06 06:30:05",
-    "date_iso": "2025-04-05T21:30:05.054645+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6513786"
-  },
-  {
-    "id": "6556324",
-    "title": "AI自動開発「バイブコーティング」の実践",
-    "date": "2025-04-04 06:30:59",
-    "date_iso": "2025-04-03T21:30:59.034434+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6556324"
-  },
-  {
-    "id": "6594290",
-    "title": "『メタバース麻雀』二連覇",
-    "date": "2025-04-05 06:30:39",
-    "date_iso": "2025-04-04T21:30:39.861389+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6594290"
-  },
-  {
-    "id": "6568290",
-    "title": "AI時代とブロックチェーン",
-    "date": "2025-04-10 06:30:10",
-    "date_iso": "2025-04-09T21:30:10.904960+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6568290"
-  },
-  {
-    "id": "6591283",
-    "title": "AI自動開発でTikTok向けショート動画を編集しようとした話",
-    "date": "2025-04-12 06:30:46",
-    "date_iso": "2025-04-11T21:30:46.472830+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6591283"
-  },
-  {
-    "id": "6673793",
-    "title": "AI談義90分、GWのお供にどうぞ",
-    "date": "2025-05-02 06:30:58",
-    "date_iso": "2025-05-01T21:30:58.930890+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "8分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6673793"
+    "url": "https://voicy.jp/channel/2834/6620298"
   },
   {
     "id": "6639433",
@@ -150,84 +50,104 @@
     "url": "https://voicy.jp/channel/2834/6639433"
   },
   {
-    "id": "6639552",
-    "title": "AGI社会における再分配とブロックチェーン",
-    "date": "2025-04-30 06:30:54",
-    "date_iso": "2025-04-29T21:30:54.196760+00:00",
+    "id": "6673793",
+    "title": "AI談義90分、GWのお供にどうぞ",
+    "date": "2025-05-02 06:30:58",
+    "date_iso": "2025-05-01T21:30:58.930890+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6639552"
+    "url": "https://voicy.jp/channel/2834/6673793"
   },
   {
-    "id": "6589761",
-    "title": "AIヤバい、今度はプレゼン資料デザインも",
-    "date": "2025-04-23 06:30:25",
-    "date_iso": "2025-04-22T21:30:25.519459+00:00",
+    "id": "6591283",
+    "title": "AI自動開発でTikTok向けショート動画を編集しようとした話",
+    "date": "2025-04-12 06:30:46",
+    "date_iso": "2025-04-11T21:30:46.472830+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6589761"
+    "url": "https://voicy.jp/channel/2834/6591283"
   },
   {
-    "id": "6603219",
-    "title": "投機性のないNFTに魅力はあるのか",
-    "date": "2025-04-15 06:30:22",
-    "date_iso": "2025-04-14T21:30:22.531271+00:00",
+    "id": "6568290",
+    "title": "AI時代とブロックチェーン",
+    "date": "2025-04-10 06:30:10",
+    "date_iso": "2025-04-09T21:30:10.904960+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6603219"
+    "url": "https://voicy.jp/channel/2834/6568290"
   },
   {
-    "id": "6412787",
-    "title": "NFTの未来",
-    "date": "2025-04-11 06:30:17",
-    "date_iso": "2025-04-10T21:30:17.293566+00:00",
+    "id": "6594290",
+    "title": "『メタバース麻雀』二連覇",
+    "date": "2025-04-05 06:30:39",
+    "date_iso": "2025-04-04T21:30:39.861389+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6412787"
+    "url": "https://voicy.jp/channel/2834/6594290"
   },
   {
-    "id": "6603783",
-    "title": "景気後退とAI化社会が同時進行中",
-    "date": "2025-04-09 06:30:59",
-    "date_iso": "2025-04-08T21:30:59.615812+00:00",
+    "id": "6556324",
+    "title": "AI自動開発「バイブコーティング」の実践",
+    "date": "2025-04-04 06:30:59",
+    "date_iso": "2025-04-03T21:30:59.034434+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6603783"
+    "url": "https://voicy.jp/channel/2834/6556324"
   },
   {
-    "id": "6584288",
-    "title": "AIバイブ・コーティングによってプロダクトのカンブリア爆発が起こる",
-    "date": "2025-04-16 06:30:28",
-    "date_iso": "2025-04-15T21:30:28.776204+00:00",
+    "id": "6513786",
+    "title": "AI雑感",
+    "date": "2025-04-06 06:30:05",
+    "date_iso": "2025-04-05T21:30:05.054645+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6584288"
+    "url": "https://voicy.jp/channel/2834/6513786"
   },
   {
-    "id": "6614300",
-    "title": "AGIのいる世界線",
-    "date": "2025-04-18 06:30:39",
-    "date_iso": "2025-04-17T21:30:39.009609+00:00",
+    "id": "6589499",
+    "title": "NFTはここまで簡単に購入できる",
+    "date": "2025-04-07 06:30:52",
+    "date_iso": "2025-04-06T21:30:52.745076+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6614300"
+    "url": "https://voicy.jp/channel/2834/6589499"
   },
   {
-    "id": "6655834",
-    "title": "AIとブレストの実際",
-    "date": "2025-04-29 06:30:39",
-    "date_iso": "2025-04-28T21:30:39.206171+00:00",
+    "id": "6561796",
+    "title": "AIエージェントの未来",
+    "date": "2025-04-13 06:30:46",
+    "date_iso": "2025-04-12T21:30:46.743490+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "9分前",
+    "original_date_text": "8分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6655834"
+    "url": "https://voicy.jp/channel/2834/6561796"
+  },
+  {
+    "id": "6636297",
+    "title": "AIヤバい、o3は何かを超えてきている件",
+    "date": "2025-04-19 06:30:56",
+    "date_iso": "2025-04-18T21:30:56.178876+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "8分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6636297"
+  },
+  {
+    "id": "6625790",
+    "title": "AIクローン時代が近づいている",
+    "date": "2025-04-21 06:31:07",
+    "date_iso": "2025-04-20T21:31:07.254758+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "8分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6625790"
   },
   {
     "id": "6680289",
@@ -240,64 +160,84 @@
     "url": "https://voicy.jp/channel/2834/6680289"
   },
   {
-    "id": "6648501",
-    "title": "AIが電話予約する時代",
-    "date": "2025-05-03 06:30:37",
-    "date_iso": "2025-05-02T21:30:37.084799+00:00",
+    "id": "6655834",
+    "title": "AIとブレストの実際",
+    "date": "2025-04-29 06:30:39",
+    "date_iso": "2025-04-28T21:30:39.206171+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "10分前",
+    "original_date_text": "9分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6648501"
+    "url": "https://voicy.jp/channel/2834/6655834"
   },
   {
-    "id": "6582789",
-    "title": "AI時代に高めたい能力10選",
-    "date": "2025-04-17 06:30:33",
-    "date_iso": "2025-04-16T21:30:33.033142+00:00",
+    "id": "6614300",
+    "title": "AGIのいる世界線",
+    "date": "2025-04-18 06:30:39",
+    "date_iso": "2025-04-17T21:30:39.009609+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "10分前",
+    "original_date_text": "9分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6582789"
+    "url": "https://voicy.jp/channel/2834/6614300"
   },
   {
-    "id": "6549289",
-    "title": "AIエージェント実践から見える未来",
-    "date": "2025-04-08 06:30:55",
-    "date_iso": "2025-04-07T21:30:55.772333+00:00",
+    "id": "6584288",
+    "title": "AIバイブ・コーティングによってプロダクトのカンブリア爆発が起こる",
+    "date": "2025-04-16 06:30:28",
+    "date_iso": "2025-04-15T21:30:28.776204+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "10分前",
+    "original_date_text": "9分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6549289"
+    "url": "https://voicy.jp/channel/2834/6584288"
   },
   {
-    "id": "6596829",
-    "title": "AIに奪われない仕事のヒント",
-    "date": "2025-04-22 06:30:03",
-    "date_iso": "2025-04-21T21:30:03.797393+00:00",
+    "id": "6603783",
+    "title": "景気後退とAI化社会が同時進行中",
+    "date": "2025-04-09 06:30:59",
+    "date_iso": "2025-04-08T21:30:59.615812+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "10分前",
+    "original_date_text": "9分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6596829"
+    "url": "https://voicy.jp/channel/2834/6603783"
   },
   {
-    "id": "6639795",
-    "title": "AI発展と認知度",
-    "date": "2025-04-24 06:30:58",
-    "date_iso": "2025-04-23T21:30:58.088532+00:00",
+    "id": "6412787",
+    "title": "NFTの未来",
+    "date": "2025-04-11 06:30:17",
+    "date_iso": "2025-04-10T21:30:17.293566+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "10分前",
+    "original_date_text": "9分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6639795"
+    "url": "https://voicy.jp/channel/2834/6412787"
   },
   {
-    "id": "6602520",
-    "title": "AIに取られてきた領域",
-    "date": "2025-04-26 06:30:47",
-    "date_iso": "2025-04-25T21:30:47.471307+00:00",
+    "id": "6603219",
+    "title": "投機性のないNFTに魅力はあるのか",
+    "date": "2025-04-15 06:30:22",
+    "date_iso": "2025-04-14T21:30:22.531271+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "10分前",
+    "original_date_text": "9分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6602520"
+    "url": "https://voicy.jp/channel/2834/6603219"
+  },
+  {
+    "id": "6589761",
+    "title": "AIヤバい、今度はプレゼン資料デザインも",
+    "date": "2025-04-23 06:30:25",
+    "date_iso": "2025-04-22T21:30:25.519459+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "9分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6589761"
+  },
+  {
+    "id": "6639552",
+    "title": "AGI社会における再分配とブロックチェーン",
+    "date": "2025-04-30 06:30:54",
+    "date_iso": "2025-04-29T21:30:54.196760+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "9分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6639552"
   },
   {
     "id": "6584004",
@@ -310,14 +250,64 @@
     "url": "https://voicy.jp/channel/2834/6584004"
   },
   {
-    "id": "6626850",
-    "title": "AIクローンとSNSの未来",
-    "date": "2025-05-06 06:30:11",
-    "date_iso": "2025-05-05T21:30:11.839825+00:00",
+    "id": "6602520",
+    "title": "AIに取られてきた領域",
+    "date": "2025-04-26 06:30:47",
+    "date_iso": "2025-04-25T21:30:47.471307+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "11分前",
+    "original_date_text": "10分前",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6626850"
+    "url": "https://voicy.jp/channel/2834/6602520"
+  },
+  {
+    "id": "6639795",
+    "title": "AI発展と認知度",
+    "date": "2025-04-24 06:30:58",
+    "date_iso": "2025-04-23T21:30:58.088532+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "10分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6639795"
+  },
+  {
+    "id": "6596829",
+    "title": "AIに奪われない仕事のヒント",
+    "date": "2025-04-22 06:30:03",
+    "date_iso": "2025-04-21T21:30:03.797393+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "10分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6596829"
+  },
+  {
+    "id": "6549289",
+    "title": "AIエージェント実践から見える未来",
+    "date": "2025-04-08 06:30:55",
+    "date_iso": "2025-04-07T21:30:55.772333+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "10分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6549289"
+  },
+  {
+    "id": "6582789",
+    "title": "AI時代に高めたい能力10選",
+    "date": "2025-04-17 06:30:33",
+    "date_iso": "2025-04-16T21:30:33.033142+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "10分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6582789"
+  },
+  {
+    "id": "6648501",
+    "title": "AIが電話予約する時代",
+    "date": "2025-05-03 06:30:37",
+    "date_iso": "2025-05-02T21:30:37.084799+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "10分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6648501"
   },
   {
     "id": "6633303",
@@ -330,34 +320,14 @@
     "url": "https://voicy.jp/channel/2834/6633303"
   },
   {
-    "id": "6634446",
-    "title": "AI雑感",
-    "date": "2025-04-26 18:01:02",
-    "date_iso": "2025-04-26T09:01:02.819351+00:00",
+    "id": "6626850",
+    "title": "AIクローンとSNSの未来",
+    "date": "2025-05-06 06:30:11",
+    "date_iso": "2025-05-05T21:30:11.839825+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "38分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6634446"
-  },
-  {
-    "id": "6553470",
-    "title": "NFTはこれからどうなるのか",
-    "date": "2025-04-06 18:00:40",
-    "date_iso": "2025-04-06T09:00:40.197272+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "38分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6553470"
-  },
-  {
-    "id": "6556060",
-    "title": "雑談回",
-    "date": "2025-04-05 18:00:08",
-    "date_iso": "2025-04-05T09:00:08.582085+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "38分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6556060"
+    "original_date_text": "11分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6626850"
   },
   {
     "id": "6623647",
@@ -370,44 +340,34 @@
     "url": "https://voicy.jp/channel/2834/6623647"
   },
   {
-    "id": "6594787",
+    "id": "6556060",
     "title": "雑談回",
-    "date": "2025-04-20 18:00:53",
-    "date_iso": "2025-04-20T09:00:53.524008+00:00",
+    "date": "2025-04-05 18:00:08",
+    "date_iso": "2025-04-05T09:00:08.582085+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "39分前",
+    "original_date_text": "38分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6594787"
+    "url": "https://voicy.jp/channel/2834/6556060"
   },
   {
-    "id": "6570521",
-    "title": "AIエージェント「Manus」にみるチャージ料金を考察",
-    "date": "2025-04-12 18:01:02",
-    "date_iso": "2025-04-12T09:01:02.345006+00:00",
+    "id": "6553470",
+    "title": "NFTはこれからどうなるのか",
+    "date": "2025-04-06 18:00:40",
+    "date_iso": "2025-04-06T09:00:40.197272+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "39分前",
+    "original_date_text": "38分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6570521"
+    "url": "https://voicy.jp/channel/2834/6553470"
   },
   {
-    "id": "6652117",
-    "title": "ChatGPT o3は、もうプレAGI",
-    "date": "2025-04-27 18:00:23",
-    "date_iso": "2025-04-27T09:00:23.334681+00:00",
+    "id": "6634446",
+    "title": "AI雑感",
+    "date": "2025-04-26 18:01:02",
+    "date_iso": "2025-04-26T09:01:02.819351+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "39分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6652117"
-  },
-  {
-    "id": "6648383",
-    "title": "AI開発競争と資本主義",
-    "date": "2025-05-03 18:00:39",
-    "date_iso": "2025-05-03T09:00:39.313562+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "39分前",
+    "original_date_text": "38分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6648383"
+    "url": "https://voicy.jp/channel/2834/6634446"
   },
   {
     "id": "6491048",
@@ -420,6 +380,46 @@
     "url": "https://voicy.jp/channel/2834/6491048"
   },
   {
+    "id": "6648383",
+    "title": "AI開発競争と資本主義",
+    "date": "2025-05-03 18:00:39",
+    "date_iso": "2025-05-03T09:00:39.313562+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "39分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6648383"
+  },
+  {
+    "id": "6652117",
+    "title": "ChatGPT o3は、もうプレAGI",
+    "date": "2025-04-27 18:00:23",
+    "date_iso": "2025-04-27T09:00:23.334681+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "39分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6652117"
+  },
+  {
+    "id": "6570521",
+    "title": "AIエージェント「Manus」にみるチャージ料金を考察",
+    "date": "2025-04-12 18:01:02",
+    "date_iso": "2025-04-12T09:01:02.345006+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "39分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6570521"
+  },
+  {
+    "id": "6594787",
+    "title": "雑談回",
+    "date": "2025-04-20 18:00:53",
+    "date_iso": "2025-04-20T09:00:53.524008+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "39分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6594787"
+  },
+  {
     "id": "6575711",
     "title": "『裏・パジちゃんねる』Spotifyにもマルチ配信を開始しました",
     "date": "2025-04-13 18:00:51",
@@ -428,86 +428,6 @@
     "original_date_text": "40分前",
     "is_premium": false,
     "url": "https://voicy.jp/channel/2834/6575711"
-  },
-  {
-    "id": "6599796",
-    "title": "イーサリアム財団の宮口あやさんがJoiさんの番組にご出演",
-    "date": "2025-04-18 18:00:29",
-    "date_iso": "2025-04-18T09:00:29.049777+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6599796"
-  },
-  {
-    "id": "6560775",
-    "title": "AI時代に必要なチカラを考えてAIに聞いてみたらため息が出た話",
-    "date": "2025-04-10 18:00:32",
-    "date_iso": "2025-04-10T09:00:32.413318+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6560775"
-  },
-  {
-    "id": "6557293",
-    "title": "ブロックチェーンとミームトークンとNFT",
-    "date": "2025-04-08 18:00:58",
-    "date_iso": "2025-04-08T09:00:58.026070+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6557293"
-  },
-  {
-    "id": "6554790",
-    "title": "AI雑談",
-    "date": "2025-04-03 18:00:22",
-    "date_iso": "2025-04-03T09:00:22.632479+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6554790"
-  },
-  {
-    "id": "6563953",
-    "title": "2025年春段階のAI自動開発",
-    "date": "2025-04-04 18:00:10",
-    "date_iso": "2025-04-04T09:00:10.048983+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6563953"
-  },
-  {
-    "id": "6582791",
-    "title": "続・AI時代に高めたい能力10選",
-    "date": "2025-04-17 18:00:52",
-    "date_iso": "2025-04-17T09:00:52.560937+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6582791"
-  },
-  {
-    "id": "6619962",
-    "title": "続・AIクローン時代が近づいている",
-    "date": "2025-04-21 18:00:16",
-    "date_iso": "2025-04-21T09:00:16.522079+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6619962"
-  },
-  {
-    "id": "6629793",
-    "title": "AIの気になるニュースと雑感",
-    "date": "2025-04-25 18:00:36",
-    "date_iso": "2025-04-25T09:00:36.731146+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "41分前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6629793"
   },
   {
     "id": "6669987",
@@ -520,94 +440,84 @@
     "url": "https://voicy.jp/channel/2834/6669987"
   },
   {
-    "id": "6644289",
-    "title": "AGIはどのように社会変革するのか",
-    "date": "2025-05-02 18:00:08",
-    "date_iso": "2025-05-02T09:00:08.954000+00:00",
+    "id": "6629793",
+    "title": "AIの気になるニュースと雑感",
+    "date": "2025-04-25 18:00:36",
+    "date_iso": "2025-04-25T09:00:36.731146+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6644289"
+    "original_date_text": "41分前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6629793"
   },
   {
-    "id": "6627926",
-    "title": "ビットコインとイーサリアム、投資的観点から考える",
-    "date": "2025-04-24 18:00:31",
-    "date_iso": "2025-04-24T09:00:31.021232+00:00",
+    "id": "6619962",
+    "title": "続・AIクローン時代が近づいている",
+    "date": "2025-04-21 18:00:16",
+    "date_iso": "2025-04-21T09:00:16.522079+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
+    "original_date_text": "41分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6627926"
+    "url": "https://voicy.jp/channel/2834/6619962"
   },
   {
-    "id": "6620302",
-    "title": "アニメ製作委員会をブロックチェーンで表現すると",
-    "date": "2025-04-22 18:00:07",
-    "date_iso": "2025-04-22T09:00:07.218974+00:00",
+    "id": "6582791",
+    "title": "続・AI時代に高めたい能力10選",
+    "date": "2025-04-17 18:00:52",
+    "date_iso": "2025-04-17T09:00:52.560937+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
+    "original_date_text": "41分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6620302"
+    "url": "https://voicy.jp/channel/2834/6582791"
   },
   {
-    "id": "6607788",
-    "title": "Nouns方式のDAOを「取っ付きやすく」する",
-    "date": "2025-04-16 18:00:57",
-    "date_iso": "2025-04-16T09:00:57.116927+00:00",
+    "id": "6563953",
+    "title": "2025年春段階のAI自動開発",
+    "date": "2025-04-04 18:00:10",
+    "date_iso": "2025-04-04T09:00:10.048983+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
+    "original_date_text": "41分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6607788"
+    "url": "https://voicy.jp/channel/2834/6563953"
   },
   {
-    "id": "6596294",
-    "title": "最近のXは◯◯◯だよね",
-    "date": "2025-04-07 18:00:10",
-    "date_iso": "2025-04-07T09:00:10.877669+00:00",
+    "id": "6554790",
+    "title": "AI雑談",
+    "date": "2025-04-03 18:00:22",
+    "date_iso": "2025-04-03T09:00:22.632479+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
+    "original_date_text": "41分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6596294"
+    "url": "https://voicy.jp/channel/2834/6554790"
   },
   {
-    "id": "6603286",
-    "title": "景気後退とゲームノミクス",
-    "date": "2025-04-09 18:00:57",
-    "date_iso": "2025-04-09T09:00:57.345997+00:00",
+    "id": "6557293",
+    "title": "ブロックチェーンとミームトークンとNFT",
+    "date": "2025-04-08 18:00:58",
+    "date_iso": "2025-04-08T09:00:58.026070+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
+    "original_date_text": "41分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6603286"
+    "url": "https://voicy.jp/channel/2834/6557293"
   },
   {
-    "id": "6412290",
-    "title": "続・NFTの未来",
-    "date": "2025-04-11 18:00:09",
-    "date_iso": "2025-04-11T09:00:09.319182+00:00",
+    "id": "6560775",
+    "title": "AI時代に必要なチカラを考えてAIに聞いてみたらため息が出た話",
+    "date": "2025-04-10 18:00:32",
+    "date_iso": "2025-04-10T09:00:32.413318+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
+    "original_date_text": "41分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6412290"
+    "url": "https://voicy.jp/channel/2834/6560775"
   },
   {
-    "id": "6611282",
-    "title": "NFTである理由",
-    "date": "2025-04-15 18:00:10",
-    "date_iso": "2025-04-15T09:00:10.443392+00:00",
+    "id": "6599796",
+    "title": "イーサリアム財団の宮口あやさんがJoiさんの番組にご出演",
+    "date": "2025-04-18 18:00:29",
+    "date_iso": "2025-04-18T09:00:29.049777+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
+    "original_date_text": "41分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6611282"
-  },
-  {
-    "id": "6560788",
-    "title": "web3が実現しつつある",
-    "date": "2025-04-23 18:00:36",
-    "date_iso": "2025-04-23T09:00:36.928603+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "42分前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6560788"
+    "url": "https://voicy.jp/channel/2834/6599796"
   },
   {
     "id": "6648278",
@@ -620,34 +530,94 @@
     "url": "https://voicy.jp/channel/2834/6648278"
   },
   {
-    "id": "6669696",
-    "title": "AIアバターが自律稼働する未来",
-    "date": "2025-05-05 18:00:52",
-    "date_iso": "2025-05-05T09:00:52.434132+00:00",
+    "id": "6560788",
+    "title": "web3が実現しつつある",
+    "date": "2025-04-23 18:00:36",
+    "date_iso": "2025-04-23T09:00:36.928603+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "43分前",
+    "original_date_text": "42分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6669696"
+    "url": "https://voicy.jp/channel/2834/6560788"
   },
   {
-    "id": "6658294",
-    "title": "続・AIとブレストの実際",
-    "date": "2025-04-29 18:00:55",
-    "date_iso": "2025-04-29T09:00:55.686602+00:00",
+    "id": "6611282",
+    "title": "NFTである理由",
+    "date": "2025-04-15 18:00:10",
+    "date_iso": "2025-04-15T09:00:10.443392+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "43分前",
+    "original_date_text": "42分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6658294"
+    "url": "https://voicy.jp/channel/2834/6611282"
   },
   {
-    "id": "6609610",
-    "title": "続・AI化される社会でまだ残っている雑務",
-    "date": "2025-04-14 18:00:34",
-    "date_iso": "2025-04-14T09:00:34.152177+00:00",
+    "id": "6412290",
+    "title": "続・NFTの未来",
+    "date": "2025-04-11 18:00:09",
+    "date_iso": "2025-04-11T09:00:09.319182+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "43分前",
+    "original_date_text": "42分前",
     "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6609610"
+    "url": "https://voicy.jp/channel/2834/6412290"
+  },
+  {
+    "id": "6603286",
+    "title": "景気後退とゲームノミクス",
+    "date": "2025-04-09 18:00:57",
+    "date_iso": "2025-04-09T09:00:57.345997+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "42分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6603286"
+  },
+  {
+    "id": "6596294",
+    "title": "最近のXは◯◯◯だよね",
+    "date": "2025-04-07 18:00:10",
+    "date_iso": "2025-04-07T09:00:10.877669+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "42分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6596294"
+  },
+  {
+    "id": "6607788",
+    "title": "Nouns方式のDAOを「取っ付きやすく」する",
+    "date": "2025-04-16 18:00:57",
+    "date_iso": "2025-04-16T09:00:57.116927+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "42分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6607788"
+  },
+  {
+    "id": "6620302",
+    "title": "アニメ製作委員会をブロックチェーンで表現すると",
+    "date": "2025-04-22 18:00:07",
+    "date_iso": "2025-04-22T09:00:07.218974+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "42分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6620302"
+  },
+  {
+    "id": "6627926",
+    "title": "ビットコインとイーサリアム、投資的観点から考える",
+    "date": "2025-04-24 18:00:31",
+    "date_iso": "2025-04-24T09:00:31.021232+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "42分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6627926"
+  },
+  {
+    "id": "6644289",
+    "title": "AGIはどのように社会変革するのか",
+    "date": "2025-05-02 18:00:08",
+    "date_iso": "2025-05-02T09:00:08.954000+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "42分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6644289"
   },
   {
     "id": "6413897",
@@ -660,6 +630,36 @@
     "url": "https://voicy.jp/channel/2834/6413897"
   },
   {
+    "id": "6609610",
+    "title": "続・AI化される社会でまだ残っている雑務",
+    "date": "2025-04-14 18:00:34",
+    "date_iso": "2025-04-14T09:00:34.152177+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "43分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6609610"
+  },
+  {
+    "id": "6658294",
+    "title": "続・AIとブレストの実際",
+    "date": "2025-04-29 18:00:55",
+    "date_iso": "2025-04-29T09:00:55.686602+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "43分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6658294"
+  },
+  {
+    "id": "6669696",
+    "title": "AIアバターが自律稼働する未来",
+    "date": "2025-05-05 18:00:52",
+    "date_iso": "2025-05-05T09:00:52.434132+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "43分前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6669696"
+  },
+  {
     "id": "6571294",
     "title": "続・ブロックチェーンゲームのもうひとつのパターン",
     "date": "2025-04-02 18:00:17",
@@ -668,26 +668,6 @@
     "original_date_text": "44分前",
     "is_premium": true,
     "url": "https://voicy.jp/channel/2834/6571294"
-  },
-  {
-    "id": "6564102",
-    "title": "ブロックチェーンゲームのもうひとつのパターン",
-    "date": "2025-04-02 07:26:57",
-    "date_iso": "2025-04-01T22:26:57.231592+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "1時間前",
-    "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6564102"
-  },
-  {
-    "id": "6648791",
-    "title": "AIを巧みに操るチカラはスキルになるのか",
-    "date": "2025-04-28 18:27:43",
-    "date_iso": "2025-04-28T09:27:43.645205+00:00",
-    "date_source": "hierarchical_extraction",
-    "original_date_text": "1時間前",
-    "is_premium": true,
-    "url": "https://voicy.jp/channel/2834/6648791"
   },
   {
     "id": "6665373",
@@ -700,6 +680,26 @@
     "url": "https://voicy.jp/channel/2834/6665373"
   },
   {
+    "id": "6648791",
+    "title": "AIを巧みに操るチカラはスキルになるのか",
+    "date": "2025-04-28 18:27:43",
+    "date_iso": "2025-04-28T09:27:43.645205+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "1時間前",
+    "is_premium": true,
+    "url": "https://voicy.jp/channel/2834/6648791"
+  },
+  {
+    "id": "6564102",
+    "title": "ブロックチェーンゲームのもうひとつのパターン",
+    "date": "2025-04-02 07:26:57",
+    "date_iso": "2025-04-01T22:26:57.231592+00:00",
+    "date_source": "hierarchical_extraction",
+    "original_date_text": "1時間前",
+    "is_premium": false,
+    "url": "https://voicy.jp/channel/2834/6564102"
+  },
+  {
     "id": "6575475",
     "title": "続・現実はSFより奇なり、AGIで世界総生産が1000万倍になる世界線",
     "date": "2025-04-01 18:26:58",
@@ -710,14 +710,14 @@
     "url": "https://voicy.jp/channel/2834/6575475"
   },
   {
-    "id": "6574799",
-    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
-    "date": "2025-04-01 08:27:00",
-    "date_iso": "2025-03-31T23:27:00.329793+00:00",
+    "id": "6578292",
+    "title": "現実はSFより奇なり、AGIで世界総生産が1000万倍になる世界線",
+    "date": "2025-04-01 08:26:58",
+    "date_iso": "2025-03-31T23:26:58.787883+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "一昨日",
+    "original_date_text": "昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6574799"
+    "url": "https://voicy.jp/channel/2834/6578292"
   },
   {
     "id": "6539799",
@@ -730,14 +730,14 @@
     "url": "https://voicy.jp/channel/2834/6539799"
   },
   {
-    "id": "6578292",
-    "title": "現実はSFより奇なり、AGIで世界総生産が1000万倍になる世界線",
-    "date": "2025-04-01 08:26:58",
-    "date_iso": "2025-03-31T23:26:58.787883+00:00",
+    "id": "6574799",
+    "title": "やはり来た、バイブコーティングManusとReplitの性能強化を実際に体感",
+    "date": "2025-04-01 08:27:00",
+    "date_iso": "2025-03-31T23:27:00.329793+00:00",
     "date_source": "hierarchical_extraction",
-    "original_date_text": "昨日",
+    "original_date_text": "一昨日",
     "is_premium": false,
-    "url": "https://voicy.jp/channel/2834/6578292"
+    "url": "https://voicy.jp/channel/2834/6574799"
   },
   {
     "id": "6575380",
