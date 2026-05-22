@@ -189,8 +189,9 @@ jobs:
                       except Exception as e:
                           print(f"一時ファイルの削除中にエラーが発生しました: {e}")
                   
-                  # ファイル拡張子を確認
-                  if m3u8_url.endswith('.m3u8'):
+                  # ファイル拡張子を確認（クエリ文字列付き署名URLにも対応）
+                  _url_path = m3u8_url.split('?')[0]
+                  if _url_path.endswith('.m3u8'):
                       # m3u8ファイルの場合
                       print(f"m3u8ファイルを処理します")
                       
@@ -268,7 +269,7 @@ jobs:
                               print(f"MP3ファイルの変換に失敗しました: {result.stderr}")
                       else:
                           print(f"ダウンロードされたセグメントがありません")
-                  elif m3u8_url.endswith('.mp3'):
+                  elif _url_path.endswith('.mp3'):
                       # 直接MP3ファイルの場合
                       print(f"直接MP3ファイルをダウンロードします")
                       
@@ -287,7 +288,7 @@ jobs:
                       except Exception as e:
                           print(f"MP3ファイルのダウンロード中にエラーが発生しました: {str(e)}")
                           traceback.print_exc()
-                  elif m3u8_url.endswith('.aac'):
+                  elif _url_path.endswith('.aac'):
                       # AACファイルの場合
                       print(f"AACファイルをダウンロードしてMP3に変換します")
                       
@@ -384,6 +385,9 @@ jobs:
                   chrome_options.add_argument("--disable-dev-shm-usage")
                   chrome_options.add_argument("--disable-gpu")
                   chrome_options.add_argument("--window-size=1920,1080")
+                  # 【改良】ヘッドレスでも音声再生を許可し、CDPネットワークログを有効化
+                  chrome_options.add_argument("--autoplay-policy=no-user-gesture-required")
+                  chrome_options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
                   
                   # Chromeドライバーを初期化
                   service = Service(ChromeDriverManager().install())
@@ -493,7 +497,7 @@ jobs:
                   
                   # ネットワークリクエストを監視するためのJavaScriptを実行
                   driver.execute_script("""
-                  window.audioRequests = [];
+                  window.audioRequests = window.audioRequests || [];
                   
                   // XMLHttpRequestをオーバーライド
                   var originalXHR = window.XMLHttpRequest;
@@ -523,8 +527,26 @@ jobs:
                   };
                   """)
                   
-                  # 再生ボタンをクリック
-                  if target_episode and target_episode["play_button"]:
+                  # 【改良】まずエピソード本体のメイン「再生する」ボタンを堅牢にクリック
+                  main_play_clicked = False
+                  try:
+                      main_btn = WebDriverWait(driver, 15).until(
+                          EC.presence_of_element_located((By.XPATH, "(//button[contains(normalize-space(.), '再生する')])[1]"))
+                      )
+                      driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", main_btn)
+                      time.sleep(1)
+                      try:
+                          main_btn.click()
+                      except Exception:
+                          driver.execute_script("arguments[0].click();", main_btn)
+                      main_play_clicked = True
+                      print("メイン再生ボタンをクリックしました")
+                      time.sleep(12)
+                  except Exception as e:
+                      print(f"メイン再生ボタンのクリックに失敗: {str(e)}")
+
+                  # 再生ボタンをクリック（従来ロジック・フォールバック）
+                  if (not main_play_clicked) and target_episode and target_episode["play_button"]:
                       try:
                           target_episode["play_button"].click()
                           print(f"エピソード '{target_episode['title']}' の再生ボタンをクリックしました")
@@ -532,7 +554,7 @@ jobs:
                           time.sleep(10)
                       except Exception as e:
                           print(f"再生ボタンのクリックに失敗しました: {str(e)}")
-                  else:
+                  elif not main_play_clicked:
                       # 再生ボタンが見つからない場合は、一般的なセレクタを試す
                       try:
                           # 再生ボタンのセレクタを複数試す
@@ -567,7 +589,22 @@ jobs:
                           print(f"再生ボタンのクリックに失敗しました: {str(e)}")
                   
                   # キャプチャしたオーディオリクエストを取得
-                  audio_requests = driver.execute_script("return window.audioRequests;")
+                  audio_requests = driver.execute_script("return window.audioRequests;") or []
+                  # 【改良】CDP performance ログからも m3u8/mp3 を収集（JS横取りが漏れても拾える）
+                  try:
+                      import json as _json
+                      for _entry in driver.get_log('performance'):
+                          try:
+                              _msg = _json.loads(_entry['message']).get('message', {})
+                          except Exception:
+                              continue
+                          if _msg.get('method') == 'Network.requestWillBeSent':
+                              _u = _msg.get('params', {}).get('request', {}).get('url', '')
+                              if ('.m3u8' in _u or '.mp3' in _u) and _u not in audio_requests:
+                                  audio_requests.append(_u)
+                      print(f"performanceログ併用後のオーディオ候補: {len(audio_requests)} 件")
+                  except Exception as _e:
+                      print(f"performanceログ取得をスキップ: {_e}")
                   
                   # ページのHTMLを取得
                   html = driver.page_source
