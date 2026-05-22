@@ -2,7 +2,8 @@ name: Voicy URL Scraper
 
 on:
   schedule:
-    - cron: '31 * * * *'  # 毎時31分に実行
+    - cron: '31 * * * *'        # 毎時31分（通常巡回）
+    - cron: '*/15 21-22 * * *'  # UTC21-22時台を15分おき = JST6:00〜7:45（朝の新規回を素早く取得）
   workflow_dispatch:  # 手動実行用
 # 明示的に権限を設定
 permissions:

@@ -5,20 +5,20 @@ permissions:
   contents: write
 
 on:
+  # MP3ダウンローダー完了で自動起動（順序保証つきチェーン）
+  workflow_run:
+    workflows: ["Voicy MP3 Downloader"]
+    types: [completed]
   schedule:
-    - cron: '8 9 * * *'  # 6時38分に実行
-    - cron: '38 21 * * *'  # 18時08分に実行
-    - cron: '44 21 * * *'  # 18時08分に実行
-
+    - cron: '44 21 * * *'  # JST 6:44（バックアップ）
+    - cron: '8 9 * * *'    # JST 18:08（バックアップ）
   workflow_dispatch:  # 手動実行用
-  push:
-    paths:
-      - 'docs/podcast/**'  # podcast フォルダに変更があった場合に実行
-      - 'output/voicy_episodes.json'  # JSONファイルが更新された場合も実行
 
 jobs:
   generate-rss:
     runs-on: ubuntu-latest
+    # workflow_run起動時はMP3ダウンローダー成功時のみ実行（schedule/手動は常に実行）
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     
     steps:
       - name: Checkout main repository

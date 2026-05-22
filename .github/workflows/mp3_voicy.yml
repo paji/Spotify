@@ -1,11 +1,14 @@
 name: Voicy MP3 Downloader
 
 on:
- schedule:
-  - cron: '38 21 * * *'  # JST 6時31分 (UTC 21:31)
-  - cron: '33 21 * * *'  # JST 6時31分 (UTC 21:31)
-  - cron: '3 9 * * *'    # JST 18時01分 (UTC 9:01)
- workflow_dispatch:  # 手動実行用
+  # スクレイパー完了で自動起動（順序保証つきチェーン）
+  workflow_run:
+    workflows: ["Voicy URL Scraper"]
+    types: [completed]
+  schedule:
+    - cron: '38 21 * * *'  # JST 6:38（バックアップ）
+    - cron: '3 9 * * *'    # JST 18:03（バックアップ）
+  workflow_dispatch:  # 手動実行用
 
 # 明示的に権限を設定
 permissions:
@@ -15,6 +18,8 @@ permissions:
 jobs:
   voicy-mp3-download:
     runs-on: ubuntu-latest
+    # workflow_run起動時はスクレイパー成功時のみ実行（schedule/手動は常に実行）
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     
     steps:
       - name: チェックアウト
