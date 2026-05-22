@@ -971,8 +971,20 @@ jobs:
       
       - name: 結果をコミット
         run: |
+          set +e
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add output/voicy_episodes.json output/voicy_urls_only.json
-          git commit -m "Update Voicy episodes JSON" || echo "No changes to commit"
-          git push
+          if git diff --cached --quiet; then
+            echo "新規エピソードなし。コミット・プッシュをスキップします。"
+            exit 0
+          fi
+          git commit -m "Update Voicy episodes JSON"
+          for attempt in 1 2 3 4 5; do
+            git push origin main && { echo "プッシュ成功 (試行 ${attempt} 回目)"; exit 0; }
+            echo "プッシュ拒否 (試行 ${attempt} 回目)。main を再同期して再試行します。"
+            git pull --rebase origin main || git rebase --abort
+            sleep $(( (RANDOM % 15) + 5 ))
+          done
+          echo "リトライ上限に達しました。プッシュ失敗。"
+          exit 1
