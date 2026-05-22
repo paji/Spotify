@@ -513,12 +513,23 @@ jobs:
       - name: Commit and push changes to gh-pages branch
         run: |
           cd gh-pages
+          set +e
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          
+
           git add docs/feed.rss docs/rss.xml docs/.nojekyll docs/.feed_updated docs/rss_debug.log
-          
-          # 常に変更をコミットして強制的に更新する
+
+          if git diff --cached --quiet; then
+            echo "RSSに変更なし。コミット・プッシュをスキップします。"
+            exit 0
+          fi
           git commit -m "自動更新: Podcast RSS feed $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/paji/Spotify.git gh-pages
-          echo "gh-pagesブランチに変更をプッシュしました"
+          REPO_URL="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/paji/Spotify.git"
+          for attempt in 1 2 3 4 5; do
+            git push "$REPO_URL" gh-pages && { echo "gh-pagesブランチにプッシュしました (試行 ${attempt} 回目)"; exit 0; }
+            echo "プッシュ拒否 (試行 ${attempt} 回目)。gh-pages を再同期して再試行します。"
+            git pull --rebase "$REPO_URL" gh-pages || git rebase --abort
+            sleep $(( (RANDOM % 15) + 5 ))
+          done
+          echo "リトライ上限に達しました。プッシュ失敗。"
+          exit 1
