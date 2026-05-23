@@ -517,7 +517,9 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-          git add docs/feed.rss docs/rss.xml docs/.nojekyll docs/.feed_updated docs/rss_debug.log
+          # .feed_updated と rss_debug.log は毎回タイムスタンプが変わり、並列実行時にmerge conflictを引き起こす
+          # feed.rss本体が変わらない限り意味の無い差分なので git add から外す
+          git add docs/feed.rss docs/rss.xml docs/.nojekyll
 
           if git diff --cached --quiet; then
             echo "RSSに変更なし。コミット・プッシュをスキップします。"

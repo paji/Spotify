@@ -385,14 +385,18 @@ jobs:
               try:
                   # Chromeオプションを設定
                   chrome_options = Options()
-                  chrome_options.add_argument("--headless")
+                  chrome_options.add_argument("--headless=new")
                   chrome_options.add_argument("--no-sandbox")
                   chrome_options.add_argument("--disable-dev-shm-usage")
                   chrome_options.add_argument("--disable-gpu")
                   chrome_options.add_argument("--window-size=1920,1080")
-                  # 【改良】ヘッドレスでも音声再生を許可し、CDPネットワークログを有効化
+                  # 【改良】ヘッドレスでも音声再生を許可・CDPネットワークログを有効化・自動操縦検出を緩和
                   chrome_options.add_argument("--autoplay-policy=no-user-gesture-required")
+                  chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+                  chrome_options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
                   chrome_options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
+                  chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+                  chrome_options.add_experimental_option("useAutomationExtension", False)
                   
                   # Chromeドライバーを初期化
                   service = Service(ChromeDriverManager().install())
@@ -532,23 +536,29 @@ jobs:
                   };
                   """)
                   
-                  # 【改良】まずエピソード本体のメイン「再生する」ボタンを堅牢にクリック
+                  # 【改良】まずエピソード本体のメイン「再生する」ボタンを堅牢にクリック（複数セレクタ・長め待機）
                   main_play_clicked = False
-                  try:
-                      main_btn = WebDriverWait(driver, 15).until(
-                          EC.presence_of_element_located((By.XPATH, "(//button[contains(normalize-space(.), '再生する')])[1]"))
-                      )
-                      driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", main_btn)
-                      time.sleep(1)
+                  for _xp in [
+                      "(//button[contains(normalize-space(.), '再生する')])[1]",
+                      "(//button[contains(normalize-space(.), '再生')])[1]",
+                      "(//*[@role='button'][contains(normalize-space(.), '再生')])[1]",
+                  ]:
                       try:
-                          main_btn.click()
-                      except Exception:
-                          driver.execute_script("arguments[0].click();", main_btn)
-                      main_play_clicked = True
-                      print("メイン再生ボタンをクリックしました")
-                      time.sleep(12)
-                  except Exception as e:
-                      print(f"メイン再生ボタンのクリックに失敗: {str(e)}")
+                          main_btn = WebDriverWait(driver, 20).until(
+                              EC.presence_of_element_located((By.XPATH, _xp))
+                          )
+                          driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", main_btn)
+                          time.sleep(1)
+                          try:
+                              main_btn.click()
+                          except Exception:
+                              driver.execute_script("arguments[0].click();", main_btn)
+                          main_play_clicked = True
+                          print(f"メイン再生ボタンをクリックしました (selector: {_xp})")
+                          time.sleep(12)
+                          break
+                      except Exception as e:
+                          print(f"再生ボタンセレクタ失敗 ({_xp}): {type(e).__name__}")
 
                   # 再生ボタンをクリック（従来ロジック・フォールバック）
                   if (not main_play_clicked) and target_episode and target_episode["play_button"]:
